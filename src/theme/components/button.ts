@@ -64,5 +64,5 @@ export const ButtonStyle = defineStyleConfig({
         },
       },
     },
-  }
+  },
 })

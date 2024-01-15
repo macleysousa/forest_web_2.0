@@ -1,7 +1,7 @@
 'use client';
 
 import { Link } from '@chakra-ui/next-js';
-import { Card, Center, Flex, Grid, Icon, Text } from '@chakra-ui/react';
+import { Card, Center, Flex, Grid, Icon, Text, Image } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { FaArrowRight } from 'react-icons/fa';
@@ -27,7 +27,18 @@ export default function Login() {
   };
 
   return (
-    <Center>
+    <Center className='gap-4'>
+      <Flex
+        bg='url("background-login.png")'
+        h='100vh'
+        w='100vw'
+        position='absolute'
+        bgSize='cover'
+        bgRepeat='no-repeat'
+        filter='blur(10px) contrast(0.5)' />
+
+      <Image src='/petroplus.png' alt='petroplus logo' h='96px' w='400px' zIndex={1} />
+
       <Card className='p-8' h='433px' w='459px' borderRadius={8}>
         <Text className='text-2xl font-semibold'>Entrar</Text>
         <Form className='mt-4' onSubmit={handleSubmit(onSubmit, console.error)}>
