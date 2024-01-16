@@ -1,25 +1,6 @@
-body {
-  margin: 0;
-  line-height: inherit;
-}
+@tailwind components;
+@tailwind utilities;
 
-main {
-  background-color: #F9F9F9;
-}
-
-main>div:first-child {
-  min-height: 100vh;
-  min-width: 100%;
-  flex-direction: column;
-}
-
-/* remover o ícone de exibir/ocultar senha padrão do navegador */
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear {
-  display: none;
-}
-
-*,
 ::before,
 ::after {
   --tw-border-spacing-x: 0;

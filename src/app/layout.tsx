@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { ThemeProvider } from 'src/providers/theme-provider'
 
 import './globals.css'
+import './tailwind.css'
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] })
 
@@ -16,7 +17,7 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
   return (
     <html lang="pt">
       <body className={inter.className}>
-        <main>
+        <main className=''>
           <ThemeProvider>
             {children}
           </ThemeProvider>

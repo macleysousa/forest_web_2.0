@@ -35,7 +35,7 @@ export default function Login() {
         position='absolute'
         bgSize='cover'
         bgRepeat='no-repeat'
-        filter='blur(10px) contrast(0.5)' />
+        className='blur-sm contrast-50' />
 
       <Image src='/petroplus.png' alt='petroplus logo' h='96px' w='400px' zIndex={1} />
 

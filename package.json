@@ -7,7 +7,8 @@
     "start:dev": "npm run dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build-css": "postcss ./src/app/tailwind.css -o ./public/css/styles.css"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.2.0",
@@ -32,6 +33,10 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "postcss": "^8.4.33",
+    "postcss-cli": "^11.0.0",
+    "postcss-preset-env": "^9.3.0",
+    "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }
 }
