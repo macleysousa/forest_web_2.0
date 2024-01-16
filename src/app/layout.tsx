@@ -16,7 +16,7 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
   return (
     <html lang="pt">
       <body className={inter.className}>
-        <main className='min-h-screen min-w-full'>
+        <main>
           <ThemeProvider>
             {children}
           </ThemeProvider>

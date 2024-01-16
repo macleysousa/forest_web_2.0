@@ -1,11 +1,7 @@
 import { theme } from '@chakra-ui/react';
-import resolveConfig from 'tailwindcss/resolveConfig';
-
-import tailwindConfig from '../../tailwind.config';
 
 export const colors = {
   ...theme.colors,
-  ...resolveConfig(tailwindConfig).theme.colors,
   blue: {
     50: '#e3f2ff',
     100: '#bbdaff',

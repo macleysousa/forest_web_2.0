@@ -3,16 +3,20 @@ import React from 'react';
 
 export default function ForgotPassword() {
   return (
-    <Center>
+    <Center gap={4}>
       <Flex
         bg='url("background-login.png")'
-        className='min-h-screen min-w-full absolute bg-cover bg-no-repeat blur-md contrast-50'
-      />
+        h='100vh'
+        w='100vw'
+        position='absolute'
+        bgSize='cover'
+        bgRepeat='no-repeat'
+        filter='blur(10px) contrast(0.5)' />
 
       <Image src='/petroplus.png' alt='petroplus logo' h='96px' w='400px' zIndex={1} />
 
-      <Card className='p-8' h='433px' w='459px' borderRadius={8}>
-        <Text className='text-2xl font-semibold'>Esqueceu sua Senha?</Text>
+      <Card p={8} h='433px' w='459px' borderRadius={8}>
+        <Text>Esqueceu sua Senha?</Text>
         {/* <Form className='mt-4' onSubmit={handleSubmit(onSubmit, console.error)}>
           <Grid className='gap-4' templateColumns='1fr' w='100%'>
 

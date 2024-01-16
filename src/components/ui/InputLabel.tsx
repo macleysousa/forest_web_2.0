@@ -15,7 +15,7 @@ export const InputLabel: React.FC<InputLabelProps> = ({ children, error, ...rest
   })
   return (
     <FormControl isInvalid={!!error} aria-invalid>
-      <Text className='child:nth-child(2) mt-2' as="label" w="full" fontSize="14px" fontWeight="medium" {...rest}>
+      <Text mt={2} as="label" w="full" fontSize="14px" fontWeight="medium" {...rest}>
         {childs}
         <FormErrorMessage>{error}</FormErrorMessage>
       </Text>

@@ -27,7 +27,7 @@ export default function Login() {
   };
 
   return (
-    <Center className='gap-4'>
+    <Center gap={4}>
       <Flex
         bg='url("background-login.png")'
         h='100vh'
@@ -39,10 +39,10 @@ export default function Login() {
 
       <Image src='/petroplus.png' alt='petroplus logo' h='96px' w='400px' zIndex={1} />
 
-      <Card className='p-8' h='433px' w='459px' borderRadius={8}>
-        <Text className='text-2xl font-semibold'>Entrar</Text>
-        <Form className='mt-4' onSubmit={handleSubmit(onSubmit, console.error)}>
-          <Grid className='gap-4' templateColumns='1fr' w='100%'>
+      <Card p={4} h='433px' w='459px' borderRadius={8}>
+        <Text fontSize='24px' fontWeight='semibold'>Entrar</Text>
+        <Form onSubmit={handleSubmit(onSubmit, console.error)}>
+          <Grid gap={4} templateColumns='1fr' w='100%'>
 
             <InputLabel error={formState.errors.email?.message}>
               Email da Conta

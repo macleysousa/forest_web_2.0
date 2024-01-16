@@ -1,7 +1,3 @@
-/* @tailwind base; */
-@tailwind components;
-@tailwind utilities;
-
 body {
   margin: 0;
   line-height: inherit;
@@ -12,9 +8,9 @@ main {
 }
 
 main>div:first-child {
-  @apply min-h-screen;
-  @apply min-w-full;
-  @apply flex-col;
+  min-height: 100vh;
+  min-width: 100%;
+  flex-direction: column;
 }
 
 /* remover o ícone de exibir/ocultar senha padrão do navegador */
