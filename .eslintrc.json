@@ -2,8 +2,16 @@
   "extends": "next/core-web-vitals",
   "rules": {
     "quotes": [
-      "error",
+      "warn",
       "single"
+    ],
+    "semi": [
+      "warn",
+      "always"
+    ],
+    "comma-dangle": [
+      "warn",
+      "always-multiline"
     ]
   }
 }
