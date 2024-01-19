@@ -1,4 +1,4 @@
-import { defineStyleConfig } from '@chakra-ui/react'
+import { defineStyleConfig } from '@chakra-ui/react';
 
 export const InputStyle = defineStyleConfig({
   baseStyle: {
@@ -7,4 +7,4 @@ export const InputStyle = defineStyleConfig({
       borderRadius: 'md',
     },
   },
-})
+});

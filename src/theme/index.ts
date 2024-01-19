@@ -15,5 +15,5 @@ export const theme = extendTheme({
   components: {
     Input: InputStyle,
     Button: ButtonStyle,
-  }
+  },
 });

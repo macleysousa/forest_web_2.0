@@ -12,7 +12,7 @@ export const InputLabel: React.FC<InputLabelProps> = ({ children, error, ...rest
       return React.cloneElement(child, { ...child.props, 'aria-invalid': !!error });
     }
     return child;
-  })
+  });
   return (
     <FormControl isInvalid={!!error} aria-invalid>
       <Text mt={2} as="label" w="full" fontSize="14px" fontWeight="medium" {...rest}>

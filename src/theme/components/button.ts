@@ -1,12 +1,12 @@
-import { theme, defineStyleConfig } from '@chakra-ui/react'
+import { theme, defineStyleConfig } from '@chakra-ui/react';
 
 export const ButtonStyle = defineStyleConfig({
   ...theme.components.Button,
   sizes: {
     ...theme.components.Button.sizes,
     md: {
-      h: '48px'
-    }
+      h: '48px',
+    },
   },
   variants: {
     ...theme.components.Button.variants,
@@ -65,4 +65,4 @@ export const ButtonStyle = defineStyleConfig({
       },
     },
   },
-})
+});

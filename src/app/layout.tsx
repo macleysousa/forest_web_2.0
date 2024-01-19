@@ -18,11 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt">
       <body className={inter.className}>
-        <main className=''>
+        <main className="">
           <ThemeProvider>
-            <StyledProvider>
-              {children}
-            </StyledProvider>
+            <StyledProvider>{children}</StyledProvider>
           </ThemeProvider>
         </main>
       </body>

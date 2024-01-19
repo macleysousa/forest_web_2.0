@@ -24,7 +24,7 @@ function InputFileElement(props: InputFileProps, ref: React.LegacyRef<HTMLInputE
     const files = event.target.files;
     if (files) {
       const fileNames = Array.from(files).map((file) => file.name);
-      setFileName(fileNames.length > 0 ? fileNames.join(', ') : (placeholder ?? 'Nenhum arquivo selecionado'));
+      setFileName(fileNames.length > 0 ? fileNames.join(', ') : placeholder ?? 'Nenhum arquivo selecionado');
     }
     onChange?.call(null, event);
   };
@@ -36,7 +36,9 @@ function InputFileElement(props: InputFileProps, ref: React.LegacyRef<HTMLInputE
   return (
     <Box ref={ref} {...styles} {...rest} p={1} aria-invalid={props['aria-invalid']}>
       <label htmlFor={id} ref={refLabel} style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-        <Button onClick={() => refLabel.current?.click()} h='100%'>{title ?? 'Escolher arquivo'}</Button>
+        <Button onClick={() => refLabel.current?.click()} h="100%">
+          {title ?? 'Escolher arquivo'}
+        </Button>
         <Text ml={2} isTruncated>
           {fileName}
         </Text>
