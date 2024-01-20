@@ -23,9 +23,6 @@
       }
     ],
     "paths": {
-      "ui/*": [
-        "./src/components/ui/*"
-      ],
       "src/*": [
         "./src/*"
       ],

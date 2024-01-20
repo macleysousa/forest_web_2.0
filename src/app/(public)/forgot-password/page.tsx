@@ -1,7 +1,27 @@
-import { Button, Card, Center, Flex, Image, Text } from '@chakra-ui/react';
-import React from 'react';
+'use client';
+
+import { Button, Card, Center, Flex, Grid, Icon, Image, Text } from '@chakra-ui/react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { FaArrowRight } from 'react-icons/fa';
+import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
+import { InputLabel } from 'src/components/ui/InputLabel';
+import { InputText } from 'src/components/ui/InputText';
+import { Form } from 'src/components/ui/form';
+import { z } from 'zod';
+
 
 export default function ForgotPassword() {
+  const schema = z.object({
+    email: z.string().min(0, 'O email é obrigatório').email('Formato de email inválido'),
+  });
+
+  const { register, control, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
+
+  const onSubmit = (data: z.infer<typeof schema>) => {
+    console.log(data);
+  };
+
   return (
     <Center gap={4}>
       <Flex
@@ -12,8 +32,7 @@ export default function ForgotPassword() {
       <Image src="/petroplus.png" alt="petroplus logo" h="96px" w="400px" zIndex={1} />
 
       <Card className="p-8 rounded-md" h="433px" w="459px">
-        <Text>Esqueceu sua Senha?</Text>
-        {/* <Form className='mt-4' onSubmit={handleSubmit(onSubmit, console.error)}>
+        <Form className='mt-4' onSubmit={handleSubmit(onSubmit)}>
           <Grid className='gap-4' templateColumns='1fr' w='100%'>
 
             <InputLabel error={formState.errors.email?.message}>
@@ -21,25 +40,14 @@ export default function ForgotPassword() {
               <InputText mt={2} placeholder='Digite seu email' {...register('email')} />
             </InputLabel>
 
-            <InputLabel error={formState.errors.password?.message}>
-              Senha
-              <InputPassword mt={2} placeholder='Entre com sua senha' {...register('password')} />
-            </InputLabel>
-
-            <InputLabel>
-              <Link href='/forgot-password' color='#1E93FF'>Esqueceu a senha?</Link>
-            </InputLabel>
-
             <Flex>
               <ButtonPrimary flex={1} type='submit'>
-                <Text flex={1}>Entrar</Text>
-                <Icon as={FaArrowRight} />
+                Enviar
               </ButtonPrimary>
             </Flex>
           </Grid>
 
-        </Form> */}
-        <Button>Enviar</Button>
+        </Form>
       </Card>
     </Center>
   );
