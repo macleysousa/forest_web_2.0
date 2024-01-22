@@ -3,10 +3,6 @@ body {
   line-height: inherit;
 }
 
-main {
-  background-color: #F9F9F9;
-}
-
 main>div:first-child {
   min-height: 100vh;
   min-width: 100%;

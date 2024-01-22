@@ -1,19 +1,25 @@
 'use client';
 
 import { Link } from '@chakra-ui/next-js';
-import { Card, Center, Flex, Grid, Icon, Text, Image } from '@chakra-ui/react';
+import { Card, Center, Flex, Grid, Icon, Image, Text, useToast } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { FaArrowRight } from 'react-icons/fa';
 import { z } from 'zod';
 
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
+import { Form } from 'src/components/ui/Form';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputPassword } from 'src/components/ui/InputPassword';
 import { InputText } from 'src/components/ui/InputText';
-import { Form } from 'src/components/ui/Form';
+import { useSession } from 'src/contexts/use-session';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
+  const toast = useToast();
+  const router = useRouter();
+  const { signIn } = useSession();
+
   const schema = z.object({
     email: z.string().min(0, 'O email é obrigatório').email('Formato de email inválido'),
     password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
@@ -21,8 +27,14 @@ export default function Login() {
 
   const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    await signIn(data.email, data.password).then((res) => {
+      if (res.status === 'success') {
+        router.replace('/dashboard');
+      }
+    }).catch(() => {
+      toast({ description: 'Email ou senha inválidos', status: 'error', isClosable: true });
+    });
   };
 
   return (
@@ -57,7 +69,7 @@ export default function Login() {
             </InputLabel>
 
             <Flex>
-              <ButtonPrimary flex={1} type="submit">
+              <ButtonPrimary flex={1} type="submit" isLoading={formState.isSubmitting}>
                 <Text flex={1}>Entrar</Text>
                 <Icon as={FaArrowRight} />
               </ButtonPrimary>

@@ -6,6 +6,7 @@ import { ThemeProvider } from 'src/providers/theme.provider';
 
 import './globals.css';
 import './tailwind.css';
+import { AuthProvider } from 'src/providers/auth.provider';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800', '900'] });
 
@@ -20,7 +21,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <main className="">
           <ThemeProvider>
-            <StyledProvider>{children}</StyledProvider>
+            <StyledProvider>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+            </StyledProvider>
           </ThemeProvider>
         </main>
       </body>
