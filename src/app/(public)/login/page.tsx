@@ -11,7 +11,7 @@ import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputPassword } from 'src/components/ui/InputPassword';
 import { InputText } from 'src/components/ui/InputText';
-import { Form } from 'src/components/ui/form';
+import { Form } from 'src/components/ui/Form';
 
 export default function Login() {
   const schema = z.object({

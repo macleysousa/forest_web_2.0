@@ -7,7 +7,7 @@ import { FaArrowRight } from 'react-icons/fa';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputText } from 'src/components/ui/InputText';
-import { Form } from 'src/components/ui/form';
+import { Form } from 'src/components/ui/Form';
 import { z } from 'zod';
 
 
