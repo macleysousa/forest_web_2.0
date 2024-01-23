@@ -1,11 +1,10 @@
 'use client';
 
-import { destroyCookie, setCookie } from 'nookies';
-import { createContext, useContext, useState } from 'react';
+import { destroyCookie, parseCookies, setCookie } from 'nookies';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 import { api } from 'src/commons/api';
 import { UserResponse } from 'src/interfaces/v2/user';
-
 
 export type AuthContextType = {
   user: UserResponse | null;
@@ -20,11 +19,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [user, setUser] = useState<UserResponse | null>(null);
 
-  async function signIn(email: string, password: string): Promise<UserResponse> {
+  const forestAccessToken = parseCookies().forest_access_token;
+
+  useEffect(() => {
+    if (forestAccessToken) {
+      getMe();
+    }
+  }, [forestAccessToken]);
+
+  async function signIn(
+    email: string,
+    password: string
+  ): Promise<UserResponse> {
     return api
       .post<UserResponse>('/v2/login', { email, password })
       .then(async ({ data }) => {
-        setCookie(undefined, 'forest_access_token', data.user.api_token, { maxAge: 60 * 60 * 1, path: '/' });
+        setCookie(undefined, 'forest_access_token', data.user.api_token, {
+          maxAge: 60 * 60 * 1,
+          path: '/',
+        });
         return data;
       })
       .catch((err) => err);
@@ -37,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function getMe(): Promise<UserResponse> {
     return api
-      .get<UserResponse>('/v1/me')
+      .get<UserResponse>('/v2/user')
       .then(({ data: usr }) => {
         setUser(usr);
         return usr;
@@ -47,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, getMe }} >
+    <AuthContext.Provider value={{ user, signIn, signOut, getMe }}>
       {children}
     </AuthContext.Provider>
   );
