@@ -1,12 +1,17 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'hover-blue': '#1d1242',
+        'color-blue': '#1E93FF',
+      },
+    },
   },
   plugins: [],
-}
-export default config
+};
+export default config;

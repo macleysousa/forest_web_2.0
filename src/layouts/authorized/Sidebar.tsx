@@ -6,6 +6,7 @@ import {
   Button,
   Text,
   Box,
+  Image,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -82,31 +83,43 @@ export default function Sidebar() {
   };
 
   return (
-    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100vh">
+    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh">
       <Center m="1rem 0 2rem 0">
-        <Text>Petroplus</Text>
+        <Image src="/petroplus.png" alt="petroplus logo" w="8rem" />
       </Center>
       <VStack align="left" padding="0 1rem" gap="1rem">
-        <Link href="">
-          <Flex align="center" gap=".5rem">
+        <Link
+          href=""
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
+        >
+          <Flex align="center" gap="1rem">
             <Icon as={MdDashboard} />
             <Text>Dashboard</Text>
           </Flex>
         </Link>
-        <Link href="">
-          <Flex align="center" gap=".5rem">
+        <Link
+          href=""
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
+        >
+          <Flex align="center" gap="1rem">
             <Icon as={MdInsertChart} />
             <Text>Painel Gerencial</Text>
           </Flex>
         </Link>
-        <Link href="">
-          <Flex align="center" gap=".5rem">
+        <Link
+          href=""
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
+        >
+          <Flex align="center" gap="1rem">
             <Icon as={MdContacts} />
             <Text>Clientes</Text>
           </Flex>
         </Link>
-        <Link href="">
-          <Flex align="center" gap=".5rem">
+        <Link
+          href=""
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
+        >
+          <Flex align="center" gap="1rem">
             <Icon as={MdPaid} />
             <Text>Notas Fiscais</Text>
           </Flex>
@@ -116,8 +129,9 @@ export default function Sidebar() {
           variant="link"
           justifyContent="left"
           onClick={handleOpenMenuOption('mobile')}
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
         >
-          <Flex align="center" gap=".5rem" w="100%">
+          <Flex align="center" gap="1rem" w="100%">
             <Icon as={MdPinDrop} />
             <Text>Mobile</Text>
             <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
@@ -139,8 +153,9 @@ export default function Sidebar() {
           variant="link"
           justifyContent="left"
           onClick={handleOpenMenuOption('planning')}
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
         >
-          <Flex align="center" gap=".5rem" w="100%">
+          <Flex align="center" gap="1rem" w="100%">
             <Icon as={IoBagCheckSharp} />
             <Text>Planejamentos</Text>
             <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
@@ -162,8 +177,9 @@ export default function Sidebar() {
           variant="link"
           justifyContent="left"
           onClick={handleOpenMenuOption('products')}
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
         >
-          <Flex align="center" gap=".5rem" w="100%">
+          <Flex align="center" gap="1rem" w="100%">
             <Icon as={MdStars} />
             <Text>Produtos</Text>
             <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
@@ -173,7 +189,7 @@ export default function Sidebar() {
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.products.options.map((option, index) => (
               <Link href={option.path} key={index}>
-                <Flex align="center" gap=".5rem">
+                <Flex align="center" gap="1rem">
                   <Text>{option.name}</Text>
                 </Flex>
               </Link>
@@ -185,8 +201,9 @@ export default function Sidebar() {
           variant="link"
           justifyContent="left"
           onClick={handleOpenMenuOption('orders')}
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
         >
-          <Flex align="center" gap=".5rem" w="100%">
+          <Flex align="center" gap="1rem" w="100%">
             <Icon as={MdDirectionsCar} />
             <Text>Pedidos Parceiros</Text>
             <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
@@ -196,15 +213,18 @@ export default function Sidebar() {
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.orders.options.map((option, index) => (
               <Link href={option.path} key={index}>
-                <Flex align="center" gap=".5rem">
+                <Flex align="center" gap="1rem">
                   <Text>{option.name}</Text>
                 </Flex>
               </Link>
             ))}
           </VStack>
         )}
-        <Link href="">
-          <Flex align="center" gap=".5rem">
+        <Link
+          href=""
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
+        >
+          <Flex align="center" gap="1rem">
             <Icon as={MdSettings} />
             <Text>Ferramentas</Text>
           </Flex>

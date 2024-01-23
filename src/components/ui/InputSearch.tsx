@@ -8,9 +8,9 @@ import {
 } from '@chakra-ui/react';
 import { IoSearch } from 'react-icons/io5';
 
-interface SearchBarProps extends Omit<InputProps, 'type'> {}
+interface InputSearchProps extends Omit<InputProps, 'type'> {}
 
-export default function SearchBar({ ...props }: SearchBarProps) {
+export default function InputSearch({ ...props }: InputSearchProps) {
   const handleSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       console.log('searching...');
