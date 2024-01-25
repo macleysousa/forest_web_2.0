@@ -1,12 +1,35 @@
 'use client';
 
-import { Card, CardHeader, Heading, CardBody, Text, Box, CardProps } from '@chakra-ui/react';
-import Chart from 'chart.js/auto';
-import { Charis_SIL } from 'next/font/google';
-import { useEffect, useRef, useState } from 'react';
+import {
+  Card,
+  CardHeader,
+  Heading,
+  CardBody,
+  Text,
+  Box,
+  CardProps,
+  Th,
+  Table,
+  TableContainer,
+  Tr,
+  Thead,
+  Tbody,
+  Td,
+  Flex,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Portal,
+  MenuList,
+} from '@chakra-ui/react';
+import Chart, { ChartType } from 'chart.js/auto';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MdMoreVert } from 'react-icons/md';
 
 interface Props {
-  chartData: number[];
+  barChartData: number[];
+  lineChartData: number[];
 }
 
 const generateRandomId = () => {
@@ -17,21 +40,36 @@ const generateRandomId = () => {
   return randomId;
 };
 
-const MyChart = ({ chartData }: Props) => {
-  const formatData = (data: number[]) => ({
-    labels: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
-    datasets: [{ data }],
-  });
+const MyChart = ({ barChartData, lineChartData }: Props) => {
+  const labels = useMemo(() => ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'], []);
+
+  const formatData = useCallback(
+    (barData: number[], lineData: number[]) => ({
+      labels: labels,
+      datasets: [
+        {
+          data: barData,
+          borderColor: '#775DA6',
+          backgroundColor: '#775DA6',
+          type: 'bar' as ChartType,
+          order: 1,
+        },
+        {
+          data: lineData,
+          borderColor: '#70B6C1',
+          backgroundColor: '#70B6C1',
+          type: 'line' as ChartType,
+          order: 0,
+        },
+      ],
+    }),
+    [labels]
+  );
 
   const id = useRef<string>(generateRandomId());
   const chartRef = useRef<Chart | null>(null);
 
   if (chartRef.current) chartRef.current.destroy();
-
-  const DATA_COUNT = 7;
-  const NUMBER_CFG = { count: DATA_COUNT, min: -100, max: 100 };
-
-  const labels = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'];
 
   const canvasCallback = (canvas: HTMLCanvasElement | null) => {
     if (!canvas) return;
@@ -45,7 +83,7 @@ const MyChart = ({ chartData }: Props) => {
           datasets: [
             {
               label: 'Dataset 1',
-              data: [0, 20, 50, 12, 27, 30, 45],
+              data: [0, 0, 0, 0, 0, 0, 0],
               borderColor: '#775DA6',
               backgroundColor: '#775DA6',
               order: 1,
@@ -53,7 +91,7 @@ const MyChart = ({ chartData }: Props) => {
             },
             {
               label: 'Dataset 2',
-              data: [20, 90, 95, 75, 29, 30, 45],
+              data: [0, 0, 0, 0, 0, 0, 0],
               borderColor: '#70B6C1',
               backgroundColor: '#70B6C1',
               type: 'line',
@@ -65,7 +103,7 @@ const MyChart = ({ chartData }: Props) => {
           responsive: true,
           plugins: {
             legend: {
-              position: 'top',
+              display: false,
             },
           },
           scales: {
@@ -78,9 +116,8 @@ const MyChart = ({ chartData }: Props) => {
               type: 'linear',
               display: true,
               position: 'right',
-              // grid line settings
               grid: {
-                drawOnChartArea: false, // only want the grid lines for one axis to show up
+                drawOnChartArea: false,
               },
             },
           },
@@ -91,31 +128,82 @@ const MyChart = ({ chartData }: Props) => {
 
   useEffect(() => {
     if (chartRef.current) {
-      chartRef.current.data = formatData(chartData);
+      chartRef.current.data = formatData(barChartData, lineChartData);
       chartRef.current.update();
     }
-  }, [chartData]);
+  }, [barChartData, formatData, lineChartData]);
 
   return <canvas id={id.current} ref={canvasCallback}></canvas>;
 };
 
 interface CardGraphicProps {
+  title: string;
+  barChartData: number[];
+  lineChartData: number[];
   props?: CardProps;
 }
 
-export default function CardGraphicBarLine({ ...props }: CardGraphicProps) {
-  const [data, setData] = useState([0, 1, 2, 3, 4, 5, 6, 7]);
-
+export default function CardGraphicBarLine({ title, barChartData, lineChartData, ...props }: CardGraphicProps) {
   return (
     <Card {...props}>
       <CardHeader>
-        <Heading fontSize="24px" fontWeight="600">
-          Vendas
-        </Heading>
+        <Flex justify="space-between">
+          <Heading fontSize="24px" fontWeight="600">
+            {title}
+          </Heading>
+          <Menu>
+            <MenuButton>
+              <Icon w="24px" h="24px" cursor="pointer" as={MdMoreVert} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem>Mudar para visualização diária</MenuItem>
+            </MenuList>
+          </Menu>
+        </Flex>
       </CardHeader>
       <CardBody>
         <Box>
-          <MyChart chartData={data} />
+          <MyChart barChartData={barChartData} lineChartData={lineChartData} />
+        </Box>
+        <Box>
+          <TableContainer overflowX={{ lg: 'auto', '2xl': 'hidden' }}>
+            <Table variant="striped" colorScheme="gray" w="100%">
+              <Thead>
+                <Tr>
+                  <Th>Visão</Th>
+                  <Th textAlign="center">Meta</Th>
+                  <Th textAlign="center">Realizado</Th>
+                  <Th textAlign="center">Resultado</Th>
+                  <Th textAlign="center">Desvio</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr>
+                  <Td>Geral</Td>
+                  <Td textAlign="center">10,393</Td>
+                  <Td textAlign="center">4,038</Td>
+                  <Td textAlign="center">39%</Td>
+                  <Td textAlign="center">-6,355</Td>
+                </Tr>
+
+                <Tr>
+                  <Td>Diretoria</Td>
+                  <Td textAlign="center">10,393</Td>
+                  <Td textAlign="center">4,038</Td>
+                  <Td textAlign="center">39%</Td>
+                  <Td textAlign="center">-6,355</Td>
+                </Tr>
+
+                <Tr>
+                  <Td>Ajustes</Td>
+                  <Td textAlign="center">-</Td>
+                  <Td textAlign="center">0</Td>
+                  <Td textAlign="center">-</Td>
+                  <Td textAlign="center">-</Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </TableContainer>
         </Box>
       </CardBody>
     </Card>
