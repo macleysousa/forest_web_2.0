@@ -1,5 +1,6 @@
 import { Center, VStack, Flex, Icon, Button, Text, Box, Image } from '@chakra-ui/react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { IoBagCheckSharp } from 'react-icons/io5';
 import {
@@ -27,6 +28,11 @@ interface MenuOptionsMap {
 }
 
 export default function Sidebar() {
+  const pathname = usePathname();
+  const setClassName = (path: string) =>
+    'hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg' +
+    (pathname === path && ' ' + 'bg-hover-blue text-color-blue');
+
   const [menuOptions, setMenuOptions] = useState<MenuOptionsMap>({
     mobile: {
       options: [
@@ -79,25 +85,25 @@ export default function Sidebar() {
         <Image src="/petroplus.png" alt="petroplus logo" w="8rem" />
       </Center>
       <VStack align="left" padding="0 1rem" gap="1rem">
-        <Link href="dashboard" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
+        <Link href="dashboard" className={setClassName('/dashboard')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdDashboard} />
             <Text>Dashboard</Text>
           </Flex>
         </Link>
-        <Link href="management-panel" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
+        <Link href="management-panel" className={setClassName('/management-panel')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdInsertChart} />
             <Text>Painel Gerencial</Text>
           </Flex>
         </Link>
-        <Link href="" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
+        <Link href="clients" className={setClassName('/clients')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdContacts} />
             <Text>Clientes</Text>
           </Flex>
         </Link>
-        <Link href="" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
+        <Link href="invoices" className={setClassName('/invoices')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdPaid} />
             <Text>Notas Fiscais</Text>
@@ -119,7 +125,7 @@ export default function Sidebar() {
         {menuOptions.mobile.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.mobile.options.map((option, index) => (
-              <Link href={option.path} key={index}>
+              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
                 <Flex align="center" gap=".5rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -143,7 +149,7 @@ export default function Sidebar() {
         {menuOptions.planning.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.planning.options.map((option, index) => (
-              <Link href={option.path} key={index}>
+              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
                 <Flex align="center" gap=".5rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -167,7 +173,7 @@ export default function Sidebar() {
         {menuOptions.products.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.products.options.map((option, index) => (
-              <Link href={option.path} key={index}>
+              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
                 <Flex align="center" gap="1rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -191,7 +197,7 @@ export default function Sidebar() {
         {menuOptions.orders.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.orders.options.map((option, index) => (
-              <Link href={option.path} key={index}>
+              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
                 <Flex align="center" gap="1rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -199,7 +205,7 @@ export default function Sidebar() {
             ))}
           </VStack>
         )}
-        <Link href="" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
+        <Link href="tools" className={setClassName('/tools')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdSettings} />
             <Text>Ferramentas</Text>
