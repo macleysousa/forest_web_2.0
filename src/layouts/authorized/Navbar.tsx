@@ -5,23 +5,11 @@ import { useSession } from 'src/contexts/use-session';
 
 export default function Navbar() {
   const { user } = useSession();
-  console.log(user);
 
   return (
-    <Flex
-      bg="#110834"
-      color="#bcbcbc"
-      w="100%"
-      ml="1px"
-      height="4rem"
-      justify="center"
-    >
+    <Flex bg="#110834" color="#bcbcbc" w="100%" ml="1px" height="4rem" justify="center">
       <Center w="100%">
-        <InputSearch
-          color="#898989"
-          placeholder="Buscar..."
-          ml={true ? 'auto' : 'unset'}
-        />
+        <InputSearch color="#898989" placeholder="Buscar..." ml={true ? 'auto' : 'unset'} />
 
         <Flex ml="auto">
           <PopoverNotification haveNotifications={true} />
