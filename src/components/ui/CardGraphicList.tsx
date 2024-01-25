@@ -9,7 +9,7 @@ interface CardGraphicProps {
   props?: CardProps;
 }
 
-export default function CardGraphic({ title, content, ...props }: CardGraphicProps) {
+export default function CardGraphicList({ title, content, ...props }: CardGraphicProps) {
   return (
     <Card h="30rem" w="24rem" {...props}>
       <CardHeader>

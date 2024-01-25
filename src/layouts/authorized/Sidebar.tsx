@@ -1,13 +1,4 @@
-import {
-  Center,
-  VStack,
-  Flex,
-  Icon,
-  Button,
-  Text,
-  Box,
-  Image,
-} from '@chakra-ui/react';
+import { Center, VStack, Flex, Icon, Button, Text, Box, Image } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { IoBagCheckSharp } from 'react-icons/io5';
@@ -88,37 +79,25 @@ export default function Sidebar() {
         <Image src="/petroplus.png" alt="petroplus logo" w="8rem" />
       </Center>
       <VStack align="left" padding="0 1rem" gap="1rem">
-        <Link
-          href=""
-          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
-        >
+        <Link href="dashboard" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
           <Flex align="center" gap="1rem">
             <Icon as={MdDashboard} />
             <Text>Dashboard</Text>
           </Flex>
         </Link>
-        <Link
-          href=""
-          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
-        >
+        <Link href="management-panel" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
           <Flex align="center" gap="1rem">
             <Icon as={MdInsertChart} />
             <Text>Painel Gerencial</Text>
           </Flex>
         </Link>
-        <Link
-          href=""
-          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
-        >
+        <Link href="" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
           <Flex align="center" gap="1rem">
             <Icon as={MdContacts} />
             <Text>Clientes</Text>
           </Flex>
         </Link>
-        <Link
-          href=""
-          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
-        >
+        <Link href="" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
           <Flex align="center" gap="1rem">
             <Icon as={MdPaid} />
             <Text>Notas Fiscais</Text>
@@ -220,10 +199,7 @@ export default function Sidebar() {
             ))}
           </VStack>
         )}
-        <Link
-          href=""
-          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
-        >
+        <Link href="" className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg">
           <Flex align="center" gap="1rem">
             <Icon as={MdSettings} />
             <Text>Ferramentas</Text>

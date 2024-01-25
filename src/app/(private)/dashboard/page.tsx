@@ -16,7 +16,7 @@ import {
 import { MdArrowDropDown } from 'react-icons/md';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import CardGraphic from 'src/components/ui/CardGraphic';
+import CardGraphicList from 'src/components/ui/CardGraphicList';
 import CardInfo from 'src/components/ui/CardInfo';
 import DatePicker from 'src/components/ui/DatePicker';
 import { useSession } from 'src/contexts/use-session';
@@ -87,9 +87,9 @@ export default function Dashboard() {
         <CardInfo title="Volume Mix" value="715" type="up" variation="21%" month="Jan" />
       </SimpleGrid>
       <SimpleGrid columns={{ lg: 1, xl: 2, '2xl': 3 }} spacing={7} p="1rem 2rem">
-        <CardGraphic content={content} title="Top Cidades" />
-        <CardGraphic content={content} title="Top Segmentos" />
-        <CardGraphic content={content} title="Top Parceiros" />
+        <CardGraphicList content={content} title="Top Cidades" />
+        <CardGraphicList content={content} title="Top Segmentos" />
+        <CardGraphicList content={content} title="Top Parceiros" />
       </SimpleGrid>
     </Authorized>
   );
