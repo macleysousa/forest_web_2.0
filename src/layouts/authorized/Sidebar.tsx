@@ -31,7 +31,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const setClassName = (path: string) =>
     'hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg' +
-    (pathname === path && ' ' + 'bg-hover-blue text-color-blue');
+    (pathname === path ? ' ' + 'bg-hover-blue text-color-blue' : '');
 
   const [menuOptions, setMenuOptions] = useState<MenuOptionsMap>({
     mobile: {
