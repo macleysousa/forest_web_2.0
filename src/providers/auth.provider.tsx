@@ -1,9 +1,10 @@
 'use client';
 
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
 import { api } from 'src/commons/api';
+import { Loading } from 'src/components/Loader';
 import { UserResponse } from 'src/interfaces/v2/user';
 
 export type AuthContextType = {
@@ -16,7 +17,7 @@ export type AuthContextType = {
 export const AuthContext = createContext({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [user, setUser] = useState<UserResponse | null>(null);
 
   const forestAccessToken = parseCookies().forest_access_token;
@@ -40,7 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         return data;
       })
-      .catch((err) => err);
+      .catch((err) => {
+        throw err;
+      });
   }
 
   async function signOut(): Promise<void> {
@@ -49,14 +52,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function getMe(): Promise<UserResponse> {
+    setIsLoadingUser(true);
     return api
       .get<UserResponse>('/v2/user')
       .then(({ data: usr }) => {
         setUser(usr);
         return usr;
       })
-      .catch((err) => err)
+      .catch((err) => {
+        throw err;
+      })
       .finally(() => setIsLoadingUser(false));
+  }
+
+  if (!forestAccessToken || isLoadingUser) {
+    return <Loading fullScreen />;
   }
 
   return (

@@ -1,6 +1,10 @@
 'use client';
 
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
+import { useRouter } from 'next/navigation';
+
+import { Loading } from 'src/components/Loader';
+import { useSession } from 'src/contexts/use-session';
 import Navbar from 'src/layouts/authorized/Navbar';
 import Sidebar from 'src/layouts/authorized/Sidebar';
 
@@ -9,6 +13,14 @@ interface AuthorizedProps {
 }
 
 export default function Authorized({ children }: AuthorizedProps) {
+  const router = useRouter();
+  const { user } = useSession();
+
+  if (!user) {
+    router.push('/login');
+    return <Loading fullScreen />;
+  }
+
   return (
     <Box>
       <Flex direction="row">
