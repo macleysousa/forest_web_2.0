@@ -5,6 +5,7 @@ import Authorized from 'src/layouts/authorized/Authorized';
 import PanelRegistrationData from './PanelRegistrationData';
 import PanelContactData from './PanelContactData';
 import PanelLocation from './PanelLocation';
+import PanelSegmentation from './PanelSegmentation';
 
 export default function NewClient() {
   return (
@@ -30,7 +31,8 @@ export default function NewClient() {
 
           <PanelLocation />
 
-          <TabPanel>Three</TabPanel>
+          <PanelSegmentation />
+
           <TabPanel>Four</TabPanel>
           <TabPanel>Five</TabPanel>
           <TabPanel>Six</TabPanel>

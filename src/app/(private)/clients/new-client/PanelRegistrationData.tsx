@@ -32,11 +32,23 @@ export default function PanelRegistrationData() {
 
   return (
     <TabPanel p="2rem 0">
-      <Box maxW="53rem" w="53rem" borderRadius="8px" shadow="sm" p="3rem 2rem 1rem 2rem" bg="#fff">
+      <Box
+        maxW="53rem"
+        w={{ md: '100%', lg: '100%', xl: '53rem' }}
+        borderRadius="8px"
+        shadow="sm"
+        p="3rem 2rem 1rem 2rem"
+        bg="#fff"
+      >
         <Form onSubmit={handleSubmit(onSubmit, console.error)}>
-          <Flex align="center">
-            <Text minW="7rem">Avatar</Text>
-            <Flex ml="4rem" align="center">
+          <Flex
+            align={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            direction={{ md: 'column', lg: 'column', xl: 'row' }}
+          >
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW={{ md: 'auto', lg: 'auto', xl: '7rem' }}>
+              Avatar
+            </Text>
+            <Flex ml={{ base: '0', lg: '0', xl: '4rem' }} align="center">
               <Box h="72px" w="72px" borderRadius="50%" bg="#84818A" />
               <ButtonPrimary ml="2rem" h="2rem" w="9rem">
                 Alterar Foto
@@ -49,17 +61,20 @@ export default function PanelRegistrationData() {
           <InputLabel
             my="2rem"
             display="flex"
-            alignItems="center"
+            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
             justifyContent="space-between"
             error={formState.errors.cnpj?.message}
           >
-            <Text minW="7rem">CNPJ</Text>
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
+              CNPJ
+            </Text>
             <Input
               as={InputMask}
               mask="99.999.999/9999-99"
               maskChar={null}
               alwaysShowMask={false}
-              ml="4rem"
+              ml={{ md: '0', lg: '0', xl: '4rem' }}
               placeholder="CNPJ"
               {...register('cnpj')}
             />
@@ -67,44 +82,71 @@ export default function PanelRegistrationData() {
           <InputLabel
             my="2rem"
             display="flex"
-            alignItems="center"
+            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
             justifyContent="space-between"
             error={formState.errors.corporateReason?.message}
           >
-            <Text minW="7rem">Razão Social</Text>
-            <InputText ml="4rem" placeholder="Nome da Empresa" {...register('corporateReason')} />
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
+              Razão Social
+            </Text>
+            <InputText
+              ml={{ md: '0', lg: '0', xl: '4rem' }}
+              placeholder="Nome da Empresa"
+              {...register('corporateReason')}
+            />
           </InputLabel>
           <InputLabel
             my="2rem"
             display="flex"
-            alignItems="center"
+            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
             justifyContent="space-between"
             error={formState.errors.fantasyName?.message}
           >
-            <Text minW="7rem">Nome Fantasia</Text>
-            <InputText ml="4rem" placeholder="Nome Fantasia (Se houver)" {...register('fantasyName')} />
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
+              Nome Fantasia
+            </Text>
+            <InputText
+              ml={{ md: '0', lg: '0', xl: '4rem' }}
+              placeholder="Nome Fantasia (Se houver)"
+              {...register('fantasyName')}
+            />
           </InputLabel>
           <InputLabel
             my="2rem"
             display="flex"
-            alignItems="center"
+            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
             justifyContent="space-between"
             error={formState.errors.fantasyName?.message}
           >
-            <Text minW="7rem">IE / IM</Text>
-            <InputText ml="4rem" placeholder="Inscrição Estadual" {...register('ie')} />
-            <InputText ml="2rem" placeholder="Inscrição Municipal" {...register('im')} />
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
+              IE / IM
+            </Text>
+            <Flex w="100%">
+              <InputText
+                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                w="100%"
+                placeholder="Inscrição Estadual"
+                {...register('ie')}
+              />
+              <InputText ml="2rem" w="100%" placeholder="Inscrição Municipal" {...register('im')} />
+            </Flex>
           </InputLabel>
           <InputLabel
             my="2rem"
             display="flex"
-            alignItems="center"
+            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
             justifyContent="space-between"
             error={formState.errors.fantasyName?.message}
           >
-            <Text minW="7rem">Situação</Text>
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
+              Situação
+            </Text>
             <Box width="100%" display="flex" alignItems="center">
-              <Select ml="4rem" w="25rem" placeholder="Situação" {...register('situation')}>
+              <Select ml={{ md: '0', lg: '0', xl: '4rem' }} w="25rem" placeholder="Situação" {...register('situation')}>
                 <option value="Regular">Regular</option>
                 <option value="Irregular">Irregular</option>
               </Select>
@@ -114,21 +156,36 @@ export default function PanelRegistrationData() {
           <InputLabel
             my="2rem"
             display="flex"
-            alignItems="center"
+            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
             justifyContent="space-between"
             error={formState.errors.customerReview?.message}
           >
-            <Text minW="8rem">Avaliação Cliente</Text>
-            <InputText ml="3rem" placeholder="Avaliação Cliente" {...register('customerReview')} />
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="8rem">
+              Avaliação Cliente
+            </Text>
+            <InputText
+              ml={{ md: '0', lg: '0', xl: '3rem' }}
+              placeholder="Avaliação Cliente"
+              {...register('customerReview')}
+            />
           </InputLabel>
-          <InputLabel my="2rem" display="flex" alignItems="center" error={formState.errors.comments?.message}>
-            <Text minW="7rem">Observações</Text>
+          <InputLabel
+            my="2rem"
+            display="flex"
+            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            error={formState.errors.comments?.message}
+          >
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
+              Observações
+            </Text>
             <Textarea
               maxW="26.625rem"
               w="26.625rem"
               h="9rem"
               resize="none"
-              ml="4rem"
+              ml={{ md: '0', lg: '0', xl: '4rem' }}
               placeholder="Descrição da empresa"
               {...register('comments')}
             />
@@ -138,7 +195,7 @@ export default function PanelRegistrationData() {
             <ButtonOutline w="5.5rem" h="2.5rem">
               Cancelar
             </ButtonOutline>
-            <ButtonPrimary ml="1.5rem" w="8rem" h="2.5rem">
+            <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">
               Salvar
             </ButtonPrimary>
           </Flex>
