@@ -101,6 +101,10 @@ const MyChart = ({ barChartData, lineChartData }: Props) => {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          onResize: () => {
+            chartRef.current?.resize();
+          },
           plugins: {
             legend: {
               display: false,
@@ -136,11 +140,10 @@ const MyChart = ({ barChartData, lineChartData }: Props) => {
   return <canvas id={id.current} ref={canvasCallback}></canvas>;
 };
 
-interface CardGraphicProps {
+interface CardGraphicProps extends CardProps {
   title: string;
   barChartData: number[];
   lineChartData: number[];
-  props?: CardProps;
 }
 
 export default function CardGraphicBarLine({ title, barChartData, lineChartData, ...props }: CardGraphicProps) {
@@ -162,7 +165,7 @@ export default function CardGraphicBarLine({ title, barChartData, lineChartData,
         </Flex>
       </CardHeader>
       <CardBody>
-        <Box>
+        <Box position="relative" height={{ lg: '12rem', xl: '16rem', '2xl': '20rem', '3xl': '24rem' }}>
           <MyChart barChartData={barChartData} lineChartData={lineChartData} />
         </Box>
         <Box>

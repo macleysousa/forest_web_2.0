@@ -50,11 +50,13 @@ export default function Dashboard() {
 
             <Popover>
               <PopoverTrigger>
-                <Button variant="outline" bg="#fff" w="15rem" p="0 1rem">
+                <Button variant="outline" bg="#fff" w={{ lg: '12rem', xl: '16rem' }} p="0 1rem">
                   <Text fontWeight="400" color="#898989" mr=".5rem">
                     Ator:
                   </Text>
-                  <Text fontWeight="400">Defina os atores</Text>
+                  <Text fontWeight="400" overflow="hidden" textOverflow="ellipsis">
+                    Defina os atores
+                  </Text>
                   <Icon ml="auto" as={MdArrowDropDown} />
                 </Button>
               </PopoverTrigger>
@@ -76,20 +78,84 @@ export default function Dashboard() {
           </Flex>
         </Flex>
       </Box>
-      <SimpleGrid columns={{ lg: 2, xl: 3, '2xl': 4 }} spacing={5} p="1rem 2rem">
-        <CardInfo title="Faturamento" value="R$22.880,50" type="down" variation="21%" month="Jan" />
-        <CardInfo title="Volume Mix" value="715" type="up" variation="21%" month="Jan" />
-        <CardInfo title="Cobertura" value="209" type="down" variation="21%" month="Jan" />
-        <CardInfo title="Ticket Médio" value="R$685,90" type="up" variation="+21%" month="Jan" />
-        <CardInfo title="Volume Mix" value="715" type="up" variation="21%" month="Jan" />
-        <CardInfo title="Volume Mix" value="715" type="up" variation="21%" month="Jan" />
-        <CardInfo title="Volume Mix" value="715" type="up" variation="21%" month="Jan" />
-        <CardInfo title="Volume Mix" value="715" type="up" variation="21%" month="Jan" />
+      <SimpleGrid columns={{ lg: 2, xl: 3, '2xl': 4, '3xl': 4 }} spacing={5} p="1rem 2rem">
+        <CardInfo
+          title="Faturamento"
+          value="R$22.880,50"
+          type="down"
+          variation="21%"
+          month="Jan"
+          w={{ '3xl': '25rem' }}
+          h={{ '3xl': '11rem' }}
+        />
+        <CardInfo
+          title="Volume Mix"
+          value="715"
+          type="up"
+          variation="21%"
+          month="Jan"
+          w={{ '3xl': '25rem' }}
+          h={{ '3xl': '11rem' }}
+        />
+        <CardInfo
+          title="Cobertura"
+          value="209"
+          type="down"
+          variation="21%"
+          month="Jan"
+          w={{ '3xl': '25rem' }}
+          h={{ '3xl': '11rem' }}
+        />
+        <CardInfo
+          title="Ticket Médio"
+          value="R$685,90"
+          type="up"
+          variation="+21%"
+          month="Jan"
+          w={{ '3xl': '25rem' }}
+          h={{ '3xl': '11rem' }}
+        />
+        <CardInfo
+          title="Volume Mix"
+          value="715"
+          type="up"
+          variation="21%"
+          month="Jan"
+          w={{ '3xl': '25rem' }}
+          h={{ '3xl': '11rem' }}
+        />
+        <CardInfo
+          title="Volume Mix"
+          value="715"
+          type="up"
+          variation="21%"
+          month="Jan"
+          w={{ '3xl': '25rem' }}
+          h={{ '3xl': '11rem' }}
+        />
+        <CardInfo
+          title="Volume Mix"
+          value="715"
+          type="up"
+          variation="21%"
+          month="Jan"
+          w={{ '3xl': '25rem' }}
+          h={{ '3xl': '11rem' }}
+        />
+        <CardInfo
+          title="Volume Mix"
+          value="715"
+          type="up"
+          variation="21%"
+          month="Jan"
+          w={{ '3xl': '25rem' }}
+          h={{ '3xl': '11rem' }}
+        />
       </SimpleGrid>
-      <SimpleGrid columns={{ lg: 1, xl: 2, '2xl': 3 }} spacing={7} p="1rem 2rem">
-        <CardGraphicList content={content} title="Top Cidades" />
-        <CardGraphicList content={content} title="Top Segmentos" />
-        <CardGraphicList content={content} title="Top Parceiros" />
+      <SimpleGrid columns={{ md: 1, lg: 2, xl: 2, '2xl': 3 }} spacing={7} p="1rem 2rem">
+        <CardGraphicList data={content} title="Top Cidades" />
+        <CardGraphicList data={content} title="Top Segmentos" />
+        <CardGraphicList data={content} title="Top Parceiros" />
       </SimpleGrid>
     </Authorized>
   );
