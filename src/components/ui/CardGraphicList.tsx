@@ -1,24 +1,24 @@
 import { Card, CardBody, CardHeader, CardProps, Heading, Text, Box, Flex, Tooltip } from '@chakra-ui/react';
 
-interface CardGraphicProps {
+interface CardGraphicProps extends CardProps {
   title: string;
-  content: {
+  data: {
     name: string;
     value: string;
   }[];
   props?: CardProps;
 }
 
-export default function CardGraphicList({ title, content, ...props }: CardGraphicProps) {
+export default function CardGraphicList({ title, data, ...props }: CardGraphicProps) {
   return (
-    <Card h="30rem" w="24rem" {...props}>
+    <Card h="30rem" w={{ lg: '100%', xl: '24rem', '3xl': '32rem' }} {...props}>
       <CardHeader>
         <Heading fontSize="24px" fontWeight="600">
           {title}
         </Heading>
       </CardHeader>
       <CardBody p="0 1.25rem">
-        {content.map((item, index) => (
+        {data.map((item, index) => (
           <Flex key={index} justify="space-between" gap="1rem" align="center" m=".75rem 0">
             <Text maxW="8rem" w="8rem" isTruncated>
               <Tooltip label={item.name} aria-label={item.name} placement="top">
