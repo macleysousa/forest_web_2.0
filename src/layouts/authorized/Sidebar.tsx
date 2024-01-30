@@ -85,25 +85,25 @@ export default function Sidebar() {
         <Image src="/petroplus.png" alt="petroplus logo" w="8rem" />
       </Center>
       <VStack align="left" padding="0 1rem" gap="1rem">
-        <Link href="dashboard" className={setClassName('/dashboard')}>
+        <Link href="/dashboard" className={setClassName('/dashboard')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdDashboard} />
             <Text>Dashboard</Text>
           </Flex>
         </Link>
-        <Link href="management-panel" className={setClassName('/management-panel')}>
+        <Link href="/management-panel" className={setClassName('/management-panel')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdInsertChart} />
             <Text>Painel Gerencial</Text>
           </Flex>
         </Link>
-        <Link href="clients" className={setClassName('/clients')}>
+        <Link href="/clients" className={setClassName('/clients')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdContacts} />
             <Text>Clientes</Text>
           </Flex>
         </Link>
-        <Link href="invoices" className={setClassName('/invoices')}>
+        <Link href="/invoices" className={setClassName('/invoices')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdPaid} />
             <Text>Notas Fiscais</Text>
@@ -205,7 +205,7 @@ export default function Sidebar() {
             ))}
           </VStack>
         )}
-        <Link href="tools" className={setClassName('/tools')}>
+        <Link href="/tools" className={setClassName('/tools')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdSettings} />
             <Text>Ferramentas</Text>

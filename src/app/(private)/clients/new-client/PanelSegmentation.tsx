@@ -11,8 +11,8 @@ export default function PanelSegmentation() {
   const schema = z.object({
     segment: z.string().min(1, 'Segmento inválido'),
     partner: z.string().min(1, 'Parceiro inválido'),
-    flag: z.string().min(1, 'Bandeira inválida'),
-    net: z.string().min(1, 'Net inválida'),
+    flag: z.string(),
+    net: z.string(),
   });
 
   const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
@@ -32,74 +32,97 @@ export default function PanelSegmentation() {
         bg="#fff"
       >
         <Form onSubmit={handleSubmit(onSubmit, console.error)}>
-          <InputLabel
-            my="2rem"
-            display="flex"
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+          <Flex
+            align={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-            justifyContent="space-between"
-            error={formState.errors.segment?.message}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
-              Segmento
-            </Text>
-            <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Segmento" {...register('segment')}>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
-            </Select>
-          </InputLabel>
-          <InputLabel
-            my="2rem"
-            display="flex"
+            <Text minW="7rem">Segmento</Text>
+            <InputLabel
+              my="1rem"
+              display="flex"
+              alignItems="baseline"
+              flexDirection="column"
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              error={formState.errors.segment?.message}
+            >
+              <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Definir o Segmento" {...register('segment')}>
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+              </Select>
+            </InputLabel>
+          </Flex>
+          <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-            justifyContent="space-between"
-            error={formState.errors.partner?.message}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
-              Parceiro
-            </Text>
-            <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Parceiro" {...register('partner')}>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
-            </Select>
-          </InputLabel>
-          <InputLabel
-            my="2rem"
-            display="flex"
+            <Text minW="7rem">Parceiro</Text>
+            <InputLabel
+              my="1rem"
+              display="flex"
+              alignItems="baseline"
+              flexDirection="column"
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              error={formState.errors.partner?.message}
+            >
+              <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Definir o Parceiro" {...register('partner')}>
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+              </Select>
+            </InputLabel>
+          </Flex>
+          <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-            justifyContent="space-between"
-            error={formState.errors.flag?.message}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
-              Bandeira
-            </Text>
-            <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Bandeira" {...register('flag')}>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
-            </Select>
-          </InputLabel>
-          <InputLabel
-            my="2rem"
-            display="flex"
+            <Text minW="7rem">Bandeira</Text>
+            <InputLabel
+              my="1rem"
+              display="flex"
+              alignItems="baseline"
+              flexDirection="column"
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              error={formState.errors.flag?.message}
+            >
+              <Select
+                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                placeholder="Definir a Bandeira (quando aplicável)"
+                {...register('flag')}
+              >
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+              </Select>
+            </InputLabel>
+          </Flex>
+          <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-            justifyContent="space-between"
-            error={formState.errors.net?.message}
           >
             <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
               Rede
             </Text>
-            <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Rede" {...register('net')}>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
-            </Select>
-          </InputLabel>
+            <InputLabel
+              my="1rem"
+              display="flex"
+              alignItems="baseline"
+              flexDirection="column"
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              error={formState.errors.net?.message}
+            >
+              <Select
+                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                placeholder="Definir a Rede (quando aplicável)"
+                {...register('net')}
+              >
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+              </Select>
+            </InputLabel>
+          </Flex>
+
           <Divider my="2rem" />
 
           <Flex justify="flex-end" align="center">

@@ -1,6 +1,6 @@
 import { Box, Flex, Center, Text, Image } from '@chakra-ui/react';
 import InputSearch from 'src/components/ui/InputSearch';
-import PopoverNotification from 'src/components/ui/PopoverNotification';
+import PopoverNotification from 'src/components/PopoverNotification';
 import { useSession } from 'src/contexts/use-session';
 
 export default function Navbar() {

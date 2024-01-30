@@ -34,81 +34,99 @@ export default function PanelContactData() {
         bg="#fff"
       >
         <Form onSubmit={handleSubmit(onSubmit, console.error)}>
-          <InputLabel
-            my="2rem"
-            display="flex"
+          <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-            justifyContent="space-between"
-            error={formState.errors.contactName?.message}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="8rem">
-              Nome do Contato
-            </Text>
-            <InputText
-              ml={{ md: '0', lg: '0', xl: '3rem' }}
-              placeholder="Nome do Contato"
-              {...register('contactName')}
-            />
-          </InputLabel>
-          <InputLabel
-            my="2rem"
-            display="flex"
+            <Text minW="9rem">Nome do Contato</Text>
+            <InputLabel
+              my="1rem"
+              display="flex"
+              alignItems="baseline"
+              flexDirection="column"
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              error={formState.errors.contactName?.message}
+            >
+              <InputText
+                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                placeholder="Nome do Contato"
+                {...register('contactName')}
+              />
+            </InputLabel>
+          </Flex>
+          <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-            justifyContent="space-between"
-            error={formState.errors.phoneNumber?.message}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="8rem">
-              Telefone
-            </Text>
-            <Input
-              as={InputMask}
-              //   mask={[/^(\d{2})\D*(\d{5}|\d{4})\D*(\d{4})$/]}
-              mask="(99) 9 9999-9999"
-              maskChar={null}
-              alwaysShowMask={false}
-              ml={{ md: '0', lg: '0', xl: '3rem' }}
-              placeholder="Telefone"
-              {...register('phoneNumber')}
-            />
-          </InputLabel>
-          <InputLabel
-            my="2rem"
-            display="flex"
+            <Text minW="9rem">Telefone</Text>
+            <InputLabel
+              my="1rem"
+              display="flex"
+              alignItems="baseline"
+              flexDirection="column"
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              error={formState.errors.phoneNumber?.message}
+            >
+              <Input
+                as={InputMask}
+                //   mask={[/^(\d{2})\D*(\d{5}|\d{4})\D*(\d{4})$/]}
+                mask="(99) 9 9999-9999"
+                maskChar={null}
+                alwaysShowMask={false}
+                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                placeholder="Telefone"
+                {...register('phoneNumber')}
+              />
+            </InputLabel>
+          </Flex>
+
+          <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-            justifyContent="space-between"
-            error={formState.errors.email?.message}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="8rem">
-              E-Mail
-            </Text>
-            <InputText ml={{ md: '0', lg: '0', xl: '3rem' }} placeholder="E-Mail Comercial" {...register('email')} />
-          </InputLabel>
-          <InputLabel
-            my="2rem"
-            display="flex"
+            <Text minW="9rem">E-Mail</Text>
+            <InputLabel
+              my="1rem"
+              display="flex"
+              alignItems="baseline"
+              flexDirection="column"
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              error={formState.errors.email?.message}
+            >
+              <InputText ml={{ md: '0', lg: '0', xl: '3rem' }} placeholder="E-Mail Comercial" {...register('email')} />
+            </InputLabel>
+          </Flex>
+
+          <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-            justifyContent="space-between"
-            error={formState.errors.financialEmail?.message}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="8rem">
+            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="9rem">
               E-Mail Financeiro
             </Text>
-            <InputText
-              ml={{ md: '0', lg: '0', xl: '3rem' }}
-              placeholder="E-Mail Financeiro"
-              {...register('financialEmail')}
-            />
-          </InputLabel>
+            <InputLabel
+              my="1rem"
+              display="flex"
+              alignItems="baseline"
+              flexDirection="column"
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              error={formState.errors.financialEmail?.message}
+            >
+              <InputText
+                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                placeholder="E-Mail Financeiro"
+                {...register('financialEmail')}
+              />
+            </InputLabel>
+          </Flex>
+
           <Divider my="2rem" />
+
           <Flex justify="flex-end" align="center">
             <ButtonOutline w="5.5rem" h="2.5rem">
               Cancelar
             </ButtonOutline>
-            <ButtonPrimary ml="1.5rem" w="8rem" h="2.5rem">
+            <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">
               Salvar
             </ButtonPrimary>
           </Flex>
