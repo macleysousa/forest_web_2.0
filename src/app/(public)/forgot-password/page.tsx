@@ -1,36 +1,24 @@
 'use client';
 
-import {
-  Button,
-  Card,
-  Center,
-  Flex,
-  Grid,
-  Icon,
-  Image,
-  Link,
-  Text,
-} from '@chakra-ui/react';
+import { Card, Center, Flex, Grid, Image, Link, Text } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { FaArrowRight } from 'react-icons/fa';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputText } from 'src/components/ui/InputText';
 import { Form } from 'src/components/ui/Form';
 import { z } from 'zod';
+import { isPublicPage } from 'src/contexts/AuthContext';
 
-export default function ForgotPassword() {
-  const schema = z.object({
-    email: z
-      .string()
-      .min(0, 'O email é obrigatório')
-      .email('Formato de email inválido'),
-  });
+const schema = z.object({
+  email: z
+    .string()
+    .min(0, 'O email é obrigatório')
+    .email('Formato de email inválido'),
+});
 
-  const { register, control, handleSubmit, formState } = useForm<
-    z.infer<typeof schema>
-  >({ resolver: zodResolver(schema) });
+function ForgotPasswordPage() {
+  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
 
   const onSubmit = (data: z.infer<typeof schema>) => {
     console.log(data);
@@ -98,3 +86,5 @@ export default function ForgotPassword() {
     </Center>
   );
 }
+
+export default isPublicPage(ForgotPasswordPage);
