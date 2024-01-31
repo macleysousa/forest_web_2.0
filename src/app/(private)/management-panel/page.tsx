@@ -1,13 +1,16 @@
-import { Box, Flex, Heading, Icon, SimpleGrid } from '@chakra-ui/react';
-import CardGraphicBarLine from 'src/components/ui/CardGraphicBarLine';
-import Authorized from 'src/layouts/authorized/Authorized';
+'use client';
 
-export default function ManagementPanel() {
+import { Box, Flex, Heading, SimpleGrid } from '@chakra-ui/react';
+import { PrivateLayout } from 'src/components/PrivateLayout';
+import CardGraphicBarLine from 'src/components/ui/CardGraphicBarLine';
+import { isPrivatePage } from 'src/contexts/AuthContext';
+
+function ManagementPanelPage() {
   const generateRandomArray = (quantity: number) =>
     Array.from({ length: quantity }, () => Math.floor(Math.random() * 101));
 
   return (
-    <Authorized>
+    <PrivateLayout>
       <Box p="2rem">
         <Flex>
           <Heading>Painel Gerencial</Heading>
@@ -35,6 +38,8 @@ export default function ManagementPanel() {
           />
         </SimpleGrid>
       </Box>
-    </Authorized>
+    </PrivateLayout>
   );
 }
+
+export default isPrivatePage(ManagementPanelPage);

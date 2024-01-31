@@ -1,10 +1,10 @@
 import { Box, Flex, Center, Text, Image } from '@chakra-ui/react';
 import InputSearch from 'src/components/ui/InputSearch';
 import PopoverNotification from 'src/components/PopoverNotification';
-import { useSession } from 'src/contexts/use-session';
+import { useAuthContext } from 'src/contexts/AuthContext';
 
 export default function Navbar() {
-  const { user } = useSession();
+  const auth = useAuthContext();
 
   return (
     <Flex bg="#110834" color="#bcbcbc" w="100%" ml="1px" height="4rem" justify="center">
@@ -17,7 +17,11 @@ export default function Navbar() {
           <Flex margin="0 1rem" minW="7rem">
             <Center>
               <Image
-                src={user?.user.avatar ?? '/empty-profile-picture.webp'}
+                src={
+                  auth.is === 'authenticated' && auth.user.user.avatar
+                    ? auth.user.user.avatar
+                    : '/empty-profile-picture.webp'
+                }
                 alt="profile-picture"
                 h="32px"
                 w="32px"
@@ -25,10 +29,10 @@ export default function Navbar() {
               />
               <Box ml=".5rem">
                 <Text fontSize="14px" fontWeight="500">
-                  {user?.user.name || 'Usuário'}
+                  {auth.is === 'authenticated' ? auth.user.user.name : 'Usuário'}
                 </Text>
                 <Text fontSize="12px" color="#A8A8A8">
-                  {user?.user.type || 'Tipo'}
+                  {auth.is === 'authenticated' ? auth.user.user.type : 'Tipo'}
                 </Text>
               </Box>
             </Center>

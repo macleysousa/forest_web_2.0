@@ -1,15 +1,16 @@
 'use client';
 
 import { Box, Flex, Heading, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
-import Authorized from 'src/layouts/authorized/Authorized';
 import PanelRegistrationData from './PanelRegistrationData';
 import PanelContactData from './PanelContactData';
 import PanelLocation from './PanelLocation';
 import PanelSegmentation from './PanelSegmentation';
+import { PrivateLayout } from 'src/components/PrivateLayout';
+import { isPrivatePage } from 'src/contexts/AuthContext';
 
-export default function NewClient() {
+function NewClientPage() {
   return (
-    <Authorized>
+    <PrivateLayout>
       <Box p="2rem">
         <Flex>
           <Heading>Clientes/</Heading>
@@ -38,6 +39,8 @@ export default function NewClient() {
           <TabPanel>Six</TabPanel>
         </TabPanels>
       </Tabs>
-    </Authorized>
+    </PrivateLayout>
   );
 }
+
+export default isPrivatePage(NewClientPage);

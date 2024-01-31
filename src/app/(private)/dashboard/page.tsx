@@ -13,17 +13,17 @@ import {
   SimpleGrid,
   Text,
 } from '@chakra-ui/react';
+
 import { MdArrowDropDown } from 'react-icons/md';
+import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import CardGraphicList from 'src/components/ui/CardGraphicList';
 import CardInfo from 'src/components/ui/CardInfo';
 import DatePicker from 'src/components/ui/DatePicker';
-import { useSession } from 'src/contexts/use-session';
-import Authorized from 'src/layouts/authorized/Authorized';
+import { PrivatePageProps, isPrivatePage } from 'src/contexts/AuthContext';
 
-export default function Dashboard() {
-  const { user } = useSession();
+function DashboardPage({ user }: PrivatePageProps) {
 
   const content = [
     { name: 'Montadoras', value: '333.678' },
@@ -34,7 +34,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <Authorized>
+    <PrivateLayout>
       <Box p="2rem">
         <Flex w="100%" justify="space-between">
           <Heading minW="30%" w="30%">
@@ -157,6 +157,8 @@ export default function Dashboard() {
         <CardGraphicList data={content} title="Top Segmentos" />
         <CardGraphicList data={content} title="Top Parceiros" />
       </SimpleGrid>
-    </Authorized>
+    </PrivateLayout>
   );
 }
+
+export default isPrivatePage(DashboardPage);
