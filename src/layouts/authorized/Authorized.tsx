@@ -13,13 +13,13 @@ interface AuthorizedProps {
 }
 
 export default function Authorized({ children }: AuthorizedProps) {
-  const router = useRouter();
-  const { user } = useSession();
+  // const router = useRouter();
+  // const { user } = useSession();
 
-  if (!user) {
-    router.push('/login');
-    return <Loading fullScreen />;
-  }
+  // if (!user) {
+  //   router.push('/login');
+  //   return <Loading fullScreen />;
+  // }
 
   return (
     <Box>

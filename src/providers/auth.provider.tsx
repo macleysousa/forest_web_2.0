@@ -28,12 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [forestAccessToken]);
 
-  async function signIn(
-    email: string,
-    password: string
-  ): Promise<UserResponse> {
+  async function signIn(email: string, password: string): Promise<UserResponse> {
     return api
-      .post<UserResponse>('/v2/login', { email, password })
+      .post<UserResponse>('/v2/login', { email, password, origin: 'web' })
       .then(async ({ data }) => {
         setCookie(undefined, 'forest_access_token', data.user.api_token, {
           maxAge: 60 * 60 * 1,
@@ -65,13 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setIsLoadingUser(false));
   }
 
-  if (!forestAccessToken || isLoadingUser) {
-    return <Loading fullScreen />;
-  }
+  // if (!forestAccessToken || isLoadingUser) {
+  //   return <Loading fullScreen />;
+  // }
 
-  return (
-    <AuthContext.Provider value={{ user, signIn, signOut, getMe }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, signIn, signOut, getMe }}>{children}</AuthContext.Provider>;
 }
