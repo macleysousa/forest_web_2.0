@@ -19,10 +19,11 @@ import {
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import Authorized from 'src/layouts/authorized/Authorized';
 import { useRouter } from 'next/navigation';
+import { isPrivatePage } from 'src/contexts/AuthContext';
+import { PrivateLayout } from 'src/components/PrivateLayout';
 
-export default function Clients() {
+function ClientsPage() {
   const router = useRouter();
 
   const cardsContent = [
@@ -39,7 +40,7 @@ export default function Clients() {
   };
 
   return (
-    <Authorized>
+    <PrivateLayout>
       <Box p="2rem">
         <Flex>
           <Heading w="30%" minW="30%">
@@ -111,6 +112,8 @@ export default function Clients() {
           </Table>
         </TableContainer>
       </Box>
-    </Authorized>
+    </PrivateLayout>
   );
 }
+
+export default isPrivatePage(ClientsPage);
