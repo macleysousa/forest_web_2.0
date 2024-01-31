@@ -1,6 +1,6 @@
 import { Box, Flex, Center, Text, Image } from '@chakra-ui/react';
 import InputSearch from 'src/components/ui/InputSearch';
-import PopoverNotification from 'src/components/ui/PopoverNotification';
+import PopoverNotification from 'src/components/PopoverNotification';
 import { useAuthContext } from 'src/contexts/AuthContext';
 
 export default function Navbar() {
@@ -17,7 +17,11 @@ export default function Navbar() {
           <Flex margin="0 1rem" minW="7rem">
             <Center>
               <Image
-                src={auth.is === 'authenticated' && auth.user.user.avatar ? auth.user.user.avatar : '/empty-profile-picture.webp'}
+                src={
+                  auth.is === 'authenticated' && auth.user.user.avatar
+                    ? auth.user.user.avatar
+                    : '/empty-profile-picture.webp'
+                }
                 alt="profile-picture"
                 h="32px"
                 w="32px"
