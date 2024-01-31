@@ -1,14 +1,8 @@
-'use client';
-
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import Navbar from 'src/layouts/authorized/Navbar';
 import Sidebar from 'src/layouts/authorized/Sidebar';
 
-interface AuthorizedProps {
-  children: React.ReactNode;
-}
-
-export default function Authorized({ children }: AuthorizedProps) {
+export function PrivateLayout({ children }: { children: React.ReactNode }) {
   return (
     <Box>
       <Flex direction="row">

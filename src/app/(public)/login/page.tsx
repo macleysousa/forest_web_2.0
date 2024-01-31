@@ -12,29 +12,29 @@ import { Form } from 'src/components/ui/Form';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputPassword } from 'src/components/ui/InputPassword';
 import { InputText } from 'src/components/ui/InputText';
-import { useSession } from 'src/contexts/use-session';
-import { useRouter } from 'next/navigation';
+import { login } from 'src/services/api/login';
+import { isPublicPage, useAuthContext } from 'src/contexts/AuthContext';
 
-export default function Login() {
+const schema = z.object({
+  email: z.string().min(0, 'O email é obrigatório').email('Formato de email inválido'),
+  password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
+});
+
+function LoginPage() {
   const toast = useToast();
-  const router = useRouter();
-  const { signIn } = useSession();
-
-  const schema = z.object({
-    email: z.string().min(0, 'O email é obrigatório').email('Formato de email inválido'),
-    password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
-  });
+  const auth = useAuthContext();
 
   const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    await signIn(data.email, data.password).then((res) => {
-      if (res.status === 'success') {
-        router.replace('/dashboard');
-      }
-    }).catch(() => {
-      toast({ description: 'Email ou senha inválidos', status: 'error', isClosable: true });
-    });
+    try {
+      const result = await login(data.email, data.password);
+      console.log({ result });
+      auth.login(result.user.api_token);
+    } catch (error) {
+      console.error(error);
+      toast({ status: 'error', description: 'Email ou senha inválidos' });
+    }
   };
 
   return (
@@ -80,3 +80,5 @@ export default function Login() {
     </Center>
   );
 }
+
+export default isPublicPage(LoginPage);
