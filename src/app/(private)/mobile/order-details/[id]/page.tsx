@@ -26,6 +26,7 @@ import {
   Textarea,
   Tr,
   Image,
+  Thead,
 } from '@chakra-ui/react';
 import {
   MdArrowDropDown,
@@ -44,6 +45,7 @@ import { IoBagCheckSharp } from 'react-icons/io5';
 import { IoMdEye, IoMdEyeOff, IoMdTrash } from 'react-icons/io';
 import { useState } from 'react';
 import { BiSolidEditAlt } from 'react-icons/bi';
+import { formatCurrency } from 'src/utils/formatCurrency';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 type CommentsType = 'order' | 'billing';
@@ -51,7 +53,76 @@ type CommentsType = 'order' | 'billing';
 function ShowOrderPage() {
   const params = useParams();
 
-  const [isContentVisible, setIsContentVisible] = useState<boolean>(false);
+  const productsExample = [
+    {
+      id: 1,
+      code: 'ST-1231BR',
+      name: 'ST-1231BR - 1030003 - DIESEL OIL TREATMENT 12X450ML',
+      unity: 'CX',
+      amount: 12,
+      category_id: 1,
+      status: 1,
+      image: 'products/ST-1231BR.png',
+      inventory: null,
+      product_price_actor_default: {
+        id: 7109,
+        tree_id: 1,
+        actor_id: 838,
+        product_id: 1,
+        price: '586.38',
+        price_alt_1: '601.38',
+        price_alt_2: '616.38',
+        price_alt_3: '631.38',
+        price_alt_4: '646.38',
+        price_alt_5: '661.38',
+        price_alt_6: '676.38',
+        price_alt_7: null,
+        price_alt_8: null,
+        price_alt_9: null,
+        price_alt_10: null,
+        updated_by_user_id: 556,
+        deleted_by_user_id: null,
+        created_at: '2020-07-29T16:15:51.000000Z',
+        updated_at: '2020-07-29T16:15:51.000000Z',
+        deleted_at: null,
+      },
+    },
+    {
+      id: 2,
+      code: 'ST-1503BR',
+      name: 'ST-1503BR - 1030001 - OIL TREATMENT 24X450ML',
+      unity: 'CX',
+      amount: 24,
+      category_id: 1,
+      status: 1,
+      image: 'products/ST-1503BR.png',
+      inventory: null,
+      product_price_actor_default: {
+        id: 7111,
+        tree_id: 1,
+        actor_id: 838,
+        product_id: 2,
+        price: '786.98',
+        price_alt_1: '816.98',
+        price_alt_2: '846.98',
+        price_alt_3: '876.98',
+        price_alt_4: '906.98',
+        price_alt_5: '936.98',
+        price_alt_6: '966.98',
+        price_alt_7: null,
+        price_alt_8: null,
+        price_alt_9: null,
+        price_alt_10: null,
+        updated_by_user_id: 556,
+        deleted_by_user_id: null,
+        created_at: '2020-07-29T16:15:51.000000Z',
+        updated_at: '2020-07-29T16:15:51.000000Z',
+        deleted_at: null,
+      },
+    },
+  ];
+
+  const [isContentVisible, setIsContentVisible] = useState<boolean>(true);
   const [pageStatus, setPageStatus] = useState<PageStatusType>('show');
   const [currentComments, setCurrentComments] = useState<CommentsType>('order');
   const [orderData, setOrderData] = useState<any>({
@@ -172,7 +243,7 @@ function ShowOrderPage() {
                 </Menu>
               </CardHeader>
               <Divider />
-              <Box display="flex" h="15rem">
+              <Box display="flex" h="13rem">
                 <Box p="1rem" w="50%">
                   <Flex justify="space-between">
                     <Text color="#898989">CNPJ</Text>
@@ -213,39 +284,47 @@ function ShowOrderPage() {
               </Box>
               <Divider />
               <Flex w="100%" direction="column">
-                <Flex w="100%" my="1rem" justify={pageStatus === 'show' ? 'unset' : 'space-between'}>
-                  <Text
-                    w={pageStatus === 'show' ? '20%' : 'initial'}
-                    pl="1rem"
-                    flex={pageStatus === 'show' ? '2 / 5' : '0'}
-                  >
-                    Produto
-                  </Text>
-                  <Text w={pageStatus === 'show' ? '20%' : 'initial'}>Qtd. (Cx)</Text>
-                  {pageStatus === 'show' && <Text w="20%">Código</Text>}
-                  <Text w={pageStatus === 'show' ? '20%' : 'initial'}>Valor Cx. (R$)</Text>
-                  <Text w={pageStatus === 'show' ? '20%' : 'initial'}>Total (R$)</Text>
-                </Flex>
-
                 {['create', 'edit'].includes(pageStatus) && (
                   <>
-                    <Flex w="100%" h="4rem" align="center" color="#898989" position="relative">
-                      <Text bg="#fff" w="25%" pl="1rem">
-                        Nome ou Código
+                    <Flex w="100%" my="1rem">
+                      <Text w="30%" pl="1rem">
+                        Produto
                       </Text>
-                      <Text bg="#fff" w="25%" pl="1rem">
-                        Qtd.
-                      </Text>
-                      <Text bg="#fff" w="25%">
-                        R$ --
-                      </Text>
-                      <Text bg="#fff" w="25%">
-                        R$ --
-                      </Text>
-                      <Button w="2rem" h="2rem" bg="#fff" variant="outline" position="absolute" top="25%" right="0">
-                        <Icon as={IoMdTrash} h="16px" w="16px" />
-                      </Button>
+                      <Text w="17.5%">Qtd. (Cx)</Text>
+                      <Text w="17.5%">Código</Text>
+                      <Text w="17.5%">Valor Cx. (R$)</Text>
+                      <Text w="17.5%">Total (R$)</Text>
                     </Flex>
+
+                    {Array.apply(0, Array(3)).map((_, index) => (
+                      <Flex
+                        w="100%"
+                        h="4rem"
+                        align="center"
+                        color="#898989"
+                        position="relative"
+                        key={`create-edit-${index}`}
+                      >
+                        <Text bg="#fff" w="30%" pl="1rem">
+                          Nome ou Código
+                        </Text>
+                        <Text bg="#fff" w="17.5%" pl="1rem">
+                          Qtd.
+                        </Text>
+                        <Text bg="#fff" w="17.5%">
+                          918237
+                        </Text>
+                        <Text bg="#fff" w="17.5%">
+                          R$ --
+                        </Text>
+                        <Text bg="#fff" w="17.5%">
+                          R$ --
+                        </Text>
+                        <Button w="2rem" h="2rem" bg="#fff" variant="outline" position="absolute" top="25%" right="0">
+                          <Icon as={IoMdTrash} h="16px" w="16px" />
+                        </Button>
+                      </Flex>
+                    ))}
                     <Flex
                       w="100%"
                       borderBottom="1px solid #DCDCDC"
@@ -255,8 +334,8 @@ function ShowOrderPage() {
                       align="center"
                       color="#898989"
                     >
-                      <Input bg="#fff" w="20%" ml=".5rem" mr="2rem" pl="1rem" placeholder="Nome ou Código" />
-                      <Input bg="#fff" w="10%" mr="8rem" placeholder="Qtd." />
+                      <Input bg="#fff" w="20%" ml=".5rem" mr="4.5rem" pl="1rem" placeholder="Nome ou Código" />
+                      <Input bg="#fff" w="10%" mr="12rem" placeholder="Qtd." />
                       <Input bg="#fff" w="20%" placeholder="R$ --" />
                       <Icon as={MdClose} ml="auto" mr="1rem" h="24px" w="24px" />
                     </Flex>
@@ -265,26 +344,54 @@ function ShowOrderPage() {
 
                 {pageStatus === 'show' && (
                   <Table w="100%" variant="striped" colorScheme="gray">
+                    <Thead>
+                      <Tr>
+                        <Td pl="1rem" w="25%">
+                          Produto
+                        </Td>
+                        <Td w="20%">Qtd. (Cx)</Td>
+                        <Td px="0" w="20%">
+                          Código
+                        </Td>
+                        <Td px="0" w="20%">
+                          Valor Cx. (R$)
+                        </Td>
+                        <Td px="0" w="20%">
+                          Total (R$)
+                        </Td>
+                      </Tr>
+                    </Thead>
                     <Tbody>
-                      {Array.apply(0, Array(3)).map((_, index) => (
+                      {productsExample.map((product, index) => (
                         <Tr key={`product-${index}`}>
                           <Td pl="1rem" w="20%">
                             <Flex align="center">
                               <Image src="/product-oil.jpg" alt="product photo" h="32px" w="32px" />
-                              <Text ml="1rem" as="span">
-                                Produto 1
+                              <Text
+                                ml="1rem"
+                                as="span"
+                                textOverflow="ellipsis"
+                                overflow="hidden"
+                                whiteSpace="nowrap"
+                                maxW="10rem"
+                              >
+                                {canShowContent ? product.name : '--'}
                               </Text>
                             </Flex>
                           </Td>
-                          <Td w="20%">10</Td>
-                          <Td px="0" w="20%">
-                            1923874
+                          <Td pl="3rem" w="20%">
+                            {canShowContent ? product.amount : '--'}
                           </Td>
                           <Td px="0" w="20%">
-                            R$ 1.000,00
+                            {canShowContent ? product.code : '--'}
                           </Td>
                           <Td px="0" w="20%">
-                            R$ 10.000,00
+                            {canShowContent ? formatCurrency(Number(product.product_price_actor_default.price)) : '--'}
+                          </Td>
+                          <Td px="0" w="20%">
+                            {canShowContent
+                              ? formatCurrency(Number(product.product_price_actor_default.price) * product.amount)
+                              : '--'}
                           </Td>
                         </Tr>
                       ))}
@@ -295,7 +402,7 @@ function ShowOrderPage() {
                 {['create', 'edit'].includes(pageStatus) ? (
                   <>
                     <Divider />
-                    <Button variant="ghost" color="#1E93FF">
+                    <Button variant="ghost" color="#1E93FF" mt="1rem" mb="2.5rem">
                       Adicionar Novo Produto
                     </Button>
                   </>
@@ -303,12 +410,20 @@ function ShowOrderPage() {
                   <Box my="1.5rem">
                     <Flex justify="space-between" fontSize="14px">
                       <Text color="#898989">Total de CXs</Text>
-                      <Text>5</Text>
+                      <Text>{productsExample.reduce((acc, product) => acc + Number(product.amount), 0)}</Text>
                     </Flex>
                     <Divider my="1rem" />
                     <Flex justify="space-between" fontSize="14px" fontWeight="600">
                       <Text>TOTAL</Text>
-                      <Text>R$ 5.986,92</Text>
+                      <Text>
+                        {formatCurrency(
+                          productsExample.reduce(
+                            (acc, product) =>
+                              acc + Number(product.product_price_actor_default.price) * Number(product.amount),
+                            0
+                          )
+                        )}
+                      </Text>
                     </Flex>
                   </Box>
                 )}
@@ -331,7 +446,7 @@ function ShowOrderPage() {
             </Card>
             <Card>
               <CardHeader>
-                <Flex justify="space-between">
+                <Flex justify="space-between" align="center">
                   <Text fontWeight="500" fontSize="16px">
                     Prazo de Faturamento
                   </Text>
@@ -339,8 +454,8 @@ function ShowOrderPage() {
                     28d
                   </Text>
                 </Flex>
-                <Flex justify="space-between">
-                  <Flex align="center">
+                <Flex justify="space-between" align="baseline">
+                  <Flex align="baseline">
                     <Icon as={MdDescription} mx=".25rem" w="16px" h="16px" />
                     <Text fontWeight="400" fontSize="14px">
                       Pedido Total
@@ -377,7 +492,7 @@ function ShowOrderPage() {
                     7d
                   </Text>
                 </Flex>
-                <Flex justify="space-between">
+                <Flex justify="space-between" align="baseline">
                   <Flex align="center">
                     <Icon as={MdLocalShipping} mx=".25rem" w="16px" h="16px" />
                     <Text fontWeight="400" fontSize="14px">
