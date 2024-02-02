@@ -52,7 +52,7 @@ export default function Sidebar() {
     },
     products: {
       options: [
-        { name: 'Lista de Produtos', path: '/pedidos' },
+        { name: 'Lista de Produtos', path: '/products' },
         { name: 'Tabela de Preços Padrão', path: '/visitas' },
         { name: 'Tabela de Preços Clientes', path: '/mapa-de-visitas' },
         { name: 'Tabela de Preços Grupo', path: '/estoque-de-clientes' },
