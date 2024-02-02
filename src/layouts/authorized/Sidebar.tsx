@@ -45,7 +45,7 @@ export default function Sidebar() {
     },
     planning: {
       options: [
-        { name: 'Planejamento Clientes', path: '/pedidos' },
+        { name: 'Planejamento Clientes', path: '/customer-planning' },
         { name: 'Planejamento Roteiros', path: '/visitas' },
       ],
       open: false,
