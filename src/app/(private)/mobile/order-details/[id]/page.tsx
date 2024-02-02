@@ -167,8 +167,8 @@ function ShowOrderPage() {
             )}
           </Flex>
         </Flex>
-        <Flex w="100%" my="2rem">
-          <Flex w="70%" direction="column">
+        <Flex w="100%" my="2rem" direction={{ sm: 'column', md: 'column', lg: 'column', xl: 'row', '2xl': 'row' }}>
+          <Flex w={{ sm: '100%', md: '100%', lg: '100%', xl: '70%', '2xl': '70%', '3xl': '70%' }} direction="column">
             <Flex w="100%" gap={5} mb="2rem" justifyContent="space-between">
               <Card w="17rem" h="8rem">
                 <CardHeader>
@@ -447,7 +447,12 @@ function ShowOrderPage() {
             </Card>
           </Flex>
 
-          <Flex w="30%" direction="column" ml="2rem">
+          <Flex
+            w={{ sm: '100%', md: '100%', lg: '100%', xl: '30%', '2xl': '30%', '3xl': '30%' }}
+            direction="column"
+            ml={{ sm: '0', md: '0', lg: '0', xl: '2rem', '2xl': '2rem' }}
+            mt={{ sm: '0', md: '2rem', lg: '2rem', xl: '0', '2xl': '0' }}
+          >
             <Card w="100%" mb="1rem">
               <CardHeader>
                 <Flex justify="space-between">
