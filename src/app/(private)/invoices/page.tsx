@@ -19,7 +19,7 @@ export default function InvoicesPage() {
             </ButtonOutline>
           </Flex>
         </Flex>
-        <Flex marginTop="1.5rem" gap="3.25rem">
+        <Flex marginTop="1.5rem" maxWidth="80rem" justifyContent="space-between" marginLeft="auto" marginRight="auto">
           {
             [
               { label: 'Período', value: (<span>de 03/04<br /> a 06/09</span>), size: 'lg' },
