@@ -27,6 +27,7 @@ import {
   Tr,
   Image,
   Thead,
+  useToast,
 } from '@chakra-ui/react';
 import {
   MdArrowDropDown,
@@ -43,16 +44,14 @@ import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { IoBagCheckSharp } from 'react-icons/io5';
 import { IoMdEye, IoMdEyeOff, IoMdTrash } from 'react-icons/io';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BiSolidEditAlt } from 'react-icons/bi';
-import { formatCurrency } from 'src/utils/formatCurrency';
+import { formatCurrency } from 'src/commons/formatters';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 type CommentsType = 'order' | 'billing';
 
 function ShowOrderPage() {
-  const params = useParams();
-
   const productsExample = [
     {
       id: 1,
@@ -122,30 +121,20 @@ function ShowOrderPage() {
     },
   ];
 
+  const params = useParams();
+  const toast = useToast();
+
   const [isContentVisible, setIsContentVisible] = useState<boolean>(true);
-  const [pageStatus, setPageStatus] = useState<PageStatusType>('show');
+  const [pageStatus, setPageStatus] = useState<PageStatusType>('create');
   const [currentComments, setCurrentComments] = useState<CommentsType>('order');
-  const [orderData, setOrderData] = useState<any>({
-    visit: {
-      actor_id: 0,
-      customer_id: 0,
-      date_checkin: '2024-02-01T16:29:47.909Z',
-      id: 0,
-    },
-    order: {
-      payment_option_need_approval: true,
-      type: '',
-      status: 'Aguardando aprovação',
-      order_comments: '',
-      products: [{}],
-      payment_option_id: 0,
-      billing_comments: '',
-      remote_order_number: '',
-      scheduled_order_date: '2024-02-01T16:29:47.909Z',
-    },
-  });
 
   const canShowContent = isContentVisible && pageStatus !== 'create';
+  const isValidParam = params?.id !== ' ' && !!Number(params?.id);
+
+  useEffect(() => {
+    if (isValidParam) setPageStatus('show');
+    else setPageStatus('create');
+  }, [isValidParam, params.id]);
 
   return (
     <PrivateLayout>
@@ -154,14 +143,17 @@ function ShowOrderPage() {
           <Heading w="30%" minW="30%" color="#898989" fontSize="24px">
             Pedidos/
             <Text as="span" color="#202020">
-              {params?.id}
+              {isValidParam ? params?.id : ''}
             </Text>
           </Heading>
           <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            {pageStatus === 'create' ? (
-              <ButtonPrimary w="9rem" p="0 1rem">
-                Salvar
-              </ButtonPrimary>
+            {['create', 'edit'].includes(pageStatus) ? (
+              <>
+                <ButtonPrimary w="9rem" p="0 1rem">
+                  Salvar
+                </ButtonPrimary>
+                <ButtonOutline>Cancelar</ButtonOutline>
+              </>
             ) : (
               <>
                 <ButtonOutline color="#202020" borderColor="#DCDCDC" fontWeight="500">
@@ -231,11 +223,25 @@ function ShowOrderPage() {
                     <Icon as={MdMoreHoriz} h="24px" w="24px" cursor="pointer" />
                   </MenuButton>
                   <MenuList>
-                    <MenuItem fontWeight="500">
+                    <MenuItem
+                      fontWeight="500"
+                      onClick={() =>
+                        pageStatus === 'create'
+                          ? toast({ status: 'error', description: 'Não é possivel editar o pedido no momento' })
+                          : setPageStatus('edit')
+                      }
+                    >
                       <Icon h="20px" w="20px" as={BiSolidEditAlt} mr="1rem" />
                       Editar Pedido
                     </MenuItem>
-                    <MenuItem fontWeight="500">
+                    <MenuItem
+                      fontWeight="500"
+                      onClick={() =>
+                        pageStatus === 'create'
+                          ? toast({ status: 'error', description: 'Não é possivel cancelar o pedido no momento' })
+                          : console.log('cancelar')
+                      }
+                    >
                       <Icon h="20px" w="20px" as={IoMdTrash} mr="1rem" />
                       Cancelar
                     </MenuItem>
@@ -245,9 +251,13 @@ function ShowOrderPage() {
               <Divider />
               <Box display="flex" h="13rem">
                 <Box p="1rem" w="50%">
-                  <Flex justify="space-between">
+                  <Flex justify="space-between" align="center">
                     <Text color="#898989">CNPJ</Text>
-                    <Text>{canShowContent ? '20.360.416/0001-28' : '--'}</Text>
+                    {pageStatus === 'create' ? (
+                      <Input w="50%" h="2rem" bg="#fff" placeholder="Nome ou CNPJ" />
+                    ) : (
+                      <Text>{canShowContent ? '20.360.416/0001-28' : '--'}</Text>
+                    )}
                   </Flex>
                   <Flex justify="space-between" my="1rem">
                     <Text color="#898989">Endereço</Text>
@@ -410,19 +420,25 @@ function ShowOrderPage() {
                   <Box my="1.5rem">
                     <Flex justify="space-between" fontSize="14px">
                       <Text color="#898989">Total de CXs</Text>
-                      <Text>{productsExample.reduce((acc, product) => acc + Number(product.amount), 0)}</Text>
+                      <Text>
+                        {canShowContent
+                          ? productsExample.reduce((acc, product) => acc + Number(product.amount), 0)
+                          : '-'}
+                      </Text>
                     </Flex>
                     <Divider my="1rem" />
                     <Flex justify="space-between" fontSize="14px" fontWeight="600">
                       <Text>TOTAL</Text>
                       <Text>
-                        {formatCurrency(
-                          productsExample.reduce(
-                            (acc, product) =>
-                              acc + Number(product.product_price_actor_default.price) * Number(product.amount),
-                            0
-                          )
-                        )}
+                        {canShowContent
+                          ? formatCurrency(
+                              productsExample.reduce(
+                                (acc, product) =>
+                                  acc + Number(product.product_price_actor_default.price) * Number(product.amount),
+                                0
+                              )
+                            )
+                          : '--'}
                       </Text>
                     </Flex>
                   </Box>

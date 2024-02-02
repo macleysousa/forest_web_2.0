@@ -26,6 +26,7 @@ import { MdApps, MdDescription, MdMail } from 'react-icons/md';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
+import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 
 function OrderDetailsPage() {
@@ -63,6 +64,9 @@ function OrderDetailsPage() {
             <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
               Exportar
             </ButtonOutline>
+            <ButtonPrimary onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(' ')}`)}>
+              Novo Pedido
+            </ButtonPrimary>
           </Flex>
         </Flex>
         {dashboardStatus && (

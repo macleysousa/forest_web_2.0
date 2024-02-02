@@ -1,4 +1,4 @@
-export const formatCurrency = (value: number) => {
+const formatCurrency = (value: number) => {
     if (isNaN(value)) {
         return 'Invalid number';
     }
@@ -12,3 +12,5 @@ export const formatCurrency = (value: number) => {
 
     return formattedNumber;
 };
+
+export { formatCurrency };
