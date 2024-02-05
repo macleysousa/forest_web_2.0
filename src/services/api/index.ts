@@ -17,4 +17,12 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Infelizmente a API da Forest nos retorna erro com o status 200
+api.interceptors.response.use((response) => {
+  if (response.data?.status !== 'success')
+    throw new Error(response.data.message);
+
+  return response;
+});
+
 export { api };
