@@ -24,7 +24,6 @@ import DatePicker from 'src/components/ui/DatePicker';
 import { PrivatePageProps, isPrivatePage } from 'src/contexts/AuthContext';
 
 function DashboardPage({ user }: PrivatePageProps) {
-
   const content = [
     { name: 'Montadoras', value: '333.678' },
     { name: 'Postos', value: '234.555' },
@@ -46,7 +45,7 @@ function DashboardPage({ user }: PrivatePageProps) {
             </Text>
           </Heading>
           <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            <DatePicker className="w-48" onChange={(date) => console.log(date)} selectedDate={new Date()} />
+            <DatePicker onChange={(date) => console.log(date)} selectedDate={new Date()} />
 
             <Popover>
               <PopoverTrigger>

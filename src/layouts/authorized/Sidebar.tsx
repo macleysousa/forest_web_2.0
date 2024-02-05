@@ -36,10 +36,11 @@ export default function Sidebar() {
   const [menuOptions, setMenuOptions] = useState<MenuOptionsMap>({
     mobile: {
       options: [
-        { name: 'pedidos', path: '/mobile/order-details' },
-        { name: 'visitas', path: '/visitas' },
-        { name: 'mapa de visitas', path: '/mapa-de-visitas' },
-        { name: 'estoque de clientes', path: '/estoque-de-clientes' },
+        { name: 'Pedidos', path: '/mobile/order-details' },
+        { name: 'Visitas', path: '/mobile/visits' },
+        { name: 'Mapa de Visitas', path: '/mobile/visits-map' },
+        { name: 'Estoque Cliente', path: '/mobile/client-stock' },
+        { name: 'Estoque Distrubuidor', path: '/mobile/distributor-stock' },
       ],
       open: false,
     },
