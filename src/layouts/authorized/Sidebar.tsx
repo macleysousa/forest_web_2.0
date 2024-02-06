@@ -86,11 +86,11 @@ export default function Sidebar() {
           ...prevState,
           [key]: { ...prevState[key], open: true },
         }));
-        // exclude the log from the final code
-        console.log('key', key, 'menuOptions[key]', menuOptions[key]);
       }
     }
-  }, [menuOptions, pathname]);
+    // removing array dependencies to avoid infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh">
