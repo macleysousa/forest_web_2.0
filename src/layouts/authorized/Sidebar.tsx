@@ -86,6 +86,7 @@ export default function Sidebar() {
           ...prevState,
           [key]: { ...prevState[key], open: true },
         }));
+        // exclude the log from the final code
         console.log('key', key, 'menuOptions[key]', menuOptions[key]);
       }
     }
