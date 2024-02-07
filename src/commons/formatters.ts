@@ -13,4 +13,21 @@ const formatCurrency = (value: number) => {
     return formattedNumber;
 };
 
-export { formatCurrency };
+interface FormatDateProps {
+    date: string;
+    showHours?: boolean;
+}
+
+const formatDate = ({ date, showHours }: FormatDateProps) => {
+    const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: showHours ? 'numeric' : undefined,
+        minute: showHours ? 'numeric' : undefined,
+    };
+
+    return new Date(date).toLocaleString('pt-BR', options);
+};
+
+export { formatCurrency, formatDate };

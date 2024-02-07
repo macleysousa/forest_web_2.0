@@ -22,17 +22,21 @@ import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { useRouter } from 'next/navigation';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 import { PrivateLayout } from 'src/components/PrivateLayout';
+import { getCustomers } from 'src/services/api/customer';
+import { useQuery } from '@tanstack/react-query';
 
 function ClientsPage() {
   const router = useRouter();
 
+  const { data } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
+
   const cardsContent = [
-    { name: 'Clientes', value: '12' },
-    { name: 'Clientes', value: '9' },
-    { name: 'Clientes', value: '2' },
-    { name: 'Clientes', value: '1' },
-    { name: 'Clientes', value: '46' },
-    { name: 'Clientes', value: '84' },
+    { name: 'Clientes', value: data?.reduce((acc, curr) => acc + 1, 0) },
+    { name: 'Inadimplentes', value: '?' },
+    { name: 'Prospectos', value: data?.reduce((acc, curr) => (curr.status === 'Prospect' ? acc + 1 : acc), 0) },
+    { name: 'Inativos', value: data?.reduce((acc, curr) => (curr.status === 'Inactive' ? acc + 1 : acc), 0) },
+    { name: 'Ativos', value: data?.reduce((acc, curr) => (curr.status === 'Active' ? acc + 1 : acc), 0) },
+    { name: 'Roteirizados', value: data?.reduce((acc, curr) => (curr.status === 'Routed' ? acc + 1 : acc), 0) },
   ];
 
   const handleNewClient = () => {
@@ -80,10 +84,10 @@ function ClientsPage() {
             <Thead h="3rem">
               <Tr>
                 <Th pl="1rem">CNPJ</Th>
-                <Th>Razão Social</Th>
-                <Th>Situação</Th>
-                <Th>Avaliação</Th>
-                <Th>Status</Th>
+                <Th w="20%">Razão Social</Th>
+                <Th textAlign="center">Situação</Th>
+                <Th textAlign="center">Avaliação</Th>
+                <Th textAlign="center">Status</Th>
                 <Th>Segmento</Th>
                 <Th>Parceiro</Th>
                 <Th>Cidade/UF</Th>
@@ -91,16 +95,18 @@ function ClientsPage() {
               </Tr>
             </Thead>
             <Tbody h="3rem">
-              {Array.apply(0, Array(10)).map((_, index) => (
+              {data?.map((customer, index) => (
                 <Tr key={`tr-${index}`} h="3rem">
-                  <Td pl="1rem">04043949000472</Td>
-                  <Td textDecor="underline">ACREDIESEL COMERCIAL DE VEÍCULOS LTDA</Td>
-                  <Td>Regular</Td>
-                  <Td>Latão</Td>
-                  <Td>P</Td>
-                  <Td>Agro</Td>
-                  <Td>Bosch</Td>
-                  <Td>Rio Branco / AC</Td>
+                  <Td pl="1rem">{customer.cnpj}</Td>
+                  <Td textDecor="underline">{customer.social_name}</Td>
+                  <Td textAlign="center">{customer.situation}</Td>
+                  <Td textAlign="center">{customer.validated}</Td>
+                  <Td textAlign="center">{customer.status.charAt(0)}</Td>
+                  <Td>{customer.segment.name}</Td>
+                  <Td>{customer.partner || 'Não definido'}</Td>
+                  <Td>
+                    {customer.address.city} / {customer.address.state}
+                  </Td>
                   <Td>
                     <Badge fontSize="12px" color="#00A163" p="5px" borderRadius="8px" colorScheme="green">
                       Completo
