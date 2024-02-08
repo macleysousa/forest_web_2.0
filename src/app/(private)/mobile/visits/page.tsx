@@ -134,7 +134,7 @@ function VisitsPage() {
                   <Td pl="1rem">
                     {visit.status === 'Válida' && (
                       <Badge fontSize="12px" color="#1E93FF" p=".75rem" borderRadius="8px" bg="#1E93FF20">
-                        Válida
+                        {visit.status}
                       </Badge>
                     )}
                     {['Inválida', 'Ignorada'].includes(visit.status) && (
@@ -153,7 +153,9 @@ function VisitsPage() {
                   </Td>
                   <Td textAlign="center">{formatDate({ date: visit.date_checkin, showHours: true })}</Td>
                   <Td textAlign="center">{visit.actor_id} ??</Td>
-                  <Td textAlign="center">??</Td>
+                  <Td textAlign="center">
+                    {visit.customer.address.city} / {visit.customer.address.state}
+                  </Td>
                   <Td textAlign="center">{visit.customer.social_name}</Td>
                   <Td
                     textDecor="underline"
