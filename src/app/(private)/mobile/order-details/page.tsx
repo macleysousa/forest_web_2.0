@@ -22,10 +22,10 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdApps, MdDescription, MdMail } from 'react-icons/md';
 import { useQuery } from '@tanstack/react-query';
-import { formatDate } from 'src/commons/formatters';
+import { formatCurrency, formatDate, formatDateForQuery } from 'src/commons/formatters';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
@@ -33,11 +33,13 @@ import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 import { getCustomers } from 'src/services/api/customer';
 import { getOrders } from 'src/services/api/orders';
+import DatePicker from 'src/components/ui/DatePicker';
 
 function OrderDetailsPage() {
   const router = useRouter();
   const toast = useToast();
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
 
   const cardsContent = [
     { name: 'Pedidos', value: '374' },
@@ -49,11 +51,21 @@ function OrderDetailsPage() {
 
   const { data: customersData } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
 
-  const { data: ordersData, error: ordersError } = useQuery({
+  const {
+    data: ordersData,
+    error: ordersError,
+    refetch: orderRefetch,
+  } = useQuery({
     queryKey: ['orders'],
     retry: 5,
-    queryFn: () => getOrders({ dateInit: '2024-01-01', dateEnd: '2024-01-31' }),
+    queryFn: () =>
+      getOrders({ dateInit: formatDateForQuery(selectedDates[0]), dateEnd: formatDateForQuery(selectedDates[1]) }),
   });
+
+  useEffect(() => {
+    orderRefetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDates]);
 
   const handleError = (error: any) => {
     console.error(error);
@@ -75,7 +87,8 @@ function OrderDetailsPage() {
             Pedidos App
           </Heading>
           <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            <ButtonFilter placeContent="flex-start" w="22.5rem" />
+            <DatePicker onChange={setSelectedDates} />
+            <ButtonFilter placeContent="flex-start" />
             <Button
               w="9rem"
               p="0 1rem"
@@ -146,7 +159,7 @@ function OrderDetailsPage() {
                     color="#1E93FF"
                     textAlign="center"
                     cursor="pointer"
-                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(1)}`)}
+                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(order.id)}`)}
                   >
                     {order.id}
                   </Td>
@@ -160,7 +173,7 @@ function OrderDetailsPage() {
                     <Icon as={MdMail} mx=".25rem" w="16px" h="16px" />
                   </Td>
                   <Td textAlign="center">{order.payment_option_id} ??</Td>
-                  <Td textAlign="center">??</Td>
+                  <Td textAlign="center">{formatCurrency(Number(order.total_value))}</Td>
                 </Tr>
               ))}
             </Tbody>

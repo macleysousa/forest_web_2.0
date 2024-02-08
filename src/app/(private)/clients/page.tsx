@@ -31,7 +31,7 @@ function ClientsPage() {
   const { data } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
 
   const cardsContent = [
-    { name: 'Clientes', value: data?.reduce((acc, curr) => acc + 1, 0) },
+    { name: 'Clientes', value: data?.reduce((acc, _) => acc + 1, 0) },
     { name: 'Inadimplentes', value: '?' },
     { name: 'Prospectos', value: data?.reduce((acc, curr) => (curr.status === 'Prospect' ? acc + 1 : acc), 0) },
     { name: 'Inativos', value: data?.reduce((acc, curr) => (curr.status === 'Inactive' ? acc + 1 : acc), 0) },

@@ -19,26 +19,52 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdApps } from 'react-icons/md';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { isPrivatePage } from 'src/contexts/AuthContext';
+import { getVisits } from 'src/services/api/visits';
+import { useQuery } from '@tanstack/react-query';
+import { formatDate, formatDateForQuery } from 'src/commons/formatters';
+import DatePicker from 'src/components/ui/DatePicker';
 
 function VisitsPage() {
   const router = useRouter();
 
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
+
+  const { data, refetch } = useQuery({
+    queryKey: ['visits'],
+    queryFn: () =>
+      getVisits({ dateInit: formatDateForQuery(selectedDates[0]), dateEnd: formatDateForQuery(selectedDates[1]) }),
+  });
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDates]);
 
   const cardsContent = [
-    { name: 'Válidas', value: '374' },
-    { name: 'Inválidas', value: '239' },
-    { name: 'Fora de Rota', value: '22' },
-    { name: 'Fora de Roteiro', value: '190' },
-    { name: 'Ignoradas', value: '460' },
-    { name: 'Tempo Médio', value: '460' },
+    { name: 'Válidas', value: data?.visits.reduce((acc, curr) => (curr.status === 'Válida' ? acc + 1 : acc), 0) },
+    { name: 'Inválidas', value: data?.visits.reduce((acc, curr) => (curr.status === 'Inválida' ? acc + 1 : acc), 0) },
+    {
+      name: 'Fora de Rota',
+      value: data?.visits.reduce((acc, curr) => (curr.status === 'Fora de Rota' ? acc + 1 : acc), 0),
+    },
+    {
+      name: 'Fora de Roteiro',
+      value: data?.visits.reduce((acc, curr) => (curr.status === 'Fora de Roteiro' ? acc + 1 : acc), 0),
+    },
+    { name: 'Ignoradas', value: data?.visits.reduce((acc, curr) => (curr.status === 'Ignorada' ? acc + 1 : acc), 0) },
+    {
+      name: 'Tempo Médio',
+      value: (
+        Number(data?.visits.reduce((acc, curr) => acc + curr.duration, 0)) / Number(data?.visits.length) || 0
+      ).toFixed(2),
+    },
   ];
 
   return (
@@ -49,11 +75,19 @@ function VisitsPage() {
             Visitas
           </Heading>
           <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            <ButtonFilter placeContent="flex-start" w="22.5rem" />
-            <ButtonPrimary onClick={() => setDashboardStatus(!dashboardStatus)} w="9rem" p="0 1rem">
+            <DatePicker onChange={setSelectedDates} />
+            <ButtonFilter placeContent="flex-start" />
+            <Button
+              color={!dashboardStatus ? '#898989' : 'inherit'}
+              variant={!dashboardStatus ? 'outline' : 'primary'}
+              borderColor={!dashboardStatus ? '#89898970' : 'auto'}
+              onClick={() => setDashboardStatus(!dashboardStatus)}
+              w="9rem"
+              p="0 1rem"
+            >
               <Icon as={MdApps} mr="1rem" h="24px" w="24px" />
               Dashboard
-            </ButtonPrimary>
+            </Button>
             <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
               Exportar
             </ButtonOutline>
@@ -95,33 +129,43 @@ function VisitsPage() {
               </Tr>
             </Thead>
             <Tbody h="3rem">
-              {Array.apply(0, Array(10)).map((_, index) => (
+              {data?.visits.map((visit, index) => (
                 <Tr key={`tr-${index}`} h="3.5rem" fontSize="14px">
                   <Td pl="1rem">
-                    {/* <Badge fontSize="12px" color="#1E93FF" p=".75rem" borderRadius="8px" bg="#1E93FF20">
-                      Válida
-                    </Badge> */}
-                    <Badge fontSize="12px" color="#775DA6" p=".75rem" borderRadius="8px" bg="#775DA620">
-                      Inválida
-                    </Badge>
+                    {visit.status === 'Válida' && (
+                      <Badge fontSize="12px" color="#1E93FF" p=".75rem" borderRadius="8px" bg="#1E93FF20">
+                        Válida
+                      </Badge>
+                    )}
+                    {['Inválida', 'Ignorada'].includes(visit.status) && (
+                      <Badge
+                        fontSize="12px"
+                        color="#775DA6"
+                        p=".75rem"
+                        borderRadius="8px"
+                        bg="#775DA620"
+                        w="5.5rem"
+                        textAlign="center"
+                      >
+                        {visit.status}
+                      </Badge>
+                    )}
                   </Td>
-                  <Td textAlign="center" cursor="pointer">
-                    19/04/2023 as 14h23
-                  </Td>
-                  <Td textAlign="center">Júlio Cesar</Td>
-                  <Td textAlign="center">LMATTOS - Parceiro 1</Td>
-                  <Td textAlign="center">Posto Dálmatas Ltda.</Td>
+                  <Td textAlign="center">{formatDate({ date: visit.date_checkin, showHours: true })}</Td>
+                  <Td textAlign="center">{visit.actor_id} ??</Td>
+                  <Td textAlign="center">??</Td>
+                  <Td textAlign="center">{visit.customer.social_name}</Td>
                   <Td
                     textDecor="underline"
                     color="#1E93FF"
                     textAlign="center"
                     cursor="pointer"
-                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(index)}`)}
+                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(visit.id)}`)}
                   >
-                    21844
+                    {visit.id} ??
                   </Td>
-                  <Td textAlign="center">Só Bardal</Td>
-                  <Td textAlign="center">Cliente Estocado</Td>
+                  <Td textAlign="center">{visit.visit_comments || 'NC'}</Td>
+                  <Td textAlign="center">{visit.not_sale_reason_id || 'NC'} ??</Td>
                 </Tr>
               ))}
             </Tbody>
