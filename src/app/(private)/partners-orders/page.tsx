@@ -64,7 +64,12 @@ function PartnersOrdersPage() {
               <Text fontWeight="500" fontSize={{ base: '14px', xl: '14px', '2xl': '20px' }}>
                 {card.name}
               </Text>
-              <Text fontWeight="700" fontSize={{ base: '12px', xl: '12px', '2xl': '18px' }}>
+              <Text
+                w={index === 0 ? '6rem' : 'auto'}
+                textAlign={index === 0 ? 'center' : 'initial'}
+                fontWeight="700"
+                fontSize={{ base: '12px', xl: '12px', '2xl': '18px' }}
+              >
                 {card.value}
               </Text>
             </Card>
@@ -87,16 +92,16 @@ function PartnersOrdersPage() {
               {Array.apply(0, Array(10)).map((_, index) => (
                 <Tr key={`tr-${index}`} h="3rem" fontSize="14px">
                   <Td pl="1rem">
-                    <Badge fontSize="12px" color="#1E93FF" p="5px" borderRadius="8px" bg="#1E93FF20">
-                      UM
+                    <Badge fontSize="12px" color="#F9837C" p="5px" borderRadius="8px" bg="#F9837C20">
+                      Pendente
                     </Badge>
                   </Td>
-                  <Td>Dois</Td>
-                  <Td>Três</Td>
-                  <Td>Quatro</Td>
-                  <Td>Cinco</Td>
-                  <Td>Seis</Td>
-                  <Td>Sete</Td>
+                  <Td>Jeep</Td>
+                  <Td>KFP - CONCESSIONÁRIA CE I</Td>
+                  <Td>NEWSEDAN COMERCIO</Td>
+                  <Td>45.567.567/0001-45</Td>
+                  <Td>Agro</Td>
+                  <Td>Rio Branco / AC</Td>
                 </Tr>
               ))}
             </Tbody>
