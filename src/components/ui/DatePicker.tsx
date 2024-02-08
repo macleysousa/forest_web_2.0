@@ -1,25 +1,24 @@
 import { Icon, InputGroup, InputLeftElement, InputRightElement } from '@chakra-ui/react';
 import { useState } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
-import { SingleDatepicker } from 'chakra-dayzed-datepicker';
+import { RangeDatepicker, RangeDatepickerProps } from 'chakra-dayzed-datepicker';
 import { dayNames, monthNames } from 'src/commons/dateUtils';
 
 interface DatePickerProps {
-  selectedDate: Date;
-  onChange: (date: Date) => void;
-  isClearable?: boolean;
+  onChange: (dates: Date[]) => void;
+  datePickerProps?: RangeDatepickerProps;
 }
 
-export default function InputDatePicker({ selectedDate, onChange, isClearable = false, ...props }: DatePickerProps) {
-  const [startDate, setStartDate] = useState(new Date());
+export default function InputDatePicker({ onChange, datePickerProps, ...props }: DatePickerProps) {
+  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
 
-  const handleDateSelect = (date: Date) => {
-    setStartDate(date);
-    onChange(date);
+  const handleOnDateChange = (dates: Date[]) => {
+    setSelectedDates(dates);
+    onChange(dates);
   };
 
   return (
-    <InputGroup {...props} width="15rem" zIndex="999" bg="#fff">
+    <InputGroup {...props} width="20rem" zIndex="999" bg="#fff">
       <InputLeftElement pl="20px" color="#898989">
         Data:
       </InputLeftElement>
@@ -27,10 +26,10 @@ export default function InputDatePicker({ selectedDate, onChange, isClearable = 
         <Icon as={MdArrowDropDown} />
       </InputRightElement>
 
-      <SingleDatepicker
+      <RangeDatepicker
         name="date-input"
-        date={startDate}
-        onDateChange={handleDateSelect}
+        selectedDates={selectedDates}
+        onDateChange={handleOnDateChange}
         propsConfigs={{
           popoverCompProps: {
             popoverBodyProps: {
@@ -38,10 +37,11 @@ export default function InputDatePicker({ selectedDate, onChange, isClearable = 
             },
           },
           inputProps: {
-            pl: '5rem',
-            w: '15rem',
+            pl: '4rem',
+            w: '55rem',
           },
         }}
+        {...datePickerProps}
         configs={{
           dateFormat: 'dd/MM/yyyy',
           dayNames,

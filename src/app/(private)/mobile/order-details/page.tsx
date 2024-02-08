@@ -19,19 +19,27 @@ import {
   Select,
   Button,
   ButtonGroup,
+  useToast,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdApps, MdDescription, MdMail } from 'react-icons/md';
+import { useQuery } from '@tanstack/react-query';
+import { formatCurrency, formatDate, formatDateForQuery } from 'src/commons/formatters';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { isPrivatePage } from 'src/contexts/AuthContext';
+import { getCustomers } from 'src/services/api/customer';
+import { getOrders } from 'src/services/api/orders';
+import DatePicker from 'src/components/ui/DatePicker';
 
 function OrderDetailsPage() {
   const router = useRouter();
+  const toast = useToast();
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
 
   const cardsContent = [
     { name: 'Pedidos', value: '374' },
@@ -41,6 +49,36 @@ function OrderDetailsPage() {
     { name: 'Programados', value: '460' },
   ];
 
+  const { data: customersData } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
+
+  const {
+    data: ordersData,
+    error: ordersError,
+    refetch: orderRefetch,
+  } = useQuery({
+    queryKey: ['orders'],
+    retry: 5,
+    queryFn: () =>
+      getOrders({ dateInit: formatDateForQuery(selectedDates[0]), dateEnd: formatDateForQuery(selectedDates[1]) }),
+  });
+
+  useEffect(() => {
+    orderRefetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDates]);
+
+  const handleError = (error: any) => {
+    console.error(error);
+    toast({ description: 'Erro ao buscar os pedidos', status: 'error' });
+  };
+
+  if (ordersError) handleError(ordersError);
+
+  const findCustomerName = (id: string | number) => {
+    const customer = customersData?.find((customer: any) => String(customer.id) === String(id));
+    return customer?.social_name;
+  };
+
   return (
     <PrivateLayout>
       <Box p="2rem">
@@ -49,7 +87,8 @@ function OrderDetailsPage() {
             Pedidos App
           </Heading>
           <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            <ButtonFilter placeContent="flex-start" w="22.5rem" />
+            <DatePicker onChange={setSelectedDates} />
+            <ButtonFilter placeContent="flex-start" />
             <Button
               w="9rem"
               p="0 1rem"
@@ -94,7 +133,9 @@ function OrderDetailsPage() {
           <Table variant="striped" colorScheme="gray" size="xsm" fontSize="12px">
             <Thead h="3rem">
               <Tr>
-                <Th pl="1rem">Status</Th>
+                <Th pl="1rem" w="18%">
+                  Status
+                </Th>
                 <Th textAlign="center">Data</Th>
                 <Th textAlign="center">Pedido</Th>
                 <Th textAlign="center">Vendedor</Th>
@@ -105,32 +146,34 @@ function OrderDetailsPage() {
               </Tr>
             </Thead>
             <Tbody h="3rem">
-              {Array.apply(0, Array(10)).map((_, index) => (
+              {ordersData?.orders.map((order, index) => (
                 <Tr key={`tr-${index}`} h="3rem" fontSize="14px">
                   <Td pl="1rem">
                     <Badge fontSize="12px" color="#1E93FF" p="5px" borderRadius="8px" bg="#1E93FF20">
-                      Completo
+                      {order.status}
                     </Badge>
                   </Td>
-                  <Td textAlign="center">1525</Td>
+                  <Td textAlign="center">{formatDate({ date: order.date_sync, showHours: true })}</Td>
                   <Td
                     textDecor="underline"
                     color="#1E93FF"
                     textAlign="center"
                     cursor="pointer"
-                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(1)}`)}
+                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(order.id)}`)}
                   >
-                    277946
+                    {order.id}
                   </Td>
-                  <Td textAlign="center">Júlio Cesar</Td>
-                  <Td textAlign="center">LMATTOS - Parceiro 1</Td>
-                  <Td textAlign="center">
-                    Posto Dálmatas Ltda.
+                  <Td textAlign="center">{order.customer_id}</Td>
+                  <Td textAlign="center">??</Td>
+                  <Td textAlign="center" w="15%">
+                    <Box maxW="10rem" overflow="hidden" textOverflow="ellipsis" as="span" display="inline-block">
+                      {findCustomerName(order.customer_id)}
+                    </Box>
                     <Icon as={MdDescription} mx=".25rem" w="16px" h="16px" />
                     <Icon as={MdMail} mx=".25rem" w="16px" h="16px" />
                   </Td>
-                  <Td textAlign="center">21844</Td>
-                  <Td textAlign="center">R$ 756,25</Td>
+                  <Td textAlign="center">{order.payment_option_id} ??</Td>
+                  <Td textAlign="center">{formatCurrency(Number(order.total_value))}</Td>
                 </Tr>
               ))}
             </Tbody>
