@@ -14,6 +14,7 @@ import {
 import InputSearch from 'src/components/ui/InputSearch';
 import PopoverNotification from 'src/components/PopoverNotification';
 import { useAuthContext } from 'src/contexts/AuthContext';
+import { logout } from 'src/services/api/logout';
 
 export default function Navbar() {
   const auth = useAuthContext();
@@ -23,6 +24,7 @@ export default function Navbar() {
     try {
       auth.logout();
       toast({ status: 'success', description: 'Logout efetuado com sucesso!' });
+      // await logout(); // this route is currenltly returning 'The route api/v2/logout could not be found.'
     } catch (err) {
       console.error(err);
       toast({ status: 'error', description: 'Erro ao efetuar logout!' });
