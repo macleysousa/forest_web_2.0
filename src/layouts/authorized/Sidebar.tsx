@@ -62,15 +62,6 @@ export default function Sidebar() {
       ],
       open: false,
     },
-    orders: {
-      options: [
-        { name: 'pedidos', path: '/pedidos' },
-        { name: 'visitas', path: '/visitas' },
-        { name: 'mapa de visitas', path: '/mapa-de-visitas' },
-        { name: 'estoque de clientes', path: '/estoque-de-clientes' },
-      ],
-      open: false,
-    },
   });
 
   const handleOpenMenuOption = (option: string) => () => {
@@ -182,30 +173,12 @@ export default function Sidebar() {
             ))}
           </VStack>
         )}
-        <Button
-          colorScheme="#bcbcbc"
-          variant="link"
-          justifyContent="left"
-          onClick={handleOpenMenuOption('orders')}
-          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
-        >
+        <Link href="/partners-orders" className={setClassName('/partners-order')}>
           <Flex align="center" gap="1rem" w="100%">
             <Icon as={MdDirectionsCar} />
             <Text>Pedidos Parceiros</Text>
-            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
           </Flex>
-        </Button>
-        {menuOptions.orders.open && (
-          <VStack align="left" padding="0 1rem" gap="1rem">
-            {menuOptions.orders.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
-                <Flex align="center" gap="1rem">
-                  <Text>{option.name}</Text>
-                </Flex>
-              </Link>
-            ))}
-          </VStack>
-        )}
+        </Link>
         <Link href="/tools" className={setClassName('/tools')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdSettings} />
