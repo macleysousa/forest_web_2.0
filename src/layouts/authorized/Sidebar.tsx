@@ -36,10 +36,11 @@ export default function Sidebar() {
   const [menuOptions, setMenuOptions] = useState<MenuOptionsMap>({
     mobile: {
       options: [
-        { name: 'pedidos', path: '/pedidos' },
-        { name: 'visitas', path: '/visitas' },
-        { name: 'mapa de visitas', path: '/mapa-de-visitas' },
-        { name: 'estoque de clientes', path: '/estoque-de-clientes' },
+        { name: 'Pedidos', path: '/mobile/order-details' },
+        { name: 'Visitas', path: '/mobile/visits' },
+        { name: 'Mapa de Visitas', path: '/mobile/visits-map' },
+        { name: 'Estoque Cliente', path: '/mobile/client-stock' },
+        { name: 'Estoque Distrubuidor', path: '/mobile/distributor-stock' },
       ],
       open: false,
     },
@@ -52,9 +53,9 @@ export default function Sidebar() {
     },
     products: {
       options: [
-        { name: 'Lista de Produtos', path: '/pedidos' },
+        { name: 'Lista de Produtos', path: '/products' },
         { name: 'Tabela de Preços Padrão', path: '/standard-pricing-table' },
-        { name: 'Tabela de Preços Clientes', path: '/mapa-de-visitas' },
+        { name: 'Tabela de Preços Clientes', path: '/clients-pricing-table' },
         { name: 'Tabela de Preços Grupo', path: '/estoque-de-clientes' },
         { name: 'Solicitação Preço', path: '/estoque-de-clientes' },
         { name: 'Aprovações', path: '/estoque-de-clientes' },
