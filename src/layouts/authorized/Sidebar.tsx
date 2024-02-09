@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { IoBagCheckSharp } from 'react-icons/io5';
 import {
+  MdAssignmentInd,
   MdDashboard,
   MdContacts,
   MdPinDrop,
@@ -219,6 +220,12 @@ export default function Sidebar() {
             ))}
           </VStack>
         )}
+        <Link href="/users" className={setClassName('/users')}>
+          <Flex align="center" gap="1rem">
+            <Icon as={MdAssignmentInd} />
+            <Text>Usuários</Text>
+          </Flex>
+        </Link>
         <Link href="/tools" className={setClassName('/tools')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdSettings} />
