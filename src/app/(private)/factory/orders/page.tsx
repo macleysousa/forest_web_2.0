@@ -20,6 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { MdApps } from 'react-icons/md';
+import FactoryImportModal from 'src/components/FactoryImportModal';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
@@ -46,9 +47,10 @@ function FabricOrdersPage() {
           </Heading>
           <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
             <ButtonFilter placeContent="flex-start" w="22.5rem" />
-            <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
-              Importar
-            </ButtonOutline>
+            <FactoryImportModal
+              buttonProps={{ color: '#1E93FF', borderColor: '#1E93FF', variant: 'outline' }}
+              buttonTitle="Importar"
+            />
             <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
               Exportar
             </ButtonOutline>
