@@ -94,15 +94,26 @@ function DistributorStockPage() {
   return (
     <PrivateLayout>
       <Box p="2rem">
-        <Flex>
-          <Heading width="60%">Estoque Clientes</Heading>
-          <Flex width="40%">
-            <Select placeholder="Distribuidor">
-              <option>Escolha um da lista</option>
+        <Flex align="flex-end" justify="space-between">
+          <Heading width="60%">Estoque Distribuidor</Heading>
+          <Flex
+            border="1px solid #00000020"
+            borderRadius={5}
+            justify="center"
+            align="center"
+            h="2.5rem"
+            w="20rem"
+            bg="white"
+          >
+            <Text color="#898989" mx="10px">
+              Distribuidor:
+            </Text>
+            <Select variant="unstyled" placeholder="Escolha um da lista">
+              <option value="">Escolha um da lista</option>
             </Select>
           </Flex>
         </Flex>
-        <Flex direction="column">
+        <Flex direction="column" mt="2rem">
           <Text mb="1rem" fontSize="20px" fontStyle="600">
             Estoque de faturamento
           </Text>

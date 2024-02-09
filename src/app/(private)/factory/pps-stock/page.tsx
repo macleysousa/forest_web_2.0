@@ -1,11 +1,24 @@
 'use client';
 
-import { Box, Button, Flex, Heading, Select, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Select,
+  Text,
+} from '@chakra-ui/react';
 import Chart, { ChartType } from 'chart.js/auto';
 import { useMemo, useCallback, useRef, useEffect } from 'react';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 import { generateRandomId } from 'src/commons/randomId';
+import { IoSearch } from 'react-icons/io5';
 
 const generateRandomArray = (quantity: number) =>
   Array.from({ length: quantity }, () => Math.floor(Math.random() * 101));
@@ -94,17 +107,28 @@ function DistributorStockPage() {
   return (
     <PrivateLayout>
       <Box p="2rem">
-        <Flex>
+        <Flex align="flex-end" justify="space-between">
           <Heading width="60%">Estoque Clientes</Heading>
-          <Flex width="40%">
-            <Select placeholder="Distribuidor">
-              <option>Escolha um da lista</option>
+          <Flex
+            border="1px solid #00000020"
+            borderRadius={5}
+            justify="center"
+            align="center"
+            h="2.5rem"
+            w="20rem"
+            bg="white"
+          >
+            <Text color="#898989" mx="10px">
+              Distribuidor:
+            </Text>
+            <Select variant="unstyled" placeholder="Escolha um da lista">
+              <option value="">Escolha um da lista</option>
             </Select>
           </Flex>
         </Flex>
-        <Flex direction="column">
-          <Text mb="1rem" fontSize="20px" fontStyle="600">
-            Estoque de faturamento
+        <Flex direction="column" mt="2rem">
+          <Text mb="1rem" fontSize="24px" fontStyle="700">
+            15 Produtos mais vendidos
           </Text>
           <Box height="20rem">
             <MyChart chartData={generateRandomArray(7)} />

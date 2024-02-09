@@ -6,9 +6,7 @@ import { PrivateLayout } from 'src/components/PrivateLayout';
 import {
   Box,
   Button,
-  ButtonGroup,
   Card,
-  CardBody,
   CardHeader,
   Divider,
   Flex,
@@ -23,33 +21,20 @@ import {
   Tbody,
   Td,
   Text,
-  Textarea,
   Tr,
   Image,
   Thead,
   useToast,
 } from '@chakra-ui/react';
-import {
-  MdArrowDropDown,
-  MdCheckCircle,
-  MdClose,
-  MdDescription,
-  MdFileDownload,
-  MdLocalShipping,
-  MdMoreHoriz,
-  MdPayments,
-  MdViewWeek,
-} from 'react-icons/md';
+import { MdArrowDropDown, MdCheckCircle, MdClose, MdDescription, MdMoreHoriz } from 'react-icons/md';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { IoBagCheckSharp } from 'react-icons/io5';
-import { IoMdEye, IoMdEyeOff, IoMdTrash } from 'react-icons/io';
+import { IoMdTrash } from 'react-icons/io';
 import { useEffect, useState } from 'react';
 import { BiSolidEditAlt } from 'react-icons/bi';
 import { formatCurrency } from 'src/commons/formatters';
 
 type PageStatusType = 'create' | 'edit' | 'show';
-type CommentsType = 'order' | 'billing';
 
 function ShowOrderPage() {
   const productsExample = [
@@ -124,11 +109,8 @@ function ShowOrderPage() {
   const params = useParams();
   const toast = useToast();
 
-  const [isContentVisible, setIsContentVisible] = useState<boolean>(true);
   const [pageStatus, setPageStatus] = useState<PageStatusType>('create');
-  const [currentComments, setCurrentComments] = useState<CommentsType>('order');
 
-  const canShowContent = isContentVisible && pageStatus !== 'create';
   const isValidParam = params?.id !== ' ' && !!Number(params?.id);
 
   useEffect(() => {
@@ -140,13 +122,22 @@ function ShowOrderPage() {
     <PrivateLayout>
       <Box p="2rem">
         <Flex alignItems="end">
-          <Heading w="30%" minW="30%" color="#898989" fontSize="24px">
+          <Heading w="40%" color="#898989" fontSize="24px" display="flex" alignItems="baseline">
             Pedidos/
-            <Text as="span" color="#202020">
-              {isValidParam ? params?.id : ''}
-            </Text>
+            {pageStatus === 'create' ? (
+              <Flex align="center">
+                <Input w="50%" h="2rem" mx="1rem" bg="#fff" placeholder="Nome ou CNPJ" />
+                <Button w="10rem" bg="#775DA620" color="#1E93FF">
+                  Novo Pedido
+                </Button>
+              </Flex>
+            ) : (
+              <Text as="span" color="#202020">
+                {isValidParam ? params?.id : ''}
+              </Text>
+            )}
           </Heading>
-          <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
+          <Flex align="flex-end" justify="flex-end" w="60%" gap="1rem">
             {['create', 'edit'].includes(pageStatus) ? (
               <>
                 <ButtonPrimary w="9rem" p="0 1rem">
@@ -156,12 +147,8 @@ function ShowOrderPage() {
               </>
             ) : (
               <>
-                <ButtonOutline color="#202020" borderColor="#DCDCDC" fontWeight="500">
-                  <Icon as={MdFileDownload} h="24px" w="24px" />
-                  Visualizar PDF
-                </ButtonOutline>
                 <ButtonPrimary w="9rem" p="0 1rem">
-                  [Status Pedido]
+                  Enviar Pedido
                 </ButtonPrimary>
               </>
             )}
@@ -169,52 +156,6 @@ function ShowOrderPage() {
         </Flex>
         <Flex w="100%" my="2rem" direction={{ sm: 'column', md: 'column', lg: 'column', xl: 'row', '2xl': 'row' }}>
           <Flex w={{ sm: '100%', md: '100%', lg: '100%', xl: '70%', '2xl': '70%', '3xl': '70%' }} direction="column">
-            <Flex w="100%" gap={5} mb="2rem" justifyContent="space-between">
-              <Card w="17rem" h="8rem">
-                <CardHeader>
-                  <Flex justify="space-between">
-                    <Text>Volume Mix</Text>
-                    <Icon as={MdViewWeek} color="#1E93FF" h="24px" w="24px" />
-                  </Flex>
-                  <Text my=".5rem" fontWeight="700" fontSize="24px">
-                    {canShowContent ? '29.8' : '--'}
-                  </Text>
-                </CardHeader>
-              </Card>
-              <Card w="17rem" h="8rem">
-                <CardHeader>
-                  <Flex justify="space-between">
-                    <Text>Volume</Text>
-                    <Icon as={IoBagCheckSharp} color="#1E93FF" h="24px" w="24px" />
-                  </Flex>
-                  <Text my=".5rem" fontWeight="700" fontSize="24px">
-                    {canShowContent ? '31' : '--'} csx
-                  </Text>
-                </CardHeader>
-              </Card>
-              <Card w="17rem" h="8rem">
-                <CardHeader>
-                  <Flex justify="space-between">
-                    <Text>Volume do Pedido</Text>
-                    <Flex>
-                      <Icon
-                        onClick={() => setIsContentVisible(!isContentVisible)}
-                        as={canShowContent ? IoMdEyeOff : IoMdEye}
-                        cursor="pointer"
-                        h="24px"
-                        w="24px"
-                        mr=".5rem"
-                      />
-                      <Icon as={MdPayments} color="#1E93FF" h="24px" w="24px" />
-                    </Flex>
-                  </Flex>
-                  <Text my=".5rem" fontWeight="700" fontSize="24px">
-                    {canShowContent ? 'R$5.986,92' : 'R$ --'}
-                  </Text>
-                </CardHeader>
-              </Card>
-            </Flex>
-
             <Card minW="29.5rem" px="1rem">
               <CardHeader display="flex" justifyContent="space-between">
                 <Text>--</Text>
@@ -256,20 +197,20 @@ function ShowOrderPage() {
                     {pageStatus === 'create' ? (
                       <Input w="50%" h="2rem" bg="#fff" placeholder="Nome ou CNPJ" />
                     ) : (
-                      <Text>{canShowContent ? '20.360.416/0001-28' : '--'}</Text>
+                      <Text>20.360.416/0001-28</Text>
                     )}
                   </Flex>
                   <Flex justify="space-between" my="1rem">
                     <Text color="#898989">Endereço</Text>
                     <Flex direction="column" align="flex-end" gap=".75rem" minW="6rem">
-                      <Text>{canShowContent ? 'Rua, Número' : '--'}</Text>
-                      <Text>{canShowContent ? 'Cidade - Estado' : '--'}</Text>
-                      <Text>{canShowContent ? 'CEP' : '--'}</Text>
+                      <Text>Rua, Número</Text>
+                      <Text>Cidade - Estado</Text>
+                      <Text>CEP</Text>
                     </Flex>
                   </Flex>
                   <Flex justify="space-between">
                     <Text color="#898989">Grupo</Text>
-                    <Text>{canShowContent ? 'Postos JetOil' : ''}</Text>
+                    <Text>Postos JetOil</Text>
                   </Flex>
                 </Box>
                 <Divider orientation="vertical" />
@@ -385,23 +326,21 @@ function ShowOrderPage() {
                                 whiteSpace="nowrap"
                                 maxW="10rem"
                               >
-                                {canShowContent ? product.name : '--'}
+                                {product.name}
                               </Text>
                             </Flex>
                           </Td>
                           <Td pl="3rem" w="20%">
-                            {canShowContent ? product.amount : '--'}
+                            {product.amount}
                           </Td>
                           <Td px="0" w="20%">
-                            {canShowContent ? product.code : '--'}
+                            {product.code}
                           </Td>
                           <Td px="0" w="20%">
-                            {canShowContent ? formatCurrency(Number(product.product_price_actor_default.price)) : '--'}
+                            {formatCurrency(Number(product.product_price_actor_default.price))}
                           </Td>
                           <Td px="0" w="20%">
-                            {canShowContent
-                              ? formatCurrency(Number(product.product_price_actor_default.price) * product.amount)
-                              : '--'}
+                            {formatCurrency(Number(product.product_price_actor_default.price) * product.amount)}
                           </Td>
                         </Tr>
                       ))}
@@ -420,25 +359,19 @@ function ShowOrderPage() {
                   <Box my="1.5rem">
                     <Flex justify="space-between" fontSize="14px">
                       <Text color="#898989">Total de CXs</Text>
-                      <Text>
-                        {canShowContent
-                          ? productsExample.reduce((acc, product) => acc + Number(product.amount), 0)
-                          : '-'}
-                      </Text>
+                      <Text>{productsExample.reduce((acc, product) => acc + Number(product.amount), 0)}</Text>
                     </Flex>
                     <Divider my="1rem" />
                     <Flex justify="space-between" fontSize="14px" fontWeight="600">
                       <Text>TOTAL</Text>
                       <Text>
-                        {canShowContent
-                          ? formatCurrency(
-                              productsExample.reduce(
-                                (acc, product) =>
-                                  acc + Number(product.product_price_actor_default.price) * Number(product.amount),
-                                0
-                              )
-                            )
-                          : '--'}
+                        {formatCurrency(
+                          productsExample.reduce(
+                            (acc, product) =>
+                              acc + Number(product.product_price_actor_default.price) * Number(product.amount),
+                            0
+                          )
+                        )}
                       </Text>
                     </Flex>
                   </Box>
@@ -501,34 +434,6 @@ function ShowOrderPage() {
                   Aprovar
                 </ButtonOutline>
               </CardHeader>
-            </Card>
-
-            <Card mt="1rem">
-              <CardBody display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-                <ButtonGroup isAttached variant="outline" mb="1rem" w="9rem">
-                  <Button
-                    onClick={() => setCurrentComments('billing')}
-                    h="1.5rem"
-                    fontSize="12px"
-                    borderRadius="8px"
-                    bg={currentComments === 'billing' ? '#1E93FF' : 'initial'}
-                    color={currentComments === 'billing' ? '#fff' : 'initial'}
-                  >
-                    Fatur.
-                  </Button>
-                  <Button
-                    onClick={() => setCurrentComments('order')}
-                    h="1.5rem"
-                    fontSize="12px"
-                    borderRadius="8px"
-                    bg={currentComments === 'order' ? '#1E93FF' : 'initial'}
-                    color={currentComments === 'order' ? '#fff' : 'initial'}
-                  >
-                    Atend.
-                  </Button>
-                </ButtonGroup>
-                <Textarea h="4rem" mt="1rem" resize="none" placeholder="Observações"></Textarea>
-              </CardBody>
             </Card>
           </Flex>
         </Flex>

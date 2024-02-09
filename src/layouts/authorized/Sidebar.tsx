@@ -103,7 +103,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh">
+    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh" overflowY="scroll">
       <Center m="1rem 0 2rem 0">
         <Image src="/petroplus.png" alt="petroplus logo" w="8rem" />
       </Center>
