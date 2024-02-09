@@ -1,7 +1,7 @@
 import { Center, VStack, Flex, Icon, Button, Text, Box, Image } from '@chakra-ui/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoBagCheckSharp } from 'react-icons/io5';
 import {
   MdDashboard,
@@ -46,7 +46,7 @@ export default function Sidebar() {
     },
     planning: {
       options: [
-        { name: 'Planejamento Clientes', path: '/pedidos' },
+        { name: 'Planejamento Clientes', path: '/customer-planning' },
         { name: 'Planejamento Roteiros', path: '/visitas' },
       ],
       open: false,
@@ -56,7 +56,7 @@ export default function Sidebar() {
         { name: 'Lista de Produtos', path: '/products' },
         { name: 'Tabela de Preços Padrão', path: '/standard-pricing-table' },
         { name: 'Tabela de Preços Clientes', path: '/clients-pricing-table' },
-        { name: 'Tabela de Preços Grupo', path: '/estoque-de-clientes' },
+        { name: 'Tabela de Preços Grupo', path: '/group-pricing-table' },
         { name: 'Solicitação Preço', path: '/estoque-de-clientes' },
         { name: 'Aprovações', path: '/estoque-de-clientes' },
       ],
@@ -79,6 +79,19 @@ export default function Sidebar() {
       [option]: { ...prevState[option], open: !prevState[option].open },
     }));
   };
+
+  useEffect(() => {
+    for (const key in menuOptions) {
+      if (pathname.includes(key)) {
+        setMenuOptions((prevState) => ({
+          ...prevState,
+          [key]: { ...prevState[key], open: true },
+        }));
+      }
+    }
+    // removing array dependencies to avoid infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh">
@@ -126,7 +139,7 @@ export default function Sidebar() {
         {menuOptions.mobile.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.mobile.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
+              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
                 <Flex align="center" gap=".5rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -150,7 +163,7 @@ export default function Sidebar() {
         {menuOptions.planning.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.planning.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
+              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
                 <Flex align="center" gap=".5rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -174,7 +187,7 @@ export default function Sidebar() {
         {menuOptions.products.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.products.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
+              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
                 <Flex align="center" gap="1rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -198,7 +211,7 @@ export default function Sidebar() {
         {menuOptions.orders.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.orders.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
+              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
                 <Flex align="center" gap="1rem">
                   <Text>{option.name}</Text>
                 </Flex>
