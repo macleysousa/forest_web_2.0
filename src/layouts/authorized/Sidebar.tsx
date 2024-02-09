@@ -53,9 +53,9 @@ export default function Sidebar() {
     },
     products: {
       options: [
-        { name: 'Lista de Produtos', path: '/pedidos' },
-        { name: 'Tabela de Preços Padrão', path: '/visitas' },
-        { name: 'Tabela de Preços Clientes', path: '/mapa-de-visitas' },
+        { name: 'Lista de Produtos', path: '/products' },
+        { name: 'Tabela de Preços Padrão', path: '/standard-pricing-table' },
+        { name: 'Tabela de Preços Clientes', path: '/clients-pricing-table' },
         { name: 'Tabela de Preços Grupo', path: '/group-pricing-table' },
         { name: 'Solicitação Preço', path: '/estoque-de-clientes' },
         { name: 'Aprovações', path: '/estoque-de-clientes' },
