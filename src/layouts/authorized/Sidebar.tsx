@@ -14,6 +14,7 @@ import {
   MdKeyboardArrowRight,
   MdPaid,
 } from 'react-icons/md';
+import { BiSolidFactory } from 'react-icons/bi';
 
 interface MenuOptions {
   options: {
@@ -71,6 +72,14 @@ export default function Sidebar() {
       ],
       open: false,
     },
+    factory: {
+      options: [
+        { name: 'Pedidos', path: '/factory/orders' },
+        { name: 'Novos Pedidos', path: '/factory/new-orders' },
+        { name: 'Estoque PPS', path: '/factory/pps-stock' },
+      ],
+      open: false,
+    },
   });
 
   const handleOpenMenuOption = (option: string) => () => {
@@ -94,7 +103,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh">
+    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh" overflowY="scroll">
       <Center m="1rem 0 2rem 0">
         <Image src="/petroplus.png" alt="petroplus logo" w="8rem" />
       </Center>
@@ -212,6 +221,30 @@ export default function Sidebar() {
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.orders.options.map((option, index) => (
               <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
+                <Flex align="center" gap="1rem">
+                  <Text>{option.name}</Text>
+                </Flex>
+              </Link>
+            ))}
+          </VStack>
+        )}
+        <Button
+          colorScheme="#bcbcbc"
+          variant="link"
+          justifyContent="left"
+          onClick={handleOpenMenuOption('factory')}
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
+        >
+          <Flex align="center" gap="1rem" w="100%">
+            <Icon as={BiSolidFactory} />
+            <Text>Fábrica</Text>
+            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
+          </Flex>
+        </Button>
+        {menuOptions.factory.open && (
+          <VStack align="left" padding="0 1rem" gap="1rem">
+            {menuOptions.factory.options.map((option, index) => (
+              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
                 <Flex align="center" gap="1rem">
                   <Text>{option.name}</Text>
                 </Flex>
