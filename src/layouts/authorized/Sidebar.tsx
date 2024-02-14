@@ -13,6 +13,7 @@ import {
   MdSettings,
   MdKeyboardArrowRight,
   MdPaid,
+  MdAssignmentInd,
 } from 'react-icons/md';
 import { BiSolidFactory } from 'react-icons/bi';
 
@@ -252,6 +253,12 @@ export default function Sidebar() {
             ))}
           </VStack>
         )}
+        <Link href="/users" className={setClassName('/users')}>
+          <Flex align="center" gap="1rem">
+            <Icon as={MdAssignmentInd} />
+            <Text>Usuários</Text>
+          </Flex>
+        </Link>
         <Link href="/tools" className={setClassName('/tools')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdSettings} />
