@@ -45,7 +45,7 @@ const schema = z.object({
   net: z.string(),
 });
 
-function NewClientPage() {
+function NewCustomerPage() {
   const toast = useToast();
 
   const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
@@ -119,4 +119,4 @@ function NewClientPage() {
   );
 }
 
-export default isPrivatePage(NewClientPage);
+export default isPrivatePage(NewCustomerPage);

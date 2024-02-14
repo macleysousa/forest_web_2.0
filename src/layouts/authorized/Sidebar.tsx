@@ -121,7 +121,7 @@ export default function Sidebar() {
             <Text>Painel Gerencial</Text>
           </Flex>
         </Link>
-        <Link href="/clients" className={setClassName('/clients')}>
+        <Link href="/customers" className={setClassName('/customers')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdContacts} />
             <Text>Clientes</Text>

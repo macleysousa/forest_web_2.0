@@ -40,7 +40,7 @@ function ClientsPage() {
   ];
 
   const handleNewClient = () => {
-    router.push('/clients/new-client');
+    router.push('/customers/new-customer');
   };
 
   return (
