@@ -5,7 +5,6 @@ import {
   CardHeader,
   Heading,
   CardBody,
-  Text,
   Box,
   CardProps,
   Th,
@@ -20,7 +19,6 @@ import {
   Menu,
   MenuButton,
   MenuItem,
-  Portal,
   MenuList,
 } from '@chakra-ui/react';
 import Chart, { ChartType } from 'chart.js/auto';
@@ -40,40 +38,37 @@ const generateRandomId = () => {
   return randomId;
 };
 
+const labels = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'];
+
+const formatData = (barData: number[], lineData: number[]) => ({
+  labels: labels,
+  datasets: [
+    {
+      data: barData,
+      borderColor: '#775DA6',
+      backgroundColor: '#775DA6',
+      type: 'bar' as ChartType,
+      order: 1,
+    },
+    {
+      data: lineData,
+      borderColor: '#70B6C1',
+      backgroundColor: '#70B6C1',
+      type: 'line' as ChartType,
+      order: 0,
+    },
+  ],
+});
+
 const MyChart = ({ barChartData, lineChartData }: Props) => {
-  const labels = useMemo(() => ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'], []);
-
-  const formatData = useCallback(
-    (barData: number[], lineData: number[]) => ({
-      labels: labels,
-      datasets: [
-        {
-          data: barData,
-          borderColor: '#775DA6',
-          backgroundColor: '#775DA6',
-          type: 'bar' as ChartType,
-          order: 1,
-        },
-        {
-          data: lineData,
-          borderColor: '#70B6C1',
-          backgroundColor: '#70B6C1',
-          type: 'line' as ChartType,
-          order: 0,
-        },
-      ],
-    }),
-    [labels]
-  );
-
-  const id = useRef<string>(generateRandomId());
+  const id = generateRandomId();
   const chartRef = useRef<Chart | null>(null);
 
   if (chartRef.current) chartRef.current.destroy();
 
   const canvasCallback = (canvas: HTMLCanvasElement | null) => {
     if (!canvas) return;
-    const canvasElement = document.getElementById(id.current) as HTMLCanvasElement;
+    const canvasElement = document.getElementById(id) as HTMLCanvasElement;
     const ctx = canvasElement?.getContext('2d');
     if (ctx) {
       chartRef.current = new Chart(ctx, {
@@ -135,9 +130,9 @@ const MyChart = ({ barChartData, lineChartData }: Props) => {
       chartRef.current.data = formatData(barChartData, lineChartData);
       chartRef.current.update();
     }
-  }, [barChartData, formatData, lineChartData]);
+  }, [barChartData, lineChartData]);
 
-  return <canvas id={id.current} ref={canvasCallback}></canvas>;
+  return <canvas id={id} ref={canvasCallback}></canvas>;
 };
 
 interface CardGraphicProps extends CardProps {

@@ -20,23 +20,23 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { MdApps } from 'react-icons/md';
-import FactoryImportModal from 'src/components/FactoryImportModal';
+import ModalFactoryImport from 'src/components/ModalFactoryImport';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 
-function FabricOrdersPage() {
-  const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
+const cardsContent = [
+  { name: 'Pedidos', value: '12' },
+  { name: 'Pendentes', value: '9' },
+  { name: 'Faturados', value: '2' },
+  { name: 'Cobertura', value: '1' },
+  { name: 'Programados', value: '46' },
+  { name: 'Bonificação', value: '84' },
+];
 
-  const cardsContent = [
-    { name: 'Pedidos', value: '12' },
-    { name: 'Pendentes', value: '9' },
-    { name: 'Faturados', value: '2' },
-    { name: 'Cobertura', value: '1' },
-    { name: 'Programados', value: '46' },
-    { name: 'Bonificação', value: '84' },
-  ];
+function FabricOrdersPage() {
+  const [dashboardStatus, setDashboardStatus] = useState(true);
 
   return (
     <PrivateLayout>
@@ -47,7 +47,7 @@ function FabricOrdersPage() {
           </Heading>
           <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
             <ButtonFilter placeContent="flex-start" w="22.5rem" />
-            <FactoryImportModal
+            <ModalFactoryImport
               buttonProps={{ color: '#1E93FF', borderColor: '#1E93FF', variant: 'outline' }}
               buttonTitle="Importar"
             />
@@ -67,26 +67,29 @@ function FabricOrdersPage() {
             </Button>
           </Flex>
         </Flex>
-        <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 6 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">
-          {cardsContent.map((card, index) => (
-            <Card
-              variant="outline"
-              w={{ base: '9rem', xl: '9rem', '2xl': '11rem' }}
-              h={{ base: '6rem', xl: '6rem', '2xl': '9rem' }}
-              justify="center"
-              align="center"
-              key={index}
-            >
-              <Text fontWeight="500" fontSize={{ base: '14px', xl: '14px', '2xl': '20px' }}>
-                {card.name}
-              </Text>
-              <Text fontWeight="700" fontSize={{ base: '36px', xl: '36px', '2xl': '42px' }}>
-                {card.value}
-              </Text>
-            </Card>
-          ))}
-        </SimpleGrid>
-        <TableContainer p="1.5rem 1rem" bg="#fff" borderRadius="12px">
+
+        {dashboardStatus && (
+          <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 6 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">
+            {cardsContent.map((card, index) => (
+              <Card
+                variant="outline"
+                w={{ base: '9rem', xl: '9rem', '2xl': '11rem' }}
+                h={{ base: '6rem', xl: '6rem', '2xl': '9rem' }}
+                justify="center"
+                align="center"
+                key={index}
+              >
+                <Text fontWeight="500" fontSize={{ base: '14px', xl: '14px', '2xl': '20px' }}>
+                  {card.name}
+                </Text>
+                <Text fontWeight="700" fontSize={{ base: '36px', xl: '36px', '2xl': '42px' }}>
+                  {card.value}
+                </Text>
+              </Card>
+            ))}
+          </SimpleGrid>
+        )}
+        <TableContainer p="1.5rem 1rem" bg="#fff" borderRadius="12px" mt={!dashboardStatus ? '2rem' : '0'}>
           <Table variant="striped" colorScheme="gray" size="xsm" fontSize="12px">
             <Thead h="3rem">
               <Tr>
