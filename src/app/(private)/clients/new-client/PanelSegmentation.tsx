@@ -3,24 +3,22 @@ import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { Form } from 'src/components/ui/Form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
-export default function PanelSegmentation() {
-  const schema = z.object({
-    segment: z.string().min(1, 'Segmento inválido'),
-    partner: z.string().min(1, 'Parceiro inválido'),
-    flag: z.string(),
-    net: z.string(),
-  });
+interface PanelSegmentationProps {
+  formState: any;
+  register: any;
+  handleSubmit: any;
+  onSubmit: any;
+  onError: any;
+}
 
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
-
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log(data);
-  };
-
+export default function PanelSegmentation({
+  formState,
+  register,
+  handleSubmit,
+  onSubmit,
+  onError,
+}: PanelSegmentationProps) {
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -31,7 +29,7 @@ export default function PanelSegmentation() {
         p="1rem 2rem 1rem 2rem"
         bg="#fff"
       >
-        <Form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <Form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
             align={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}

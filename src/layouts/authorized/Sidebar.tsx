@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { IoBagCheckSharp } from 'react-icons/io5';
 import {
-  MdAssignmentInd,
   MdDashboard,
   MdContacts,
   MdPinDrop,

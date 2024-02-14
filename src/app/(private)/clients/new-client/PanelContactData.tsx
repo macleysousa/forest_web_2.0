@@ -1,28 +1,26 @@
 import { Box, Divider, Flex, TabPanel, Text, Input } from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputText } from 'src/components/ui/InputText';
 import { Form } from 'src/components/ui/Form';
-import { z } from 'zod';
 import InputMask from 'react-input-mask';
 
-export default function PanelContactData() {
-  const schema = z.object({
-    contactName: z.string().min(0, 'O nome do contato é obrigatório'),
-    phoneNumber: z.string().min(0, 'O telefone é obrigatório'),
-    email: z.string().email('E-mail inválido').min(0, 'O e-mail é obrigatório'),
-    financialEmail: z.string().email('E-mail inválido').min(0, 'O e-mail é obrigatório'),
-  });
+interface PanelContactDataProps {
+  formState: any;
+  register: any;
+  handleSubmit: any;
+  onSubmit: any;
+  onError: any;
+}
 
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
-
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log(data);
-  };
-
+export default function PanelContactData({
+  formState,
+  register,
+  handleSubmit,
+  onSubmit,
+  onError,
+}: PanelContactDataProps) {
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -33,7 +31,7 @@ export default function PanelContactData() {
         p="1rem 2rem 1rem 2rem"
         bg="#fff"
       >
-        <Form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <Form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}

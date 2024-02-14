@@ -1,61 +1,22 @@
 import { TabPanel, Divider, Flex, Box, Text, Input, Select, Icon, Checkbox, Image } from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputText } from 'src/components/ui/InputText';
 import { Form } from 'src/components/ui/Form';
-import { z } from 'zod';
 import InputMask from 'react-input-mask';
 import { MdArrowDropDown, MdPinDrop } from 'react-icons/md';
+import { states } from 'src/commons/locationUtils';
 
-export default function PanelLocation() {
-  const schema = z.object({
-    cep: z.string().min(8, 'CEP inválido'),
-    street: z.string().min(3, 'Endereço inválido'),
-    number: z.string().min(1, 'Número inválido'),
-    addressComplement: z.string(),
-    city: z.string().min(2, 'Cidade inválida'),
-    state: z.string().min(2, 'Estado inválido'),
-  });
+interface PanelLocationProps {
+  formState: any;
+  register: any;
+  handleSubmit: any;
+  onSubmit: any;
+  onError: any;
+}
 
-  const states: string[] = [
-    'AC',
-    'AL',
-    'AP',
-    'AM',
-    'BA',
-    'CE',
-    'DF',
-    'ES',
-    'GO',
-    'MA',
-    'MS',
-    'MT',
-    'MG',
-    'PA',
-    'PB',
-    'PR',
-    'PE',
-    'PI',
-    'RJ',
-    'RN',
-    'RS',
-    'RO',
-    'RR',
-    'SC',
-    'SP',
-    'SE',
-    'TO',
-  ];
-
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
-
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log(data);
-  };
-
+export default function PanelLocation({ formState, register, handleSubmit, onSubmit, onError }: PanelLocationProps) {
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -66,7 +27,7 @@ export default function PanelLocation() {
         p="1rem 2rem 1rem 2rem"
         bg="#fff"
       >
-        <Form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <Form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}

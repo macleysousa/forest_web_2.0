@@ -1,35 +1,26 @@
 import { TabPanel, Flex, Select, Checkbox, Textarea, Divider, Box, Text, Input } from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputText } from 'src/components/ui/InputText';
-import { z } from 'zod';
 import { Form } from 'src/components/ui/Form';
 import InputMask from 'react-input-mask';
 
-export default function PanelRegistrationData() {
-  const schema = z.object({
-    cnpj: z
-      .string()
-      .regex(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/, 'Formato inválido')
-      .min(0, 'O CNPJ é obrigatório'),
-    corporateReason: z.string().min(0, 'A Razão Social é obrigatória'),
-    fantasyName: z.string(),
-    ie: z.string(),
-    im: z.string(),
-    situation: z.string(),
-    customerReview: z.string(),
-    comments: z.string(),
-  });
+interface PanelRegistrationDataProps {
+  formState: any;
+  register: any;
+  handleSubmit: any;
+  onSubmit: any;
+  onError: any;
+}
 
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
-
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log(data);
-  };
-
+export default function PanelRegistrationData({
+  formState,
+  register,
+  handleSubmit,
+  onSubmit,
+  onError,
+}: PanelRegistrationDataProps) {
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -40,7 +31,7 @@ export default function PanelRegistrationData() {
         p="3rem 2rem 1rem 2rem"
         bg="#fff"
       >
-        <Form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <Form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
             align={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             direction={{ md: 'column', lg: 'column', xl: 'row' }}
