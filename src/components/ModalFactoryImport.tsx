@@ -16,12 +16,11 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { MdClose, MdFileDownload } from 'react-icons/md';
-import { InputFile } from './ui/InputFile';
 import { ButtonPrimary } from './ui/ButtonPrimary';
 import { InputLabel } from './ui/InputLabel';
 import React from 'react';
 
-interface FactoryImportModalProps {
+interface ModalFactoryImportProps {
   buttonProps?: ButtonProps;
   modalProps?: Omit<ModalProps, 'children' | 'isOpen' | 'onClose'>;
   modalBodyProps?: ModalBodyProps;
@@ -29,13 +28,13 @@ interface FactoryImportModalProps {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
-export default function FactoryImportModal({
+export default function ModalFactoryImport({
   buttonProps,
   modalProps,
   modalBodyProps,
   buttonTitle,
   onChange,
-}: FactoryImportModalProps) {
+}: ModalFactoryImportProps) {
   const { isOpen = true, onOpen, onClose } = useDisclosure();
 
   const [fileName, setFileName] = React.useState<string>();
@@ -87,7 +86,7 @@ export default function FactoryImportModal({
                 mt=".25rem"
                 pl=".5rem"
               >
-                Defina o arquivo
+                {fileName || 'Defina o arquivo'}
               </Box>
             </InputLabel>
 
