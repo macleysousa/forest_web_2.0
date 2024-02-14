@@ -2,7 +2,7 @@
 
 import { Box, Button, Flex, Heading, Select, Text } from '@chakra-ui/react';
 import Chart, { ChartType } from 'chart.js/auto';
-import { useMemo, useCallback, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 import { generateRandomId } from 'src/commons/randomId';
@@ -14,35 +14,29 @@ interface ChartProps {
   chartData: number[];
 }
 
+const labels = ['ST-723BR', 'ST-98234BR', 'ST-843BR', 'ST-723BR', 'ST-98234BR', 'ST-843BR', 'ST-394BR'];
+
+const formatData = (data: number[]) => ({
+  labels: labels,
+  datasets: [
+    {
+      data: data,
+      borderColor: '#7cb5ec',
+      backgroundColor: '#7cb5ec',
+      type: 'bar' as ChartType,
+    },
+  ],
+});
+
 const MyChart = ({ chartData }: ChartProps) => {
-  const labels = useMemo(
-    () => ['ST-723BR', 'ST-98234BR', 'ST-843BR', 'ST-723BR', 'ST-98234BR', 'ST-843BR', 'ST-394BR'],
-    []
-  );
-
-  const formatData = useCallback(
-    (data: number[]) => ({
-      labels: labels,
-      datasets: [
-        {
-          data: data,
-          borderColor: '#7cb5ec',
-          backgroundColor: '#7cb5ec',
-          type: 'bar' as ChartType,
-        },
-      ],
-    }),
-    [labels]
-  );
-
-  const id = useRef<string>(generateRandomId());
+  const id = generateRandomId();
   const chartRef = useRef<Chart | null>(null);
 
   if (chartRef.current) chartRef.current.destroy();
 
   const canvasCallback = (canvas: HTMLCanvasElement | null) => {
     if (!canvas) return;
-    const canvasElement = document.getElementById(id.current) as HTMLCanvasElement;
+    const canvasElement = document.getElementById(id) as HTMLCanvasElement;
     const ctx = canvasElement?.getContext('2d');
     if (ctx) {
       chartRef.current = new Chart(ctx, {
@@ -85,9 +79,9 @@ const MyChart = ({ chartData }: ChartProps) => {
       chartRef.current.data = formatData(chartData);
       chartRef.current.update();
     }
-  }, [chartData, formatData]);
+  }, [chartData]);
 
-  return <canvas id={id.current} ref={canvasCallback}></canvas>;
+  return <canvas id={id} ref={canvasCallback}></canvas>;
 };
 
 function DistributorStockPage() {

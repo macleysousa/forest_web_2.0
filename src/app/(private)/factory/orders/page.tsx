@@ -26,17 +26,17 @@ import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 
-function FabricOrdersPage() {
-  const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
+const cardsContent = [
+  { name: 'Pedidos', value: '12' },
+  { name: 'Pendentes', value: '9' },
+  { name: 'Faturados', value: '2' },
+  { name: 'Cobertura', value: '1' },
+  { name: 'Programados', value: '46' },
+  { name: 'Bonificação', value: '84' },
+];
 
-  const cardsContent = [
-    { name: 'Pedidos', value: '12' },
-    { name: 'Pendentes', value: '9' },
-    { name: 'Faturados', value: '2' },
-    { name: 'Cobertura', value: '1' },
-    { name: 'Programados', value: '46' },
-    { name: 'Bonificação', value: '84' },
-  ];
+function FabricOrdersPage() {
+  const [dashboardStatus, setDashboardStatus] = useState(true);
 
   return (
     <PrivateLayout>
