@@ -1,16 +1,4 @@
-import {
-  Box,
-  Flex,
-  Center,
-  Text,
-  Image,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useToast,
-  MenuDivider,
-} from '@chakra-ui/react';
+import { Box, Flex, Center, Text, Image, Menu, MenuButton, MenuItem, MenuList, MenuDivider } from '@chakra-ui/react';
 import InputSearch from 'src/components/ui/InputSearch';
 import PopoverNotification from 'src/components/PopoverNotification';
 import { useAuthContext } from 'src/contexts/AuthContext';
@@ -18,16 +6,14 @@ import { logout } from 'src/services/api/logout';
 
 export default function Navbar() {
   const auth = useAuthContext();
-  const toast = useToast();
 
   const handleLogout = async () => {
     try {
-      auth.logout();
-      toast({ status: 'success', description: 'Logout efetuado com sucesso!' });
-      // await logout(); // this route is currenltly returning 'The route api/v2/logout could not be found.'
+      await logout();
     } catch (err) {
       console.error(err);
-      toast({ status: 'error', description: 'Erro ao efetuar logout!' });
+    } finally {
+      auth.logout();
     }
   };
 
