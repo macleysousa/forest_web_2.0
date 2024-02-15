@@ -3,6 +3,11 @@ import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
 import { Form } from 'src/components/ui/Form';
+import { getSegments } from 'src/services/api/segments';
+import { getPartners } from 'src/services/api/partners';
+import { getFlags } from 'src/services/api/flags';
+import { getBrands } from 'src/services/api/brands';
+import { useQuery } from '@tanstack/react-query';
 
 interface PanelSegmentationProps {
   formState: any;
@@ -19,6 +24,11 @@ export default function PanelSegmentation({
   onSubmit,
   onError,
 }: PanelSegmentationProps) {
+  const { data: segments } = useQuery({ queryKey: ['segment'], queryFn: () => getSegments() });
+  const { data: partners } = useQuery({ queryKey: ['partners'], queryFn: () => getPartners() });
+  const { data: flags } = useQuery({ queryKey: ['flags'], queryFn: () => getFlags() });
+  const { data: brands } = useQuery({ queryKey: ['brands'], queryFn: () => getBrands() });
+
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -44,9 +54,11 @@ export default function PanelSegmentation({
               error={formState.errors.segment?.message}
             >
               <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Definir o Segmento" {...register('segment')}>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
+                {segments?.segments.map((segment) => (
+                  <option key={`${segment.name}-${segment.id}`} value={segment.id}>
+                    {segment.name}
+                  </option>
+                ))}
               </Select>
             </InputLabel>
           </Flex>
@@ -64,9 +76,11 @@ export default function PanelSegmentation({
               error={formState.errors.partner?.message}
             >
               <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Definir o Parceiro" {...register('partner')}>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
+                {partners?.partners.map((partner) => (
+                  <option key={`${partner.name}-${partner.id}`} value={partner.id}>
+                    {partner.name}
+                  </option>
+                ))}
               </Select>
             </InputLabel>
           </Flex>
@@ -88,9 +102,11 @@ export default function PanelSegmentation({
                 placeholder="Definir a Bandeira (quando aplicável)"
                 {...register('flag')}
               >
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
+                {flags?.flags.map((flag) => (
+                  <option key={`${flag.name}-${flag.id}`} value={flag.id}>
+                    {flag.name}
+                  </option>
+                ))}
               </Select>
             </InputLabel>
           </Flex>
@@ -107,16 +123,18 @@ export default function PanelSegmentation({
               alignItems="baseline"
               flexDirection="column"
               w={{ md: '100%', lg: '100%', xl: '90%' }}
-              error={formState.errors.net?.message}
+              error={formState.errors.brand?.message}
             >
               <Select
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Definir a Rede (quando aplicável)"
-                {...register('net')}
+                {...register('brand')}
               >
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
+                {brands?.brands.map((brand) => (
+                  <option key={`${brand.name}-${brand.id}`} value={brand.id}>
+                    {brand.name}
+                  </option>
+                ))}
               </Select>
             </InputLabel>
           </Flex>

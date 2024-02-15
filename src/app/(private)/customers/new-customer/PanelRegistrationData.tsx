@@ -5,6 +5,7 @@ import { InputLabel } from 'src/components/ui/InputLabel';
 import { InputText } from 'src/components/ui/InputText';
 import { Form } from 'src/components/ui/Form';
 import InputMask from 'react-input-mask';
+import { useState, useRef } from 'react';
 
 interface PanelRegistrationDataProps {
   formState: any;
@@ -12,6 +13,7 @@ interface PanelRegistrationDataProps {
   handleSubmit: any;
   onSubmit: any;
   onError: any;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function PanelRegistrationData({
@@ -20,7 +22,20 @@ export default function PanelRegistrationData({
   handleSubmit,
   onSubmit,
   onError,
+  onChange,
 }: PanelRegistrationDataProps) {
+  const [_, setFileName] = useState<string>();
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const fileNames = Array.from(files).map((file) => file.name);
+      setFileName(fileNames.length > 0 ? fileNames.join(', ') : 'Nenhum arquivo selecionado');
+    }
+    onChange?.call(null, event);
+  };
+
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -42,9 +57,10 @@ export default function PanelRegistrationData({
             </Text>
             <Flex ml={{ base: '0', lg: '0', xl: '4rem' }} align="center">
               <Box h="72px" w="72px" borderRadius="50%" bg="#84818A" />
-              <ButtonPrimary ml="2rem" h="2rem" w="9rem">
+              <ButtonPrimary onClick={() => fileInput.current?.click()} ml="2rem" h="2rem" w="9rem">
                 Alterar Foto
               </ButtonPrimary>
+              <Input ref={fileInput} onChange={handleChange} type="file" id="import-file" name="import-file" hidden />
               <ButtonOutline ml="1rem" h="2rem" w="9rem" color="#1E93FF" borderColor="#1E93FF">
                 Apagar Foto
               </ButtonOutline>
@@ -87,12 +103,12 @@ export default function PanelRegistrationData({
               alignItems="baseline"
               flexDirection="column"
               w={{ md: '100%', lg: '100%', xl: '90%' }}
-              error={formState.errors.corporateReason?.message}
+              error={formState.errors.socialName?.message}
             >
               <InputText
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Nome da Empresa"
-                {...register('corporateReason')}
+                {...register('socialName')}
               />
             </InputLabel>
           </Flex>
@@ -231,4 +247,7 @@ export default function PanelRegistrationData({
       </Box>
     </TabPanel>
   );
+}
+function ref(arg0: null) {
+  throw new Error('Function not implemented.');
 }

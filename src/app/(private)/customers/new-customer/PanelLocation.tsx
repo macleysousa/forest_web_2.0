@@ -39,7 +39,7 @@ export default function PanelLocation({ formState, register, handleSubmit, onSub
               alignItems="baseline"
               flexDirection="column"
               w={{ md: '100%', lg: '100%', xl: '90%' }}
-              error={formState.errors.cep?.message}
+              error={formState.errors.zip?.message}
             >
               <Input
                 as={InputMask}
@@ -49,7 +49,7 @@ export default function PanelLocation({ formState, register, handleSubmit, onSub
                 ml={{ md: '0', lg: '0', xl: '3rem' }}
                 w="12rem"
                 placeholder="CEP"
-                {...register('cep')}
+                {...register('zip')}
               />
             </InputLabel>
           </Flex>
@@ -66,20 +66,20 @@ export default function PanelLocation({ formState, register, handleSubmit, onSub
               flexDirection="column"
               w={{ md: '100%', lg: '100%', xl: '90%' }}
               error={
-                formState.errors.street?.message ||
+                formState.errors.address?.message ||
                 formState.errors.number?.message ||
-                formState.errors.addressComplement?.message ||
+                formState.errors.complement?.message ||
                 formState.errors.city?.message ||
                 formState.errors.state?.message
               }
             >
               <Flex direction="column" w="100%" ml={{ md: '0', lg: '0', xl: '3rem' }}>
                 <Flex w="100%" mb="1rem">
-                  <InputText placeholder="Logradouro" {...register('street')} />
+                  <InputText placeholder="Logradouro" {...register('address')} />
                 </Flex>
                 <Flex w="100%" mb="1rem">
                   <InputText w="30%" placeholder="Número" {...register('number')} />
-                  <InputText w="70%" ml="1rem" placeholder="Complemento" {...register('addressComplement')} />
+                  <InputText w="70%" ml="1rem" placeholder="Complemento" {...register('complement')} />
                 </Flex>
                 <Flex w="100%" mb="1rem">
                   <InputText w="95%" placeholder="Cidade" {...register('city')} />
