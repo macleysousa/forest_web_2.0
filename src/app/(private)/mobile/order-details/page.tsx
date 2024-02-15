@@ -49,7 +49,7 @@ function OrderDetailsPage() {
     { name: 'Programados', value: '460' },
   ];
 
-  const { data: customersData } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
+  const { data: customersData } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: () => getCustomers() });
 
   const {
     data: ordersData,

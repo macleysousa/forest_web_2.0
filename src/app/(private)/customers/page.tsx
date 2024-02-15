@@ -28,7 +28,7 @@ import { useQuery } from '@tanstack/react-query';
 function ClientsPage() {
   const router = useRouter();
 
-  const { data } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
+  const { data } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: () => getCustomers() });
 
   const cardsContent = [
     { name: 'Clientes', value: data?.reduce((acc, _) => acc + 1, 0) },
@@ -38,10 +38,6 @@ function ClientsPage() {
     { name: 'Ativos', value: data?.reduce((acc, curr) => (curr.status === 'Active' ? acc + 1 : acc), 0) },
     { name: 'Roteirizados', value: data?.reduce((acc, curr) => (curr.status === 'Routed' ? acc + 1 : acc), 0) },
   ];
-
-  const handleNewClient = () => {
-    router.push('/customers/new-customer');
-  };
 
   return (
     <PrivateLayout>
@@ -55,7 +51,7 @@ function ClientsPage() {
             <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
               Exportar
             </ButtonOutline>
-            <ButtonPrimary onClick={handleNewClient} w="9rem">
+            <ButtonPrimary onClick={() => router.push(`/customers/${encodeURIComponent(' ')}`)} w="9rem">
               Novo
             </ButtonPrimary>
           </Flex>
@@ -98,7 +94,13 @@ function ClientsPage() {
               {data?.map((customer, index) => (
                 <Tr key={`tr-${index}`} h="3rem">
                   <Td pl="1rem">{customer.cnpj}</Td>
-                  <Td textDecor="underline">{customer.social_name}</Td>
+                  <Td
+                    textDecor="underline"
+                    cursor="pointer"
+                    onClick={() => router.push(`/customers/${encodeURIComponent(customer.id)}`)}
+                  >
+                    {customer.social_name}
+                  </Td>
                   <Td textAlign="center">{customer.situation}</Td>
                   <Td textAlign="center">{customer.validated}</Td>
                   <Td textAlign="center">{customer.status.charAt(0)}</Td>

@@ -123,7 +123,11 @@ interface CustomerResponse {
     customers: Customer[];
 }
 
-export async function getCustomers() {
-    const response = await api.get<CustomerResponse>('/v2/customers');
+export async function getCustomers({ date, customerId }: { date?: string; customerId?: number } = {}) {
+    let queryParams = '';
+    date ? queryParams += `date=${date}` : '';
+    customerId ? queryParams += `${date ? '&' : ''}customer_id=${customerId}` : '';
+
+    const response = await api.get<CustomerResponse>(`/v2/customers?${queryParams}`);
     return response.data.customers;
 }

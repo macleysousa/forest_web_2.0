@@ -11,8 +11,10 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { postCustomerStore } from 'src/services/api/customerStore';
-import { useState } from 'react';
-import { scheduleMicrotask } from 'react-query/types/core/utils';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useQuery } from 'react-query';
+import { getCustomers } from 'src/services/api/customer';
 
 type ErrorType = {
   message: string;
@@ -50,8 +52,55 @@ const schema = z.object({
 
 function NewCustomerPage() {
   const toast = useToast();
+  const params = useParams();
 
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
+  const [pageStatus, setPageStatus] = useState<'edit' | 'create'>('edit');
+
+  const isValidParam = params?.id !== ' ' && !!Number(params?.id);
+
+  useEffect(() => {
+    if (isValidParam) setPageStatus('edit');
+    else setPageStatus('create');
+  }, [isValidParam, params.id]);
+
+  const { data: customer } = useQuery({
+    queryKey: ['customer', params.id],
+    enabled: isValidParam && pageStatus === 'edit',
+    queryFn: () => getCustomers({ customerId: Number(params?.id) }),
+  });
+
+  const customerData = customer && customer[0];
+
+  const { register, handleSubmit, formState, setValue } = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+  });
+
+  useEffect(() => {
+    if (customerData) {
+      setValue('contactName', customerData?.contact_name ?? '');
+      setValue('phoneNumber', customerData.phone ?? '');
+      setValue('email', customerData.email ?? '');
+      // setValue('financialEmail', customerData.email_billing ?? '');
+      setValue('zip', customerData.address.zip);
+      setValue('address', customerData.address.address);
+      setValue('number', customerData.address.number);
+      setValue('complement', customerData.address.complement ?? '');
+      setValue('city', customerData.address.city);
+      setValue('state', customerData.address.state);
+      setValue('cnpj', customerData.cnpj);
+      setValue('socialName', customerData.social_name);
+      setValue('fantasyName', customerData.fantasy_name ?? '');
+      // setValue('ie', customerData.ie ?? '');
+      // setValue('im', customerData.im ?? '');
+      setValue('situation', customerData.situation);
+      // setValue('customerReview', customerData.validated ?? 0);
+      setValue('comments', customerData.comments ?? '');
+      setValue('segment', customerData.segment_id);
+      setValue('partner', customerData.partner_id ?? 0);
+      setValue('flag', customerData.flag_id ?? 0);
+      setValue('brand', customerData.brand_id ?? 0);
+    }
+  }, [customerData, setValue]);
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     console.log(data);
@@ -99,7 +148,12 @@ function NewCustomerPage() {
     <PrivateLayout>
       <Box p="2rem">
         <Flex>
-          <Heading>Clientes/</Heading>
+          <Heading>
+            <Box as="span" color="#898989">
+              Clientes/
+            </Box>
+            {customerData?.social_name || ''}
+          </Heading>
         </Flex>
       </Box>
       <Tabs p="1rem 2rem">
