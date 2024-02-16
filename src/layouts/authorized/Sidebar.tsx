@@ -104,7 +104,26 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh" overflowY="scroll">
+    <Box
+      bg="#110834"
+      color="#bcbcbc"
+      minW="16rem"
+      height="100dvh"
+      overflowY="scroll"
+      css={{
+        '&::-webkit-scrollbar': {
+          width: '4px',
+        },
+        '&::-webkit-scrollbar-track': {
+          width: '6px',
+          mr: '3px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#636363',
+          borderRadius: '24px',
+        },
+      }}
+    >
       <Center m="1rem 0 2rem 0">
         <Image src="/petroplus.png" alt="petroplus logo" w="8rem" />
       </Center>
@@ -143,7 +162,12 @@ export default function Sidebar() {
           <Flex align="center" gap="1rem" w="100%">
             <Icon as={MdPinDrop} />
             <Text>Mobile</Text>
-            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
+            <Icon
+              transition="all 200ms ease"
+              transform={menuOptions.mobile.open ? 'rotate(90deg)' : ''}
+              ml="auto"
+              as={MdKeyboardArrowRight}
+            ></Icon>
           </Flex>
         </Button>
         {menuOptions.mobile.open && (
@@ -167,7 +191,12 @@ export default function Sidebar() {
           <Flex align="center" gap="1rem" w="100%">
             <Icon as={IoBagCheckSharp} />
             <Text>Planejamentos</Text>
-            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
+            <Icon
+              transition="all 200ms ease"
+              transform={menuOptions.planning.open ? 'rotate(90deg)' : ''}
+              ml="auto"
+              as={MdKeyboardArrowRight}
+            ></Icon>
           </Flex>
         </Button>
         {menuOptions.planning.open && (
@@ -191,7 +220,12 @@ export default function Sidebar() {
           <Flex align="center" gap="1rem" w="100%">
             <Icon as={MdStars} />
             <Text>Produtos</Text>
-            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
+            <Icon
+              transition="all 200ms ease"
+              transform={menuOptions.products.open ? 'rotate(90deg)' : ''}
+              ml="auto"
+              as={MdKeyboardArrowRight}
+            ></Icon>
           </Flex>
         </Button>
         {menuOptions.products.open && (
@@ -215,7 +249,12 @@ export default function Sidebar() {
           <Flex align="center" gap="1rem" w="100%">
             <Icon as={MdDirectionsCar} />
             <Text>Pedidos Parceiros</Text>
-            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
+            <Icon
+              transition="all 200ms ease"
+              transform={menuOptions.orders.open ? 'rotate(90deg)' : ''}
+              ml="auto"
+              as={MdKeyboardArrowRight}
+            ></Icon>
           </Flex>
         </Button>
         {menuOptions.orders.open && (
@@ -239,7 +278,12 @@ export default function Sidebar() {
           <Flex align="center" gap="1rem" w="100%">
             <Icon as={BiSolidFactory} />
             <Text>Fábrica</Text>
-            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
+            <Icon
+              transition="all 200ms ease"
+              transform={menuOptions.factory.open ? 'rotate(90deg)' : ''}
+              ml="auto"
+              as={MdKeyboardArrowRight}
+            ></Icon>
           </Flex>
         </Button>
         {menuOptions.factory.open && (
