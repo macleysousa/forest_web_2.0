@@ -3,9 +3,11 @@ import InputSearch from 'src/components/ui/InputSearch';
 import PopoverNotification from 'src/components/PopoverNotification';
 import { useAuthContext } from 'src/contexts/AuthContext';
 import { logout } from 'src/services/api/logout';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const auth = useAuthContext();
+  const path = usePathname();
 
   const handleLogout = async () => {
     try {
@@ -20,7 +22,9 @@ export default function Navbar() {
   return (
     <Flex bg="#110834" color="#bcbcbc" w="100%" ml="1px" height="4rem" justify="center">
       <Center w="100%">
-        <InputSearch color="#898989" placeholder="Buscar..." ml={true ? 'auto' : 'unset'} />
+        {!['/factory', '/users', '/partner-orders'].includes(path) && (
+          <InputSearch color="#898989" placeholder="Buscar..." ml={true ? 'auto' : 'unset'} />
+        )}
 
         <Flex ml="auto">
           <PopoverNotification haveNotifications={true} />
