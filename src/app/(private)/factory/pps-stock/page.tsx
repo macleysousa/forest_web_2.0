@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Button, Flex, Heading, Select, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Select, Text } from '@chakra-ui/react';
 import Chart, { ChartType } from 'chart.js/auto';
 import { useRef, useEffect } from 'react';
 import { PrivateLayout } from 'src/components/PrivateLayout';
@@ -89,7 +89,7 @@ function DistributorStockPage() {
     <PrivateLayout>
       <Box p="2rem">
         <Flex align="flex-end" justify="space-between">
-          <Heading width="60%">Estoque Distribuidor</Heading>
+          <Heading width="60%">Estoque Clientes</Heading>
           <Flex
             border="1px solid #00000020"
             borderRadius={5}
@@ -108,8 +108,8 @@ function DistributorStockPage() {
           </Flex>
         </Flex>
         <Flex direction="column" mt="2rem">
-          <Text mb="1rem" fontSize="20px" fontStyle="600">
-            Estoque de faturamento
+          <Text mb="1rem" fontSize="24px" fontStyle="700">
+            15 Produtos mais vendidos
           </Text>
           <Box height="20rem">
             <MyChart chartData={generateRandomArray(7)} />

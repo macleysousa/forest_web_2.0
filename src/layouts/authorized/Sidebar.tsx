@@ -1,9 +1,10 @@
 import { Center, VStack, Flex, Icon, Button, Text, Box, Image } from '@chakra-ui/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoBagCheckSharp } from 'react-icons/io5';
 import {
+  MdAssignmentInd,
   MdDashboard,
   MdContacts,
   MdPinDrop,
@@ -13,7 +14,9 @@ import {
   MdSettings,
   MdKeyboardArrowRight,
   MdPaid,
+  MdAssignmentInd,
 } from 'react-icons/md';
+import { BiSolidFactory } from 'react-icons/bi';
 
 interface MenuOptions {
   options: {
@@ -46,19 +49,36 @@ export default function Sidebar() {
     },
     planning: {
       options: [
-        { name: 'Planejamento Clientes', path: '/pedidos' },
+        { name: 'Planejamento Clientes', path: '/customer-planning' },
         { name: 'Planejamento Roteiros', path: '/visitas' },
       ],
       open: false,
     },
     products: {
       options: [
-        { name: 'Lista de Produtos', path: '/pedidos' },
-        { name: 'Tabela de Preços Padrão', path: '/visitas' },
-        { name: 'Tabela de Preços Clientes', path: '/mapa-de-visitas' },
-        { name: 'Tabela de Preços Grupo', path: '/estoque-de-clientes' },
+        { name: 'Lista de Produtos', path: '/products' },
+        { name: 'Tabela de Preços Padrão', path: '/standard-pricing-table' },
+        { name: 'Tabela de Preços Clientes', path: '/clients-pricing-table' },
+        { name: 'Tabela de Preços Grupo', path: '/group-pricing-table' },
         { name: 'Solicitação Preço', path: '/estoque-de-clientes' },
         { name: 'Aprovações', path: '/estoque-de-clientes' },
+      ],
+      open: false,
+    },
+    orders: {
+      options: [
+        { name: 'pedidos', path: '/pedidos' },
+        { name: 'visitas', path: '/visitas' },
+        { name: 'mapa de visitas', path: '/mapa-de-visitas' },
+        { name: 'estoque de clientes', path: '/estoque-de-clientes' },
+      ],
+      open: false,
+    },
+    factory: {
+      options: [
+        { name: 'Pedidos', path: '/factory/orders' },
+        { name: 'Novos Pedidos', path: '/factory/new-orders' },
+        { name: 'Estoque PPS', path: '/factory/pps-stock' },
       ],
       open: false,
     },
@@ -71,8 +91,21 @@ export default function Sidebar() {
     }));
   };
 
+  useEffect(() => {
+    for (const key in menuOptions) {
+      if (pathname.includes(key)) {
+        setMenuOptions((prevState) => ({
+          ...prevState,
+          [key]: { ...prevState[key], open: true },
+        }));
+      }
+    }
+    // removing array dependencies to avoid infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh">
+    <Box bg="#110834" color="#bcbcbc" minW="16rem" height="100dvh" overflowY="scroll">
       <Center m="1rem 0 2rem 0">
         <Image src="/petroplus.png" alt="petroplus logo" w="8rem" />
       </Center>
@@ -117,7 +150,7 @@ export default function Sidebar() {
         {menuOptions.mobile.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.mobile.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
+              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
                 <Flex align="center" gap=".5rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -141,7 +174,7 @@ export default function Sidebar() {
         {menuOptions.planning.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.planning.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
+              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
                 <Flex align="center" gap=".5rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -165,7 +198,7 @@ export default function Sidebar() {
         {menuOptions.products.open && (
           <VStack align="left" padding="0 1rem" gap="1rem">
             {menuOptions.products.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
+              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
                 <Flex align="center" gap="1rem">
                   <Text>{option.name}</Text>
                 </Flex>
@@ -177,6 +210,48 @@ export default function Sidebar() {
           <Flex align="center" gap="1rem" w="100%">
             <Icon as={MdDirectionsCar} />
             <Text>Pedidos Parceiros</Text>
+            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
+          </Flex>
+        </Button>
+        {menuOptions.orders.open && (
+          <VStack align="left" padding="0 1rem" gap="1rem">
+            {menuOptions.orders.options.map((option, index) => (
+              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
+                <Flex align="center" gap="1rem">
+                  <Text>{option.name}</Text>
+                </Flex>
+              </Link>
+            ))}
+          </VStack>
+        )}
+        <Button
+          colorScheme="#bcbcbc"
+          variant="link"
+          justifyContent="left"
+          onClick={handleOpenMenuOption('factory')}
+          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
+        >
+          <Flex align="center" gap="1rem" w="100%">
+            <Icon as={BiSolidFactory} />
+            <Text>Fábrica</Text>
+            <Icon ml="auto" as={MdKeyboardArrowRight}></Icon>
+          </Flex>
+        </Button>
+        {menuOptions.factory.open && (
+          <VStack align="left" padding="0 1rem" gap="1rem">
+            {menuOptions.factory.options.map((option, index) => (
+              <Link href={option.path} key={index} className={setClassName(`/${option.name}`)}>
+                <Flex align="center" gap="1rem">
+                  <Text>{option.name}</Text>
+                </Flex>
+              </Link>
+            ))}
+          </VStack>
+        )}
+        <Link href="/users" className={setClassName('/users')}>
+          <Flex align="center" gap="1rem">
+            <Icon as={MdAssignmentInd} />
+            <Text>Usuários</Text>
           </Flex>
         </Link>
         <Link href="/tools" className={setClassName('/tools')}>

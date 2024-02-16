@@ -1,22 +1,8 @@
 'use client';
 
-import {
-  Text,
-  Box,
-  Flex,
-  Heading,
-  Button,
-  Badge,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react';
+import { Text, Box, Flex, Heading, Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import Chart, { ChartType } from 'chart.js/auto';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
@@ -52,32 +38,29 @@ interface ChartProps {
   chartData: number[];
 }
 
+const labels = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'];
+
+const formatData = (data: number[]) => ({
+  labels: labels,
+  datasets: [
+    {
+      data: data,
+      borderColor: '#7cb5ec',
+      backgroundColor: '#7cb5ec',
+      type: 'bar' as ChartType,
+    },
+  ],
+});
+
 const MyChart = ({ chartData }: ChartProps) => {
-  const labels = useMemo(() => ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'], []);
-
-  const formatData = useCallback(
-    (data: number[]) => ({
-      labels: labels,
-      datasets: [
-        {
-          data: data,
-          borderColor: '#7cb5ec',
-          backgroundColor: '#7cb5ec',
-          type: 'bar' as ChartType,
-        },
-      ],
-    }),
-    [labels]
-  );
-
-  const id = useRef<string>(generateRandomId());
+  const id = generateRandomId();
   const chartRef = useRef<Chart | null>(null);
 
   if (chartRef.current) chartRef.current.destroy();
 
   const canvasCallback = (canvas: HTMLCanvasElement | null) => {
     if (!canvas) return;
-    const canvasElement = document.getElementById(id.current) as HTMLCanvasElement;
+    const canvasElement = document.getElementById(id) as HTMLCanvasElement;
     const ctx = canvasElement?.getContext('2d');
     if (ctx) {
       chartRef.current = new Chart(ctx, {
@@ -120,12 +103,12 @@ const MyChart = ({ chartData }: ChartProps) => {
       chartRef.current.data = formatData(chartData);
       chartRef.current.update();
     }
-  }, [chartData, formatData]);
+  }, [chartData]);
 
   return (
     <Box height="fit-content">
       <Box height="20rem">
-        <canvas id={id.current} ref={canvasCallback}></canvas>
+        <canvas id={id} ref={canvasCallback}></canvas>
       </Box>
       <Flex gap="1rem" mt="1rem" height="fit-content">
         {actions.map((action, index) => (
