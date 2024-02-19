@@ -15,6 +15,7 @@ interface PanelSegmentationProps {
   handleSubmit: any;
   onSubmit: any;
   onError: any;
+  onCancel: any;
 }
 
 export default function PanelSegmentation({
@@ -23,6 +24,7 @@ export default function PanelSegmentation({
   handleSubmit,
   onSubmit,
   onError,
+  onCancel,
 }: PanelSegmentationProps) {
   const { data: segments } = useQuery({ queryKey: ['segment'], queryFn: () => getSegments() });
   const { data: partners } = useQuery({ queryKey: ['partners'], queryFn: () => getPartners() });
@@ -142,7 +144,7 @@ export default function PanelSegmentation({
           <Divider my="2rem" />
 
           <Flex justify="flex-end" align="center">
-            <ButtonOutline w="5.5rem" h="2.5rem">
+            <ButtonOutline w="5.5rem" h="2.5rem" onClick={onCancel}>
               Cancelar
             </ButtonOutline>
             <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">

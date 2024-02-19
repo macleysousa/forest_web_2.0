@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from 'react-query';
 import { getCustomers } from 'src/services/api/customer';
+import { useRouter } from 'next/navigation';
 
 type ErrorType = {
   message: string;
@@ -53,6 +54,7 @@ const schema = z.object({
 function NewCustomerPage() {
   const toast = useToast();
   const params = useParams();
+  const router = useRouter();
 
   const [pageStatus, setPageStatus] = useState<'edit' | 'create'>('edit');
 
@@ -71,7 +73,7 @@ function NewCustomerPage() {
 
   const customerData = customer && customer[0];
 
-  const { register, handleSubmit, formState, setValue } = useForm<z.infer<typeof schema>>({
+  const { register, handleSubmit, reset, formState, setValue } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
 
@@ -135,6 +137,12 @@ function NewCustomerPage() {
     });
   };
 
+  const onCancel = (event: Event) => {
+    event.preventDefault();
+    reset();
+    router.back();
+  };
+
   const onError = (errors: z.inferFormattedError<typeof schema>) => {
     for (const key in errors) {
       if (errors.hasOwnProperty(key)) {
@@ -172,6 +180,7 @@ function NewCustomerPage() {
             onSubmit={onSubmit}
             register={register}
             onError={onError}
+            onCancel={onCancel}
           />
 
           <PanelContactData
@@ -180,6 +189,7 @@ function NewCustomerPage() {
             onSubmit={onSubmit}
             register={register}
             onError={onError}
+            onCancel={onCancel}
           />
 
           <PanelLocation
@@ -188,6 +198,7 @@ function NewCustomerPage() {
             onSubmit={onSubmit}
             register={register}
             onError={onError}
+            onCancel={onCancel}
           />
 
           <PanelSegmentation
@@ -196,6 +207,7 @@ function NewCustomerPage() {
             onSubmit={onSubmit}
             register={register}
             onError={onError}
+            onCancel={onCancel}
           />
 
           <TabPanel>Atributos</TabPanel>

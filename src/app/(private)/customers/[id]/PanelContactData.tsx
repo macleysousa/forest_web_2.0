@@ -12,6 +12,7 @@ interface PanelContactDataProps {
   handleSubmit: any;
   onSubmit: any;
   onError: any;
+  onCancel: any;
 }
 
 export default function PanelContactData({
@@ -20,6 +21,7 @@ export default function PanelContactData({
   handleSubmit,
   onSubmit,
   onError,
+  onCancel,
 }: PanelContactDataProps) {
   return (
     <TabPanel p="2rem 0">
@@ -131,7 +133,7 @@ export default function PanelContactData({
           <Divider my="2rem" />
 
           <Flex justify="flex-end" align="center">
-            <ButtonOutline w="5.5rem" h="2.5rem">
+            <ButtonOutline onClick={onCancel} w="5.5rem" h="2.5rem">
               Cancelar
             </ButtonOutline>
             <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">

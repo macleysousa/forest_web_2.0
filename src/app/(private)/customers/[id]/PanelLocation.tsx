@@ -14,9 +14,17 @@ interface PanelLocationProps {
   handleSubmit: any;
   onSubmit: any;
   onError: any;
+  onCancel: any;
 }
 
-export default function PanelLocation({ formState, register, handleSubmit, onSubmit, onError }: PanelLocationProps) {
+export default function PanelLocation({
+  formState,
+  register,
+  handleSubmit,
+  onSubmit,
+  onError,
+  onCancel,
+}: PanelLocationProps) {
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -114,7 +122,7 @@ export default function PanelLocation({ formState, register, handleSubmit, onSub
           <Divider my="2rem" />
 
           <Flex justify="flex-end" align="center">
-            <ButtonOutline w="5.5rem" h="2.5rem">
+            <ButtonOutline w="5.5rem" h="2.5rem" onClick={onCancel}>
               Cancelar
             </ButtonOutline>
             <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">

@@ -13,6 +13,7 @@ interface PanelRegistrationDataProps {
   handleSubmit: any;
   onSubmit: any;
   onError: any;
+  onCancel: any;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -22,6 +23,7 @@ export default function PanelRegistrationData({
   handleSubmit,
   onSubmit,
   onError,
+  onCancel,
   onChange,
 }: PanelRegistrationDataProps) {
   const [_, setFileName] = useState<string>();
@@ -251,7 +253,7 @@ export default function PanelRegistrationData({
           <Divider my="2rem" />
 
           <Flex justify="flex-end" align="center">
-            <ButtonOutline w="5.5rem" h="2.5rem">
+            <ButtonOutline w="5.5rem" h="2.5rem" onClick={onCancel}>
               Cancelar
             </ButtonOutline>
             <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">
@@ -262,7 +264,4 @@ export default function PanelRegistrationData({
       </Box>
     </TabPanel>
   );
-}
-function ref(arg0: null) {
-  throw new Error('Function not implemented.');
 }
