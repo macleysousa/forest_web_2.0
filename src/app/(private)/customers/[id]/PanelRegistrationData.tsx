@@ -71,7 +71,12 @@ export default function PanelRegistrationData({
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
-            <Text minW="7rem">CNPJ</Text>
+            <Text minW="7rem">
+              CNPJ
+              <Box as="span" color="red.500" ml="0.25rem">
+                *
+              </Box>
+            </Text>
             <InputLabel
               my="1rem"
               display="flex"
@@ -96,7 +101,12 @@ export default function PanelRegistrationData({
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
-            <Text minW="7rem">Razão Social</Text>
+            <Text minW="7rem">
+              Razão Social
+              <Box as="span" color="red.500" ml="0.25rem">
+                *
+              </Box>
+            </Text>
             <InputLabel
               my="1rem"
               display="flex"
@@ -117,7 +127,12 @@ export default function PanelRegistrationData({
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
-            <Text minW="7rem">Nome Fantasia</Text>
+            <Text minW="7rem">
+              Nome Fantasia
+              <Box as="span" color="red.500" ml="0.25rem">
+                *
+              </Box>
+            </Text>
             <InputLabel
               my="1rem"
               display="flex"

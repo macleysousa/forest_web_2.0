@@ -36,7 +36,12 @@ export default function PanelContactData({
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
-            <Text minW="9rem">Nome do Contato</Text>
+            <Text minW="9rem">
+              Nome do Contato
+              <Box as="span" color="red.500" ml="0.25rem">
+                *
+              </Box>
+            </Text>
             <InputLabel
               my="1rem"
               display="flex"
@@ -82,7 +87,12 @@ export default function PanelContactData({
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
-            <Text minW="9rem">E-Mail</Text>
+            <Text minW="9rem">
+              E-Mail
+              <Box as="span" color="red.500" ml="0.25rem">
+                *
+              </Box>
+            </Text>
             <InputLabel
               my="1rem"
               display="flex"
