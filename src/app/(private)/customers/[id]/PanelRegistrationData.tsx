@@ -6,6 +6,7 @@ import { InputText } from 'src/components/ui/InputText';
 import { Form } from 'src/components/ui/Form';
 import InputMask from 'react-input-mask';
 import { useState, useRef } from 'react';
+import { MdArrowDropDown } from 'react-icons/md';
 
 interface PanelRegistrationDataProps {
   formState: any;
@@ -216,9 +217,14 @@ export default function PanelRegistrationData({
                   w="25rem"
                   placeholder="Situação"
                   {...register('situation')}
+                  icon={<MdArrowDropDown />}
                 >
-                  <option value="Regular">Regular</option>
-                  <option value="Irregular">Irregular</option>
+                  <option value="Regular" style={{ fontFamily: 'sans-serif' }}>
+                    Regular
+                  </option>
+                  <option value="Irregular" style={{ fontFamily: 'sans-serif' }}>
+                    Irregular
+                  </option>
                 </Select>
                 <Checkbox ml="2rem">Termo de incentivo</Checkbox>
               </Box>

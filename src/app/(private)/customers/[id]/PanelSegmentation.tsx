@@ -8,6 +8,7 @@ import { getPartners } from 'src/services/api/partners';
 import { getFlags } from 'src/services/api/flags';
 import { getBrands } from 'src/services/api/brands';
 import { useQuery } from '@tanstack/react-query';
+import { MdArrowDropDown } from 'react-icons/md';
 
 interface PanelSegmentationProps {
   formState: any;
@@ -55,7 +56,12 @@ export default function PanelSegmentation({
               w={{ md: '100%', lg: '100%', xl: '90%' }}
               error={formState.errors.segment?.message}
             >
-              <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Definir o Segmento" {...register('segment')}>
+              <Select
+                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                placeholder="Definir o Segmento"
+                {...register('segment')}
+                icon={<MdArrowDropDown />}
+              >
                 {segments?.segments.map((segment) => (
                   <option key={`${segment.name}-${segment.id}`} value={segment.id} style={{ fontFamily: 'sans-serif' }}>
                     {segment.name}
@@ -77,7 +83,12 @@ export default function PanelSegmentation({
               w={{ md: '100%', lg: '100%', xl: '90%' }}
               error={formState.errors.partner?.message}
             >
-              <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Definir o Parceiro" {...register('partner')}>
+              <Select
+                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                placeholder="Definir o Parceiro"
+                {...register('partner')}
+                icon={<MdArrowDropDown />}
+              >
                 {partners?.partners.map((partner) => (
                   <option key={`${partner.name}-${partner.id}`} value={partner.id} style={{ fontFamily: 'sans-serif' }}>
                     {partner.name}
@@ -103,6 +114,7 @@ export default function PanelSegmentation({
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Definir a Bandeira (quando aplicável)"
                 {...register('flag')}
+                icon={<MdArrowDropDown />}
               >
                 {flags?.flags.map((flag) => (
                   <option key={`${flag.name}-${flag.id}`} value={flag.id} style={{ fontFamily: 'sans-serif' }}>
@@ -131,6 +143,7 @@ export default function PanelSegmentation({
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Definir a Rede (quando aplicável)"
                 {...register('brand')}
+                icon={<MdArrowDropDown />}
               >
                 {brands?.brands.map((brand) => (
                   <option key={`${brand.name}-${brand.id}`} value={brand.id} style={{ fontFamily: 'sans-serif' }}>
