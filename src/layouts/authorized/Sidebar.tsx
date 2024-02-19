@@ -234,35 +234,6 @@ export default function Sidebar() {
           colorScheme="#bcbcbc"
           variant="link"
           justifyContent="left"
-          onClick={handleOpenMenuOption('orders')}
-          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
-        >
-          <Flex align="center" gap="1rem" w="100%">
-            <Icon as={MdDirectionsCar} />
-            <Text>Pedidos Parceiros</Text>
-            <Icon
-              transition="all 200ms ease"
-              transform={menuOptions.orders.open ? 'rotate(90deg)' : ''}
-              ml="auto"
-              as={MdKeyboardArrowRight}
-            ></Icon>
-          </Flex>
-        </Button>
-        {menuOptions.orders.open && (
-          <VStack align="left" padding="0 1rem" gap="1rem">
-            {menuOptions.orders.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
-                <Flex align="center" gap="1rem">
-                  <Text>{option.name}</Text>
-                </Flex>
-              </Link>
-            ))}
-          </VStack>
-        )}
-        <Button
-          colorScheme="#bcbcbc"
-          variant="link"
-          justifyContent="left"
           onClick={handleOpenMenuOption('factory')}
           className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
         >
