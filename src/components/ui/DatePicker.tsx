@@ -38,7 +38,10 @@ export default function InputDatePicker({ onChange, datePickerProps, ...props }:
           },
           inputProps: {
             pl: '4rem',
-            w: '55rem',
+            pr: '2rem',
+            width: '100%',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           },
         }}
         {...datePickerProps}

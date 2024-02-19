@@ -97,9 +97,6 @@ const MyChart = ({ barChartData, lineChartData }: Props) => {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          onResize: () => {
-            chartRef.current?.resize();
-          },
           plugins: {
             legend: {
               display: false,
