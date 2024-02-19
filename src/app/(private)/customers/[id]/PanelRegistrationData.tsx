@@ -1,4 +1,4 @@
-import { TabPanel, Flex, Select, Checkbox, Textarea, Divider, Box, Text, Input } from '@chakra-ui/react';
+import { TabPanel, Flex, Select, Checkbox, Textarea, Divider, Box, Text, Input, Image } from '@chakra-ui/react';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { InputLabel } from 'src/components/ui/InputLabel';
@@ -26,16 +26,26 @@ export default function PanelRegistrationData({
   onCancel,
   onChange,
 }: PanelRegistrationDataProps) {
-  const [_, setFileName] = useState<string>();
+  const [photo, setPhoto] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const fileNames = Array.from(files).map((file) => file.name);
-      setFileName(fileNames.length > 0 ? fileNames.join(', ') : 'Nenhum arquivo selecionado');
+  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
+    const file = event.target.files.item(0);
+
+    if (file === null) {
+      setPhoto(null);
+      return;
     }
-    onChange?.call(null, event);
+
+    const promise = new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+    });
+
+    promise.then(setPhoto);
   };
 
   return (
@@ -58,11 +68,22 @@ export default function PanelRegistrationData({
               Avatar
             </Text>
             <Flex ml={{ base: '0', lg: '0', xl: '4rem' }} align="center">
-              <Box h="72px" w="72px" borderRadius="50%" bg="#84818A" />
+              {photo ? (
+                <Image src={photo} alt="" h="72px" w="72px" borderRadius="50%" objectFit="cover" />
+              ) : (
+                <Box h="72px" w="72px" borderRadius="50%" bg="#84818A" />
+              )}
               <ButtonPrimary onClick={() => fileInput.current?.click()} ml="2rem" h="2rem" w="9rem">
                 Alterar Foto
               </ButtonPrimary>
-              <Input ref={fileInput} onChange={handleChange} type="file" id="import-file" name="import-file" hidden />
+              <Input
+                ref={fileInput}
+                onChange={handlePhotoChange}
+                type="file"
+                id="import-file"
+                name="import-file"
+                hidden
+              />
               <ButtonOutline ml="1rem" h="2rem" w="9rem" color="#1E93FF" borderColor="#1E93FF">
                 Apagar Foto
               </ButtonOutline>
