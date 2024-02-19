@@ -64,15 +64,6 @@ export default function Sidebar() {
       ],
       open: false,
     },
-    orders: {
-      options: [
-        { name: 'pedidos', path: '/pedidos' },
-        { name: 'visitas', path: '/visitas' },
-        { name: 'mapa de visitas', path: '/mapa-de-visitas' },
-        { name: 'estoque de clientes', path: '/estoque-de-clientes' },
-      ],
-      open: false,
-    },
     factory: {
       options: [
         { name: 'Pedidos', path: '/factory/orders' },
@@ -243,35 +234,6 @@ export default function Sidebar() {
           colorScheme="#bcbcbc"
           variant="link"
           justifyContent="left"
-          onClick={handleOpenMenuOption('orders')}
-          className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
-        >
-          <Flex align="center" gap="1rem" w="100%">
-            <Icon as={MdDirectionsCar} />
-            <Text>Pedidos Parceiros</Text>
-            <Icon
-              transition="all 200ms ease"
-              transform={menuOptions.orders.open ? 'rotate(90deg)' : ''}
-              ml="auto"
-              as={MdKeyboardArrowRight}
-            ></Icon>
-          </Flex>
-        </Button>
-        {menuOptions.orders.open && (
-          <VStack align="left" padding="0 1rem" gap="1rem">
-            {menuOptions.orders.options.map((option, index) => (
-              <Link href={option.path} key={index} className={setClassName(`${option.path}`)}>
-                <Flex align="center" gap="1rem">
-                  <Text>{option.name}</Text>
-                </Flex>
-              </Link>
-            ))}
-          </VStack>
-        )}
-        <Button
-          colorScheme="#bcbcbc"
-          variant="link"
-          justifyContent="left"
           onClick={handleOpenMenuOption('factory')}
           className="hover:bg-hover-blue hover:text-color-blue p-2 rounded-lg"
         >
@@ -297,6 +259,12 @@ export default function Sidebar() {
             ))}
           </VStack>
         )}
+        <Link href="/partners-orders" className={setClassName('/partners-order')}>
+          <Flex align="center" gap="1rem" w="100%">
+            <Icon as={MdDirectionsCar} />
+            <Text>Pedidos Parceiros</Text>
+          </Flex>
+        </Link>
         <Link href="/users" className={setClassName('/users')}>
           <Flex align="center" gap="1rem">
             <Icon as={MdAssignmentInd} />
