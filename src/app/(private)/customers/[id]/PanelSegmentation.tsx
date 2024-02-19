@@ -61,9 +61,10 @@ export default function PanelSegmentation({
                 placeholder="Definir o Segmento"
                 {...register('segment')}
                 icon={<MdArrowDropDown />}
+                fontFamily="sans-serif"
               >
                 {segments?.segments.map((segment) => (
-                  <option key={`${segment.name}-${segment.id}`} value={segment.id} style={{ fontFamily: 'sans-serif' }}>
+                  <option key={`${segment.name}-${segment.id}`} value={segment.id}>
                     {segment.name}
                   </option>
                 ))}
@@ -88,9 +89,10 @@ export default function PanelSegmentation({
                 placeholder="Definir o Parceiro"
                 {...register('partner')}
                 icon={<MdArrowDropDown />}
+                fontFamily="sans-serif"
               >
                 {partners?.partners.map((partner) => (
-                  <option key={`${partner.name}-${partner.id}`} value={partner.id} style={{ fontFamily: 'sans-serif' }}>
+                  <option key={`${partner.name}-${partner.id}`} value={partner.id}>
                     {partner.name}
                   </option>
                 ))}
@@ -115,9 +117,10 @@ export default function PanelSegmentation({
                 placeholder="Definir a Bandeira (quando aplicável)"
                 {...register('flag')}
                 icon={<MdArrowDropDown />}
+                fontFamily="sans-serif"
               >
                 {flags?.flags.map((flag) => (
-                  <option key={`${flag.name}-${flag.id}`} value={flag.id} style={{ fontFamily: 'sans-serif' }}>
+                  <option key={`${flag.name}-${flag.id}`} value={flag.id}>
                     {flag.name}
                   </option>
                 ))}
@@ -144,9 +147,10 @@ export default function PanelSegmentation({
                 placeholder="Definir a Rede (quando aplicável)"
                 {...register('brand')}
                 icon={<MdArrowDropDown />}
+                fontFamily="sans-serif"
               >
                 {brands?.brands.map((brand) => (
-                  <option key={`${brand.name}-${brand.id}`} value={brand.id} style={{ fontFamily: 'sans-serif' }}>
+                  <option key={`${brand.name}-${brand.id}`} value={brand.id}>
                     {brand.name}
                   </option>
                 ))}

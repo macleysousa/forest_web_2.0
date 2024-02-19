@@ -218,13 +218,10 @@ export default function PanelRegistrationData({
                   placeholder="Situação"
                   {...register('situation')}
                   icon={<MdArrowDropDown />}
+                  fontFamily="sans-serif"
                 >
-                  <option value="Regular" style={{ fontFamily: 'sans-serif' }}>
-                    Regular
-                  </option>
-                  <option value="Irregular" style={{ fontFamily: 'sans-serif' }}>
-                    Irregular
-                  </option>
+                  <option value="Regular">Regular</option>
+                  <option value="Irregular">Irregular</option>
                 </Select>
                 <Checkbox ml="2rem">Termo de incentivo</Checkbox>
               </Box>
