@@ -91,7 +91,15 @@ export default function PanelLocation({
                 </Flex>
                 <Flex w="100%" mb="1rem">
                   <InputText w="95%" placeholder="Cidade" {...register('city')} />
-                  <Select w="15%" h="3rem" ml="1rem" placeholder="UF" {...register('state')} icon={<MdArrowDropDown />}>
+                  <Select
+                    w="15%"
+                    h="3rem"
+                    ml="1rem"
+                    placeholder="UF"
+                    {...register('state')}
+                    icon={<MdArrowDropDown />}
+                    fontFamily="sans-serif"
+                  >
                     {states.map((state, index) => (
                       <option key={index} value={state}>
                         {state}
