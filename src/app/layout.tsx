@@ -3,6 +3,9 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import './tailwind.css';
 import Providers from './providers';
+import { Suspense } from 'react';
+import Loading from './loading';
+import { ProgressBar } from 'src/components/ProgressBar';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800', '900'] });
 
@@ -15,11 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <Providers>
-          <main>
-            {children}
-          </main>
-        </Providers>
+        <Suspense fallback={<Loading />}>
+          <Providers>
+            <main>{children}</main>
+            <ProgressBar />
+          </Providers>
+        </Suspense>
       </body>
     </html>
   );
