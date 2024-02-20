@@ -93,21 +93,21 @@ function ClientsPage() {
             <Tbody h="3rem">
               {data?.map((customer, index) => (
                 <Tr key={`tr-${index}`} h="3rem">
-                  <Td pl="1rem">{customer.cnpj}</Td>
+                  <Td pl="1rem">{customer?.cnpj}</Td>
                   <Td
                     textDecor="underline"
                     cursor="pointer"
-                    onClick={() => router.push(`/customers/${encodeURIComponent(customer.id)}`)}
+                    onClick={() => router.push(`/customers/${encodeURIComponent(customer?.id)}`)}
                   >
-                    {customer.social_name}
+                    {customer?.social_name}
                   </Td>
-                  <Td textAlign="center">{customer.situation}</Td>
-                  <Td textAlign="center">{customer.validated}</Td>
-                  <Td textAlign="center">{customer.status.charAt(0)}</Td>
-                  <Td>{customer.segment.name}</Td>
-                  <Td>{customer.partner || 'Não definido'}</Td>
+                  <Td textAlign="center">{customer?.situation}</Td>
+                  <Td textAlign="center">{customer?.validated}</Td>
+                  <Td textAlign="center">{customer?.status.charAt(0)}</Td>
+                  <Td>{customer?.segment?.name}</Td>
+                  <Td>{customer?.partner?.name || 'Não definido'}</Td>
                   <Td>
-                    {customer.address.city} / {customer.address.state}
+                    {customer?.address?.city} / {customer?.address?.state}
                   </Td>
                   <Td>
                     <Badge fontSize="12px" color="#00A163" p="5px" borderRadius="8px" colorScheme="green">

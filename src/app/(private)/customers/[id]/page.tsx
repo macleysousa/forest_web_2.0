@@ -82,7 +82,7 @@ function NewCustomerPage() {
       setValue('contactName', customerData?.contact_name ?? '');
       setValue('phoneNumber', customerData.phone ?? '');
       setValue('email', customerData.email ?? '');
-      // setValue('financialEmail', customerData.email_billing ?? '');
+      setValue('financialEmail', customerData.email_billing ?? '');
       setValue('zip', customerData.address.zip);
       setValue('address', customerData.address.address);
       setValue('number', customerData.address.number);
@@ -92,8 +92,8 @@ function NewCustomerPage() {
       setValue('cnpj', customerData.cnpj);
       setValue('socialName', customerData.social_name);
       setValue('fantasyName', customerData.fantasy_name ?? '');
-      // setValue('ie', customerData.ie ?? '');
-      // setValue('im', customerData.im ?? '');
+      setValue('ie', customerData.ie ?? '');
+      setValue('im', customerData.im ?? '');
       setValue('situation', customerData.situation);
       // setValue('customerReview', customerData.validated ?? 0);
       setValue('comments', customerData.comments ?? '');

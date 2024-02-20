@@ -17,12 +17,15 @@ interface Customer {
     partner_id: number | null;
     brand_id: number | null;
     flag_id: number | null;
+    im: string | null;
+    ie: string | null;
+    email_billing: string | null;
     routes: any[]; // You might want to define a specific interface for routes if they have a consistent structure
     segment: {
         id: number;
         name: string;
     };
-    partner: any; // Define a specific interface if needed
+    partner: { id: number; name: string } | null;
     brand: any; // Define a specific interface if needed
     flag: any; // Define a specific interface if needed
     address: {
