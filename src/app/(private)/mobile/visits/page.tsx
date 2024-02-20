@@ -18,7 +18,6 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { MdApps } from 'react-icons/md';
 import { PrivateLayout } from 'src/components/PrivateLayout';
@@ -29,10 +28,9 @@ import { getVisits } from 'src/services/api/visits';
 import { useQuery } from '@tanstack/react-query';
 import { formatDate, formatDateForQuery } from 'src/commons/formatters';
 import DatePicker from 'src/components/ui/DatePicker';
+import Link from 'next/link';
 
 function VisitsPage() {
-  const router = useRouter();
-
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
   const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
 
@@ -157,14 +155,10 @@ function VisitsPage() {
                     {visit.customer.address.city} / {visit.customer.address.state}
                   </Td>
                   <Td textAlign="center">{visit.customer.social_name}</Td>
-                  <Td
-                    textDecor="underline"
-                    color="#1E93FF"
-                    textAlign="center"
-                    cursor="pointer"
-                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(visit.id)}`)}
-                  >
-                    {visit.id} ??
+                  <Td textDecor="underline" color="#1E93FF" textAlign="center" cursor="pointer">
+                    <Link href={`/mobile/order-details/${encodeURIComponent(visit.id)}`} passHref legacyBehavior>
+                      {visit.id + ' ??'}
+                    </Link>
                   </Td>
                   <Td textAlign="center">{visit.visit_comments || 'NC'}</Td>
                   <Td textAlign="center">{visit.not_sale_reason_id || 'NC'} ??</Td>

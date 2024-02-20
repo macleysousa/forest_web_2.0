@@ -16,18 +16,16 @@ import {
   Td,
   Badge,
 } from '@chakra-ui/react';
+import Link from 'next/link';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { useRouter } from 'next/navigation';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { getCustomers } from 'src/services/api/customer';
 import { useQuery } from '@tanstack/react-query';
 
 function ClientsPage() {
-  const router = useRouter();
-
   const { data } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
 
   const cardsContent = [
@@ -38,10 +36,6 @@ function ClientsPage() {
     { name: 'Ativos', value: data?.reduce((acc, curr) => (curr.status === 'Active' ? acc + 1 : acc), 0) },
     { name: 'Roteirizados', value: data?.reduce((acc, curr) => (curr.status === 'Routed' ? acc + 1 : acc), 0) },
   ];
-
-  const handleNewClient = () => {
-    router.push('/clients/new-client');
-  };
 
   return (
     <PrivateLayout>
@@ -55,9 +49,11 @@ function ClientsPage() {
             <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
               Exportar
             </ButtonOutline>
-            <ButtonPrimary onClick={handleNewClient} w="9rem">
-              Novo
-            </ButtonPrimary>
+            <Link href="/clients/new-client" passHref legacyBehavior>
+              <ButtonPrimary as="a" w="9rem">
+                Novo
+              </ButtonPrimary>
+            </Link>
           </Flex>
         </Flex>
         <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 6 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">

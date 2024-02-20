@@ -1,18 +1,30 @@
 'use client';
-import { Badge, Box, Flex, Heading, Select, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
-import { PrivateLayout } from "src/components/PrivateLayout";
-import { ButtonFilter } from "src/components/ui/ButtonFilter";
-import { ButtonOutline } from "src/components/ui/ButtonOutline";
-import { ButtonPrimary } from "src/components/ui/ButtonPrimary";
-import InputSearch from "src/components/ui/InputSearch";
-import { isPrivatePage } from "src/contexts/AuthContext";
+import {
+  Badge,
+  Box,
+  Flex,
+  Heading,
+  Select,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import Link from 'next/link';
+import { PrivateLayout } from 'src/components/PrivateLayout';
+import { ButtonFilter } from 'src/components/ui/ButtonFilter';
+import { ButtonOutline } from 'src/components/ui/ButtonOutline';
+import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
+import InputSearch from 'src/components/ui/InputSearch';
+import { isPrivatePage } from 'src/contexts/AuthContext';
 
 const range = (stop: number) => new Array(stop).fill(null).map((_, i) => i);
 
 function UsersPage() {
-  const router = useRouter();
-
   return (
     <PrivateLayout>
       <Box p="2rem">
@@ -22,9 +34,11 @@ function UsersPage() {
           </Heading>
           <InputSearch placeholder="Buscar" maxW="15rem" h="2.5rem" mr="1rem" />
           <ButtonFilter h="2.5rem" mr="1rem" />
-          <ButtonPrimary h="2.5rem" mr="1rem" onClick={() => router.push('/users/create')}>
-            Novo Usuário
-          </ButtonPrimary>
+          <Link href="/users/create" passHref legacyBehavior>
+            <ButtonPrimary as="a" h="2.5rem" mr="1rem">
+              Novo Usuário
+            </ButtonPrimary>
+          </Link>
         </Flex>
         <TableContainer mt="2rem" bg="#FFFFFF" shadow="base" borderRadius="0.5rem">
           <Table>
@@ -40,7 +54,9 @@ function UsersPage() {
             </Thead>
             <Tbody>
               <Tr bg="#F9F9F9">
-                <Td><Box display="inline-block" w="2rem" h="2rem" bg="gray.300" borderRadius="50%" /></Td>
+                <Td>
+                  <Box display="inline-block" w="2rem" h="2rem" bg="gray.300" borderRadius="50%" />
+                </Td>
                 <Td fontSize="sm">Mathilda Bell</Td>
                 <Td fontSize="sm">napozje@paw.com</Td>
                 <Td fontSize="sm">Administrador</Td>
@@ -52,7 +68,9 @@ function UsersPage() {
                 </Td>
               </Tr>
               <Tr bg="#FFFFFF">
-                <Td><Box display="inline-block" w="2rem" h="2rem" bg="gray.300" borderRadius="50%" /></Td>
+                <Td>
+                  <Box display="inline-block" w="2rem" h="2rem" bg="gray.300" borderRadius="50%" />
+                </Td>
                 <Td fontSize="sm">Ryan Stevens</Td>
                 <Td fontSize="sm">lefiden@podi.gov</Td>
                 <Td fontSize="sm">Vendedor</Td>
@@ -60,7 +78,9 @@ function UsersPage() {
                 <Td></Td>
               </Tr>
               <Tr bg="#F9F9F9">
-                <Td><Box display="inline-block" w="2rem" h="2rem" bg="gray.300" borderRadius="50%" /></Td>
+                <Td>
+                  <Box display="inline-block" w="2rem" h="2rem" bg="gray.300" borderRadius="50%" />
+                </Td>
                 <Td fontSize="sm">Loretta Myers</Td>
                 <Td fontSize="sm">kuw@rolluzdi.gov</Td>
                 <Td fontSize="sm">Distribuidor</Td>
@@ -82,9 +102,7 @@ function UsersPage() {
         </TableContainer>
         <Flex mt="2rem" align="center" justify="space-between">
           <Flex align="center" gap="0.5rem">
-            <Text size="sm">
-              Mostrando
-            </Text>
+            <Text size="sm">Mostrando</Text>
             <Select size="xs" h="2rem">
               <option>10</option>
             </Select>
