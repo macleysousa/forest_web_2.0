@@ -13,9 +13,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { postCustomerStore } from 'src/services/api/customerStore';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { getCustomers } from 'src/services/api/customer';
 import { useRouter } from 'next/navigation';
+import { putCustomerUpdate } from 'src/services/api/customerUpdate';
 
 type ErrorType = {
   message: string;
@@ -23,32 +24,32 @@ type ErrorType = {
   ref: HTMLElement;
 };
 
+const configSelectSchema = z.union([z.string().transform((val) => Number(val)), z.number()]);
+
 const schema = z.object({
   contactName: z.string().min(0, 'O nome do contato é obrigatório'),
-  phoneNumber: z.string().min(0, 'O telefone é obrigatório'),
+  phoneNumber: z.string(),
   email: z.string().email('E-mail inválido').min(0, 'O e-mail é obrigatório'),
-  financialEmail: z.string().email('E-mail inválido').min(0, 'O e-mail é obrigatório'),
-  zip: z.string().min(8, 'CEP inválido'),
-  address: z.string().min(3, 'Endereço inválido'),
-  number: z.string().min(1, 'Número inválido'),
+  financialEmail: z.string().email('E-mail inválido'),
+  zip: z.string(),
+  address: z.string(),
+  number: z.string(),
   complement: z.string(),
-  city: z.string().min(2, 'Cidade inválida'),
-  state: z.string().min(2, 'Estado inválido'),
-  cnpj: z
-    .string()
-    .regex(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/, 'Formato inválido')
-    .min(0, 'O CNPJ é obrigatório'),
+  city: z.string(),
+  state: z.string(),
+  neighborhood: z.string(),
+  cnpj: z.string().min(0, 'O CNPJ é obrigatório'),
   socialName: z.string().min(0, 'A Razão Social é obrigatória'),
-  fantasyName: z.string(),
+  fantasyName: z.string().min(0, 'O Nome Fantasia é obrigatório'),
   ie: z.string(),
   im: z.string(),
   situation: z.string(),
   customerReview: z.string(),
   comments: z.string(),
-  segment: z.string().transform((val) => Number(val)),
-  partner: z.string().transform((val) => Number(val)),
-  flag: z.string().transform((val) => Number(val)),
-  brand: z.string().transform((val) => Number(val)),
+  segment: configSelectSchema,
+  partner: configSelectSchema,
+  flag: configSelectSchema,
+  brand: configSelectSchema,
 });
 
 function NewCustomerPage() {
@@ -72,6 +73,29 @@ function NewCustomerPage() {
   });
 
   const customerData = customer && customer[0];
+
+  const customerStoreMutation = useMutation({
+    mutationFn: postCustomerStore,
+    onSuccess: (data: { status: string; message: string; customer_id: number }) => {
+      router.replace('/customers');
+      toast({ status: 'success', description: 'Cliente cadastrado com sucesso' });
+    },
+    onError: (error) => {
+      console.log('customerStoreMutationError', error);
+      toast({ status: 'error', description: 'Erro ao cadastrar cliente' });
+    },
+  });
+
+  const customerUpdateMutation = useMutation({
+    mutationFn: putCustomerUpdate,
+    onSuccess: () => {
+      toast({ status: 'success', description: 'Cliente atualizado com sucesso' });
+    },
+    onError: (error) => {
+      console.log('customerUpdateMutationError', error);
+      toast({ status: 'error', description: 'Erro ao atualizar cliente' });
+    },
+  });
 
   const { register, handleSubmit, reset, formState, setValue } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -105,36 +129,158 @@ function NewCustomerPage() {
   }, [customerData, setValue]);
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log(data);
+    if (pageStatus === 'create') {
+      customerStoreMutation.mutate({
+        address: {
+          city: data.city,
+          complement: data.complement,
+          number: data.number,
+          state: data.state,
+          address: data.address,
+          zip: data.zip,
+          neighborhood: data.neighborhood,
+          latitude: 0,
+          longitude: 0,
+        },
+        cnpj: data.cnpj,
+        comments: data.comments,
+        contact_name: data.contactName,
+        email: data.email,
+        email_billing: data.financialEmail,
+        fantasy_name: data.fantasyName,
+        ie: data.ie,
+        im: data.im,
+        phone: data.phoneNumber,
+        social_name: data.socialName,
+        address_id: 1,
+        brand_id: data.brand,
+        flag_id: data.flag,
+        partner_id: data.partner,
+        segment_id: data.segment,
+        customer_info: {
+          customer_id: 0,
+          visit_frequency: '',
+          postos_galonagem: 0,
+          postos_frentistas: 0,
+          postos_tem_troca_oleo: false,
+          postos_tem_lavagem: false,
+          postos_tem_conveniencia: false,
+          postos_gerente: '',
+          postos_chefe_pista: '',
+          postos_lubrificador: '',
+          postos_melhor_frentista: '',
+          postos_tem_expositor_chao: false,
+          postos_tem_expositor_bomba: false,
+          postos_tem_expositor_acrilico: false,
+          postos_tem_banners: false,
+          postos_tem_adesivos: false,
+          mont_conc_ca_passagem: 0,
+          mont_conc_ca_consultores: 0,
+          mont_conc_ca_gerente_pecas: '',
+          mont_conc_ca_gerente_vendas: '',
+          mont_conc_ca_chefe_oficina: '',
+          mont_conc_ca_melhor_consultor: '',
+          ca_qtd_elevadores: 0,
+          ca_qtd_mecanicos: 0,
+          ca_qtd_atendentes: 0,
+          todos_decisor_nome: '',
+          todos_decisor_email: '',
+          todos_decisor_telefone: '',
+          todos_decisor_aniversario: '',
+          todos_melhor_horario: '',
+          avaliacao_geral: 0,
+          tem_meta_diaria_agentes_vendas: false,
+          tem_comissao_venda_agentes: false,
+          responsavel_acompanhamento_meta_diaria: '',
+          multiplicador_nome: '',
+          comments: '',
+        },
+      });
+    }
 
-    postCustomerStore({
-      address: {
-        city: data.city,
-        complement: data.complement,
-        number: data.number,
-        state: data.state,
-        address: data.address,
-        zip: data.zip,
-        neighborhood: '',
-        latitude: 0,
-        longitude: 0,
-      },
-      cnpj: data.cnpj,
-      comments: data.comments,
-      contact_name: data.contactName,
-      email: data.email,
-      email_billing: data.financialEmail,
-      fantasy_name: data.fantasyName,
-      ie: data.ie,
-      im: data.im,
-      phone: data.phoneNumber,
-      social_name: data.socialName,
-      address_id: 1,
-      brand_id: data.brand,
-      flag_id: data.flag,
-      partner_id: data.partner,
-      segment_id: data.segment,
-    });
+    if (pageStatus === 'edit') {
+      customerUpdateMutation.mutate({
+        customer_id: Number(params.id),
+        address: {
+          city: data.city,
+          complement: data.complement,
+          number: data.number,
+          state: data.state,
+          address: data.address,
+          zip: data.zip,
+          neighborhood: data.neighborhood,
+          latitude: 0,
+          longitude: 0,
+          address_id: customerData?.address_id ?? 0,
+          geo_update_mode: 'API',
+          update_mode: 'API',
+        },
+        situation: data.situation,
+        customer_matrix_id: 1,
+        update_mode: 'API',
+        validated: customerData?.validated ?? 0,
+        cnpj: data.cnpj,
+        comments: data.comments,
+        contact_name: data.contactName,
+        email: data.email,
+        email_billing: data.financialEmail,
+        fantasy_name: data.fantasyName,
+        ie: data.ie,
+        im: data.im,
+        phone: data.phoneNumber,
+        social_name: data.socialName,
+        address_id: customerData?.address_id ?? 0,
+        brand_id: data.brand,
+        flag_id: data.flag,
+        partner_id: data.partner,
+        segment_id: data.segment,
+        customer_info: {
+          actor_id: customerData?.customer_data[0]?.actor_id ?? 0,
+          visit_frequency: customerData?.customer_info?.visit_frequency ?? '',
+          postos_galonagem: customerData?.customer_info.postos_galonagem ?? 0,
+          postos_frentistas: customerData?.customer_info.postos_frentistas ?? 0,
+          postos_tem_troca_oleo: (customerData?.customer_info?.postos_tem_troca_oleo as unknown as boolean) ?? false,
+          postos_tem_lavagem: (customerData?.customer_info?.postos_tem_lavagem as unknown as boolean) ?? false,
+          postos_tem_conveniencia:
+            (customerData?.customer_info?.postos_tem_conveniencia as unknown as boolean) ?? false,
+          postos_gerente: customerData?.customer_info?.postos_gerente ?? '',
+          postos_chefe_pista: customerData?.customer_info?.postos_chefe_pista ?? '',
+          postos_lubrificador: customerData?.customer_info?.postos_lubrificador ?? '',
+          postos_melhor_frentista: customerData?.customer_info?.postos_melhor_frentista ?? '',
+          postos_tem_expositor_chao:
+            (customerData?.customer_info?.postos_tem_expositor_chao as unknown as boolean) ?? false,
+          postos_tem_expositor_bomba:
+            (customerData?.customer_info?.postos_tem_expositor_bomba as unknown as boolean) ?? false,
+          postos_tem_expositor_acrilico:
+            (customerData?.customer_info?.postos_tem_expositor_acrilico as unknown as boolean) ?? false,
+          postos_tem_banners: (customerData?.customer_info?.postos_tem_banners as unknown as boolean) ?? false,
+          postos_tem_adesivos: (customerData?.customer_info?.postos_tem_adesivos as unknown as boolean) ?? false,
+          mont_conc_ca_passagem: customerData?.customer_info?.mont_conc_ca_passagem ?? 0,
+          mont_conc_ca_consultores: customerData?.customer_info?.mont_conc_ca_consultores ?? 0,
+          mont_conc_ca_gerente_pecas: customerData?.customer_info?.mont_conc_ca_gerente_pecas ?? '',
+          mont_conc_ca_gerente_vendas: customerData?.customer_info?.mont_conc_ca_gerente_vendas ?? '',
+          mont_conc_ca_chefe_oficina: customerData?.customer_info?.mont_conc_ca_chefe_oficina ?? '',
+          mont_conc_ca_melhor_consultor: customerData?.customer_info?.mont_conc_ca_melhor_consultor ?? '',
+          ca_qtd_elevadores: customerData?.customer_info?.ca_qtd_elevadores ?? 0,
+          ca_qtd_mecanicos: customerData?.customer_info?.ca_qtd_mecanicos ?? 0,
+          ca_qtd_atendentes: customerData?.customer_info?.ca_qtd_atendentes ?? 0,
+          todos_decisor_nome: customerData?.customer_info?.todos_decisor_nome ?? '',
+          todos_decisor_email: customerData?.customer_info?.todos_decisor_email ?? '',
+          todos_decisor_telefone: customerData?.customer_info?.todos_decisor_telefone ?? '',
+          todos_decisor_aniversario: customerData?.customer_info?.todos_decisor_aniversario ?? '',
+          todos_melhor_horario: customerData?.customer_info?.todos_melhor_horario ?? '',
+          avaliacao_geral: customerData?.customer_info?.avaliacao_geral ?? 0,
+          tem_meta_diaria_agentes_vendas:
+            (customerData?.customer_info?.tem_meta_diaria_agentes_vendas as unknown as boolean) ?? false,
+          tem_comissao_venda_agentes:
+            (customerData?.customer_info?.tem_comissao_venda_agentes as unknown as boolean) ?? false,
+          responsavel_acompanhamento_meta_diaria:
+            customerData?.customer_info?.responsavel_acompanhamento_meta_diaria ?? '',
+          multiplicador_nome: customerData?.customer_info?.multiplicador_nome ?? '',
+          comments: customerData?.customer_info?.comments ?? '',
+        },
+      });
+    }
   };
 
   const onCancel = (event: Event) => {

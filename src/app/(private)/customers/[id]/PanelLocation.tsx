@@ -62,10 +62,7 @@ export default function PanelLocation({
             </InputLabel>
           </Flex>
 
-          <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
-          >
+          <Flex alignItems="baseline" flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}>
             <Text minW="7rem">Endereço</Text>
             <InputLabel
               my="1rem"
@@ -78,12 +75,16 @@ export default function PanelLocation({
                 formState.errors.number?.message ||
                 formState.errors.complement?.message ||
                 formState.errors.city?.message ||
-                formState.errors.state?.message
+                formState.errors.state?.message ||
+                formState.errors.neighborhood?.message
               }
             >
               <Flex direction="column" w="100%" ml={{ md: '0', lg: '0', xl: '3rem' }}>
                 <Flex w="100%" mb="1rem">
                   <InputText placeholder="Logradouro" {...register('address')} />
+                </Flex>
+                <Flex w="100%" mb="1rem">
+                  <InputText placeholder="Bairro" {...register('neighborhood')} />
                 </Flex>
                 <Flex w="100%" mb="1rem">
                   <InputText w="30%" placeholder="Número" {...register('number')} />

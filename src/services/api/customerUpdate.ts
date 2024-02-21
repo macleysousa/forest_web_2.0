@@ -1,6 +1,7 @@
 import { api } from '.';
 
 interface Address {
+    address_id: number;
     zip: string;
     address: string;
     number: string;
@@ -10,10 +11,12 @@ interface Address {
     state: string;
     latitude: number;
     longitude: number;
+    update_mode: string;
+    geo_update_mode: string;
 }
 
 interface CustomerInfo {
-    customer_id: number;
+    actor_id: number;
     visit_frequency: string;
     postos_galonagem: number;
     postos_frentistas: number;
@@ -51,7 +54,8 @@ interface CustomerInfo {
     comments: string;
 }
 
-interface CustomerStore {
+interface CustomerUpdate {
+    customer_id: number;
     address_id: number;
     contact_name: string;
     email: string;
@@ -66,13 +70,16 @@ interface CustomerStore {
     partner_id: number;
     flag_id: number;
     brand_id: number;
+    customer_matrix_id: number;
+    situation: string;
     comments: string;
+    validated: number;
+    update_mode: string;
     address: Address;
     customer_info: CustomerInfo;
 }
 
-export async function postCustomerStore(data: CustomerStore) {
-    const response = await api.post('/v2/customers/store', data);
+export async function putCustomerUpdate(data: CustomerUpdate) {
+    const response = await api.put('/v2/customers/update', data);
     return response.data.customers;
 }
-
