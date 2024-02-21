@@ -7,7 +7,7 @@
     "start:dev": "npm run dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint src",
     "prepare": "husky"
   },
   "dependencies": {
