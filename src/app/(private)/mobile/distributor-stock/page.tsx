@@ -2,19 +2,27 @@
 
 import { Box, Button, Flex, Heading, Select, Text } from '@chakra-ui/react';
 import Chart, { ChartType } from 'chart.js/auto';
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { generateRandomId } from 'src/commons/randomId';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { isPrivatePage } from 'src/contexts/AuthContext';
-import { generateRandomId } from 'src/commons/randomId';
 
 const generateRandomArray = (quantity: number) =>
   Array.from({ length: quantity }, () => Math.floor(Math.random() * 101));
 
-interface ChartProps {
+type ChartProps = {
   chartData: number[];
-}
+};
 
-const labels = ['ST-723BR', 'ST-98234BR', 'ST-843BR', 'ST-723BR', 'ST-98234BR', 'ST-843BR', 'ST-394BR'];
+const labels = [
+  'ST-723BR',
+  'ST-98234BR',
+  'ST-843BR',
+  'ST-723BR',
+  'ST-98234BR',
+  'ST-843BR',
+  'ST-394BR',
+];
 
 const formatData = (data: number[]) => ({
   labels: labels,
@@ -81,34 +89,55 @@ const MyChart = ({ chartData }: ChartProps) => {
     }
   }, [chartData]);
 
-  return <canvas id={id} ref={canvasCallback}></canvas>;
+  return (
+    <canvas
+      ref={canvasCallback}
+      id={id}
+    ></canvas>
+  );
 };
 
 function DistributorStockPage() {
   return (
     <PrivateLayout>
       <Box p="2rem">
-        <Flex align="flex-end" justify="space-between">
+        <Flex
+          align="flex-end"
+          justify="space-between"
+        >
           <Heading width="60%">Estoque Distribuidor</Heading>
           <Flex
+            align="center"
+            bg="white"
             border="1px solid #00000020"
             borderRadius={5}
-            justify="center"
-            align="center"
             h="2.5rem"
+            justify="center"
             w="20rem"
-            bg="white"
           >
-            <Text color="#898989" mx="10px">
+            <Text
+              color="#898989"
+              mx="10px"
+            >
               Distribuidor:
             </Text>
-            <Select variant="unstyled" placeholder="Escolha um da lista">
+            <Select
+              placeholder="Escolha um da lista"
+              variant="unstyled"
+            >
               <option value="">Escolha um da lista</option>
             </Select>
           </Flex>
         </Flex>
-        <Flex direction="column" mt="2rem">
-          <Text mb="1rem" fontSize="20px" fontStyle="600">
+        <Flex
+          direction="column"
+          mt="2rem"
+        >
+          <Text
+            fontSize="20px"
+            fontStyle="600"
+            mb="1rem"
+          >
             Estoque de faturamento
           </Text>
           <Box height="20rem">

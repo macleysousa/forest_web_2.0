@@ -13,10 +13,10 @@ import {
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
-  Text,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { MdApps } from 'react-icons/md';
@@ -42,55 +42,99 @@ function FabricOrdersPage() {
     <PrivateLayout>
       <Box p="2rem">
         <Flex>
-          <Heading w="30%" minW="30%">
+          <Heading
+            minW="30%"
+            w="30%"
+          >
             Pedidos Fábrica
           </Heading>
-          <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            <ButtonFilter placeContent="flex-start" w="22.5rem" />
-            <ModalFactoryImport
-              buttonProps={{ color: '#1E93FF', borderColor: '#1E93FF', variant: 'outline' }}
-              buttonTitle="Importar"
+          <Flex
+            align="flex-end"
+            gap="1rem"
+            justify="flex-end"
+            minW="70%"
+            w="70%"
+          >
+            <ButtonFilter
+              placeContent="flex-start"
+              w="22.5rem"
             />
-            <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
+            <ModalFactoryImport
+              buttonTitle="Importar"
+              buttonProps={{
+                color: '#1E93FF',
+                borderColor: '#1E93FF',
+                variant: 'outline',
+              }}
+            />
+            <ButtonOutline
+              borderColor="#1E93FF"
+              color="#1E93FF"
+            >
               Exportar
             </ButtonOutline>
             <Button
-              w="9rem"
-              p="0 1rem"
-              onClick={() => setDashboardStatus(!dashboardStatus)}
-              color={!dashboardStatus ? '#898989' : 'inherit'}
-              variant={!dashboardStatus ? 'outline' : 'primary'}
               borderColor={!dashboardStatus ? '#89898970' : 'auto'}
+              color={!dashboardStatus ? '#898989' : 'inherit'}
+              p="0 1rem"
+              variant={!dashboardStatus ? 'outline' : 'primary'}
+              w="9rem"
+              onClick={() => setDashboardStatus(!dashboardStatus)}
             >
-              <Icon as={MdApps} mr="1rem" h="24px" w="24px" />
+              <Icon
+                as={MdApps}
+                h="24px"
+                mr="1rem"
+                w="24px"
+              />
               Dashboard
             </Button>
           </Flex>
         </Flex>
 
         {dashboardStatus && (
-          <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 6 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">
+          <SimpleGrid
+            columns={{ sm: 2, md: 3, lg: 3, xl: 6 }}
+            p="2rem 0"
+            spacing={{ sm: 5, md: 5, lg: 7 }}
+          >
             {cardsContent.map((card, index) => (
               <Card
-                variant="outline"
-                w={{ base: '9rem', xl: '9rem', '2xl': '11rem' }}
-                h={{ base: '6rem', xl: '6rem', '2xl': '9rem' }}
-                justify="center"
-                align="center"
                 key={index}
+                align="center"
+                h={{ 'base': '6rem', 'xl': '6rem', '2xl': '9rem' }}
+                justify="center"
+                variant="outline"
+                w={{ 'base': '9rem', 'xl': '9rem', '2xl': '11rem' }}
               >
-                <Text fontWeight="500" fontSize={{ base: '14px', xl: '14px', '2xl': '20px' }}>
+                <Text
+                  fontSize={{ 'base': '14px', 'xl': '14px', '2xl': '20px' }}
+                  fontWeight="500"
+                >
                   {card.name}
                 </Text>
-                <Text fontWeight="700" fontSize={{ base: '36px', xl: '36px', '2xl': '42px' }}>
+                <Text
+                  fontSize={{ 'base': '36px', 'xl': '36px', '2xl': '42px' }}
+                  fontWeight="700"
+                >
                   {card.value}
                 </Text>
               </Card>
             ))}
           </SimpleGrid>
         )}
-        <TableContainer p="1.5rem 1rem" bg="#fff" borderRadius="12px" mt={!dashboardStatus ? '2rem' : '0'}>
-          <Table variant="striped" colorScheme="gray" size="xsm" fontSize="12px">
+        <TableContainer
+          bg="#fff"
+          borderRadius="12px"
+          mt={!dashboardStatus ? '2rem' : '0'}
+          p="1.5rem 1rem"
+        >
+          <Table
+            colorScheme="gray"
+            fontSize="12px"
+            size="xsm"
+            variant="striped"
+          >
             <Thead h="3rem">
               <Tr>
                 <Th pl="1rem">Status</Th>
@@ -104,23 +148,43 @@ function FabricOrdersPage() {
             </Thead>
             <Tbody h="3rem">
               {Array.apply(0, Array(10)).map((_, index) => (
-                <Tr key={`tr-${index}`} h="3rem">
+                <Tr
+                  key={`tr-${index}`}
+                  h="3rem"
+                >
                   <Td pl="1rem">
-                    <Badge fontSize="12px" color="#775DA6" p="5px" borderRadius="8px" bg="#775DA620">
+                    <Badge
+                      bg="#775DA620"
+                      borderRadius="8px"
+                      color="#775DA6"
+                      fontSize="12px"
+                      p="5px"
+                    >
                       Faturamento
                     </Badge>
                   </Td>
-                  <Td textAlign="center" textDecor="underline">
+                  <Td
+                    textAlign="center"
+                    textDecor="underline"
+                  >
                     27/04/2023 13h23
                   </Td>
                   <Td textAlign="center">
                     17823{' '}
-                    <Badge fontSize="12px" color="#775DA6" p="5px" borderRadius="8px" bg="#775DA620">
+                    <Badge
+                      bg="#775DA620"
+                      borderRadius="8px"
+                      color="#775DA6"
+                      fontSize="12px"
+                      p="5px"
+                    >
                       B
                     </Badge>
                   </Td>
                   <Td textAlign="center">Aline Magalhães</Td>
-                  <Td textAlign="center">PPK DIst. Autopeças LTDA 43.823.823/0001-41</Td>
+                  <Td textAlign="center">
+                    PPK DIst. Autopeças LTDA 43.823.823/0001-41
+                  </Td>
                   <Td>UF</Td>
                   <Td textAlign="center">DL28</Td>
                 </Tr>

@@ -1,45 +1,52 @@
 'use client';
 
 import {
-  Box,
-  Heading,
-  Flex,
-  Icon,
-  Card,
-  SimpleGrid,
-  Text,
   Badge,
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Flex,
+  Heading,
+  Icon,
+  Select,
+  SimpleGrid,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
-  Select,
-  Button,
-  ButtonGroup,
   useToast,
 } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { MdApps, MdDescription, MdMail } from 'react-icons/md';
-import { useQuery } from '@tanstack/react-query';
-import { formatCurrency, formatDate, formatDateForQuery } from 'src/commons/formatters';
+import {
+  formatCurrency,
+  formatDate,
+  formatDateForQuery,
+} from 'src/commons/formatters';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
+import DatePicker from 'src/components/ui/DatePicker';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 import { getCustomers } from 'src/services/api/customer';
 import { getOrders } from 'src/services/api/orders';
-import DatePicker from 'src/components/ui/DatePicker';
 
 function OrderDetailsPage() {
   const router = useRouter();
   const toast = useToast();
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
-  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([
+    new Date(),
+    new Date(),
+  ]);
 
   const cardsContent = [
     { name: 'Pedidos', value: '374' },
@@ -49,7 +56,11 @@ function OrderDetailsPage() {
     { name: 'Programados', value: '460' },
   ];
 
-  const { data: customersData } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
+  const { data: customersData } = useQuery({
+    queryKey: ['customers'],
+    retry: 5,
+    queryFn: getCustomers,
+  });
 
   const {
     data: ordersData,
@@ -59,7 +70,10 @@ function OrderDetailsPage() {
     queryKey: ['orders'],
     retry: 5,
     queryFn: () =>
-      getOrders({ dateInit: formatDateForQuery(selectedDates[0]), dateEnd: formatDateForQuery(selectedDates[1]) }),
+      getOrders({
+        dateInit: formatDateForQuery(selectedDates[0]),
+        dateEnd: formatDateForQuery(selectedDates[1]),
+      }),
   });
 
   useEffect(() => {
@@ -75,7 +89,9 @@ function OrderDetailsPage() {
   if (ordersError) handleError(ordersError);
 
   const findCustomerName = (id: string | number) => {
-    const customer = customersData?.find((customer: any) => String(customer.id) === String(id));
+    const customer = customersData?.find(
+      (customer: any) => String(customer.id) === String(id),
+    );
     return customer?.social_name;
   };
 
@@ -83,57 +99,101 @@ function OrderDetailsPage() {
     <PrivateLayout>
       <Box p="2rem">
         <Flex>
-          <Heading w="30%" minW="30%">
+          <Heading
+            minW="30%"
+            w="30%"
+          >
             Pedidos App
           </Heading>
-          <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
+          <Flex
+            align="flex-end"
+            gap="1rem"
+            justify="flex-end"
+            minW="70%"
+            w="70%"
+          >
             <DatePicker onChange={setSelectedDates} />
             <ButtonFilter placeContent="flex-start" />
             <Button
-              w="9rem"
-              p="0 1rem"
-              onClick={() => setDashboardStatus(!dashboardStatus)}
-              color={!dashboardStatus ? '#898989' : 'inherit'}
-              variant={!dashboardStatus ? 'outline' : 'primary'}
               borderColor={!dashboardStatus ? '#89898970' : 'auto'}
+              color={!dashboardStatus ? '#898989' : 'inherit'}
+              p="0 1rem"
+              variant={!dashboardStatus ? 'outline' : 'primary'}
+              w="9rem"
+              onClick={() => setDashboardStatus(!dashboardStatus)}
             >
-              <Icon as={MdApps} mr="1rem" h="24px" w="24px" />
+              <Icon
+                as={MdApps}
+                h="24px"
+                mr="1rem"
+                w="24px"
+              />
               Dashboard
             </Button>
-            <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
+            <ButtonOutline
+              borderColor="#1E93FF"
+              color="#1E93FF"
+            >
               Exportar
             </ButtonOutline>
-            <ButtonPrimary onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(' ')}`)}>
+            <ButtonPrimary
+              onClick={() =>
+                router.push(`/mobile/order-details/${encodeURIComponent(' ')}`)
+              }
+            >
               Novo Pedido
             </ButtonPrimary>
           </Flex>
         </Flex>
         {dashboardStatus && (
-          <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 5 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">
+          <SimpleGrid
+            columns={{ sm: 2, md: 3, lg: 3, xl: 5 }}
+            p="2rem 0"
+            spacing={{ sm: 5, md: 5, lg: 7 }}
+          >
             {cardsContent.map((card, index) => (
               <Card
-                variant="outline"
-                w={{ base: '9rem', xl: '9rem', '2xl': '11rem' }}
-                h={{ base: '6rem', xl: '6rem', '2xl': '9rem' }}
-                justify="center"
-                align="center"
                 key={index}
+                align="center"
+                h={{ 'base': '6rem', 'xl': '6rem', '2xl': '9rem' }}
+                justify="center"
+                variant="outline"
+                w={{ 'base': '9rem', 'xl': '9rem', '2xl': '11rem' }}
               >
-                <Text fontWeight="500" fontSize={{ base: '14px', xl: '14px', '2xl': '20px' }}>
+                <Text
+                  fontSize={{ 'base': '14px', 'xl': '14px', '2xl': '20px' }}
+                  fontWeight="500"
+                >
                   {card.name}
                 </Text>
-                <Text fontWeight="700" fontSize={{ base: '36px', xl: '36px', '2xl': '42px' }}>
+                <Text
+                  fontSize={{ 'base': '36px', 'xl': '36px', '2xl': '42px' }}
+                  fontWeight="700"
+                >
                   {card.value}
                 </Text>
               </Card>
             ))}
           </SimpleGrid>
         )}
-        <TableContainer p="1.5rem 1rem" bg="#fff" borderRadius="12px" mt={!dashboardStatus ? '2rem' : '0'}>
-          <Table variant="striped" colorScheme="gray" size="xsm" fontSize="12px">
+        <TableContainer
+          bg="#fff"
+          borderRadius="12px"
+          mt={!dashboardStatus ? '2rem' : '0'}
+          p="1.5rem 1rem"
+        >
+          <Table
+            colorScheme="gray"
+            fontSize="12px"
+            size="xsm"
+            variant="striped"
+          >
             <Thead h="3rem">
               <Tr>
-                <Th pl="1rem" w="18%">
+                <Th
+                  pl="1rem"
+                  w="18%"
+                >
                   Status
                 </Th>
                 <Th textAlign="center">Data</Th>
@@ -147,42 +207,92 @@ function OrderDetailsPage() {
             </Thead>
             <Tbody h="3rem">
               {ordersData?.orders.map((order, index) => (
-                <Tr key={`tr-${index}`} h="3rem" fontSize="14px">
+                <Tr
+                  key={`tr-${index}`}
+                  fontSize="14px"
+                  h="3rem"
+                >
                   <Td pl="1rem">
-                    <Badge fontSize="12px" color="#1E93FF" p="5px" borderRadius="8px" bg="#1E93FF20">
+                    <Badge
+                      bg="#1E93FF20"
+                      borderRadius="8px"
+                      color="#1E93FF"
+                      fontSize="12px"
+                      p="5px"
+                    >
                       {order.status}
                     </Badge>
                   </Td>
-                  <Td textAlign="center">{formatDate({ date: order.date_sync, showHours: true })}</Td>
+                  <Td textAlign="center">
+                    {formatDate({ date: order.date_sync, showHours: true })}
+                  </Td>
                   <Td
-                    textDecor="underline"
                     color="#1E93FF"
-                    textAlign="center"
                     cursor="pointer"
-                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(order.id)}`)}
+                    textAlign="center"
+                    textDecor="underline"
+                    onClick={() =>
+                      router.push(
+                        `/mobile/order-details/${encodeURIComponent(order.id)}`,
+                      )
+                    }
                   >
                     {order.id}
                   </Td>
                   <Td textAlign="center">{order.customer_id}</Td>
                   <Td textAlign="center">??</Td>
-                  <Td textAlign="center" w="15%">
-                    <Box maxW="10rem" overflow="hidden" textOverflow="ellipsis" as="span" display="inline-block">
+                  <Td
+                    textAlign="center"
+                    w="15%"
+                  >
+                    <Box
+                      as="span"
+                      display="inline-block"
+                      maxW="10rem"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                    >
                       {findCustomerName(order.customer_id)}
                     </Box>
-                    <Icon as={MdDescription} mx=".25rem" w="16px" h="16px" />
-                    <Icon as={MdMail} mx=".25rem" w="16px" h="16px" />
+                    <Icon
+                      as={MdDescription}
+                      h="16px"
+                      mx=".25rem"
+                      w="16px"
+                    />
+                    <Icon
+                      as={MdMail}
+                      h="16px"
+                      mx=".25rem"
+                      w="16px"
+                    />
                   </Td>
                   <Td textAlign="center">{order.payment_option_id} ??</Td>
-                  <Td textAlign="center">{formatCurrency(Number(order.total_value))}</Td>
+                  <Td textAlign="center">
+                    {formatCurrency(Number(order.total_value))}
+                  </Td>
                 </Tr>
               ))}
             </Tbody>
           </Table>
         </TableContainer>
-        <Flex w="100%" justify="space-between" my="2rem" fontSize="14px" color="#898989">
-          <Flex w="50%" align="center">
+        <Flex
+          color="#898989"
+          fontSize="14px"
+          justify="space-between"
+          my="2rem"
+          w="100%"
+        >
+          <Flex
+            align="center"
+            w="50%"
+          >
             <Text>Mostrando</Text>
-            <Select w="4.5rem" h="2rem" mx="1rem">
+            <Select
+              h="2rem"
+              mx="1rem"
+              w="4.5rem"
+            >
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="30">30</option>
@@ -192,23 +302,41 @@ function OrderDetailsPage() {
           <Box>
             <ButtonGroup spacing={6}>
               <Button
-                h="2rem"
-                w="2rem"
-                fontSize="14px"
-                variant="outline"
-                colorScheme="white"
                 borderColor="#1E93FF"
                 color="#898989"
+                colorScheme="white"
+                fontSize="14px"
+                h="2rem"
+                variant="outline"
+                w="2rem"
               >
                 1
               </Button>
-              <Button h="2rem" w="2rem" fontSize="14px" variant="ghost" color="#898989">
+              <Button
+                color="#898989"
+                fontSize="14px"
+                h="2rem"
+                variant="ghost"
+                w="2rem"
+              >
                 2
               </Button>
-              <Button h="2rem" w="2rem" fontSize="14px" variant="ghost" color="#898989">
+              <Button
+                color="#898989"
+                fontSize="14px"
+                h="2rem"
+                variant="ghost"
+                w="2rem"
+              >
                 Prox.
               </Button>
-              <Button h="2rem" w="2rem" fontSize="14px" variant="ghost" color="#898989">
+              <Button
+                color="#898989"
+                fontSize="14px"
+                h="2rem"
+                variant="ghost"
+                w="2rem"
+              >
                 Fim
               </Button>
             </ButtonGroup>

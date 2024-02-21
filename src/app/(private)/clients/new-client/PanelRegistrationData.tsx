@@ -1,30 +1,41 @@
-import { TabPanel, Flex, Select, Checkbox, Textarea, Divider, Box, Text, Input } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Flex,
+  Input,
+  Select,
+  TabPanel,
+  Text,
+  Textarea,
+} from '@chakra-ui/react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { InputLabel } from 'src/components/ui/InputLabel';
-import { InputText } from 'src/components/ui/InputText';
-import { z } from 'zod';
-import { Form } from 'src/components/ui/Form';
 import InputMask from 'react-input-mask';
+import { z } from 'zod';
+import { InputLabel } from '../../../../components/InputLabel';
+import { InputText } from '../../../../components/InputText';
 
-export default function PanelRegistrationData() {
+export function PanelRegistrationData() {
   const schema = z.object({
     cnpj: z
       .string()
-      .regex(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/, 'Formato inválido')
+      .regex(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$)/, 'Formato inválido')
       .min(0, 'O CNPJ é obrigatório'),
+    comments: z.string(),
     corporateReason: z.string().min(0, 'A Razão Social é obrigatória'),
+    customerReview: z.string(),
     fantasyName: z.string(),
     ie: z.string(),
     im: z.string(),
     situation: z.string(),
-    customerReview: z.string(),
-    comments: z.string(),
   });
 
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
+  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>(
+    { resolver: zodResolver(schema) },
+  );
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     console.log(data);
@@ -33,51 +44,84 @@ export default function PanelRegistrationData() {
   return (
     <TabPanel p="2rem 0">
       <Box
-        maxW="53rem"
-        w={{ md: '100%', lg: '100%', xl: '53rem' }}
-        borderRadius="8px"
-        shadow="sm"
-        p="3rem 2rem 1rem 2rem"
         bg="#fff"
+        borderRadius="8px"
+        maxW="53rem"
+        p="3rem 2rem 1rem 2rem"
+        shadow="sm"
+        // eslint-disable-next-line canonical/sort-keys
+        w={{ md: '100%', lg: '100%', xl: '53rem' }}
       >
-        <Form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <form onSubmit={handleSubmit(onSubmit, console.error)}>
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             align={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             direction={{ md: 'column', lg: 'column', xl: 'row' }}
             mb="1rem"
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW={{ md: 'auto', lg: 'auto', xl: '7rem' }}>
+            <Text
+              // eslint-disable-next-line canonical/sort-keys
+              mb={{ base: '0', md: '1rem', lg: '1rem' }}
+              // eslint-disable-next-line canonical/sort-keys
+              minW={{ md: 'auto', lg: 'auto', xl: '7rem' }}
+            >
               Avatar
             </Text>
-            <Flex ml={{ base: '0', lg: '0', xl: '4rem' }} align="center">
-              <Box h="72px" w="72px" borderRadius="50%" bg="#84818A" />
-              <ButtonPrimary ml="2rem" h="2rem" w="9rem">
+            <Flex
+              align="center"
+              // eslint-disable-next-line canonical/sort-keys
+              ml={{ base: '0', lg: '0', xl: '4rem' }}
+            >
+              <Box
+                bg="#84818A"
+                borderRadius="50%"
+                h="72px"
+                w="72px"
+              />
+              <Button
+                h="2rem"
+                ml="2rem"
+                variant="solid"
+                w="9rem"
+              >
                 Alterar Foto
-              </ButtonPrimary>
-              <ButtonOutline ml="1rem" h="2rem" w="9rem" color="#1E93FF" borderColor="#1E93FF">
+              </Button>
+              <Button
+                borderColor="#1E93FF"
+                color="#1E93FF"
+                h="2rem"
+                ml="1rem"
+                variant="outline"
+                w="9rem"
+              >
                 Apagar Foto
-              </ButtonOutline>
+              </Button>
             </Flex>
           </Flex>
 
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
             <Text minW="7rem">CNPJ</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.cnpj?.message}
+              flexDirection="column"
+              my="1rem"
+              // eslint-disable-next-line canonical/sort-keys
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
             >
               <Input
+                alwaysShowMask={false}
                 as={InputMask}
                 mask="99.999.999/9999-99"
                 maskChar={null}
-                alwaysShowMask={false}
+                // eslint-disable-next-line canonical/sort-keys
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="CNPJ"
                 {...register('cnpj')}
@@ -86,19 +130,21 @@ export default function PanelRegistrationData() {
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Razão Social</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.corporateReason?.message}
+              flexDirection="column"
+              my="1rem"
+              // eslint-disable-next-line canonical/sort-keys
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
             >
               <InputText
+                // eslint-disable-next-line canonical/sort-keys
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Nome da Empresa"
                 {...register('corporateReason')}
@@ -107,19 +153,23 @@ export default function PanelRegistrationData() {
           </Flex>
 
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Nome Fantasia</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.fantasyName?.message}
+              flexDirection="column"
+              my="1rem"
+              // eslint-disable-next-line canonical/sort-keys
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
             >
               <InputText
+                // eslint-disable-next-line canonical/sort-keys
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Nome Fantasia (Se houver)"
                 {...register('fantasyName')}
@@ -128,48 +178,63 @@ export default function PanelRegistrationData() {
           </Flex>
 
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
             <Text minW="7rem">IE / IM</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w="100%"
+              display="flex"
               error={formState.errors.fantasyName?.message}
+              flexDirection="column"
+              my="1rem"
+              w="100%"
             >
               <Flex w="100%">
                 <InputText
+                  // eslint-disable-next-line canonical/sort-keys
                   ml={{ md: '0', lg: '0', xl: '4rem' }}
-                  w="100%"
                   placeholder="Inscrição Estadual"
+                  w="100%"
                   {...register('ie')}
                 />
-                <InputText ml="2rem" w="100%" placeholder="Inscrição Municipal" {...register('im')} />
+                <InputText
+                  ml="2rem"
+                  placeholder="Inscrição Municipal"
+                  w="100%"
+                  {...register('im')}
+                />
               </Flex>
             </InputLabel>
           </Flex>
 
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Situação</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w="100%"
+              display="flex"
               error={formState.errors.fantasyName?.message}
+              flexDirection="column"
+              my="1rem"
+              w="100%"
             >
-              <Box width="100%" display="flex" alignItems="center">
+              <Box
+                alignItems="center"
+                display="flex"
+                width="100%"
+              >
                 <Select
+                  // eslint-disable-next-line canonical/sort-keys
                   ml={{ md: '0', lg: '0', xl: '4rem' }}
-                  w="25rem"
                   placeholder="Situação"
+                  w="25rem"
                   {...register('situation')}
                 >
                   <option value="Regular">Regular</option>
@@ -181,19 +246,23 @@ export default function PanelRegistrationData() {
           </Flex>
 
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
             <Text minW="8rem">Avaliação Cliente</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '92.5%' }}
+              display="flex"
               error={formState.errors.customerReview?.message}
+              flexDirection="column"
+              my="1rem"
+              // eslint-disable-next-line canonical/sort-keys
+              w={{ md: '100%', lg: '100%', xl: '92.5%' }}
             >
               <InputText
+                // eslint-disable-next-line canonical/sort-keys
                 ml={{ md: '0', lg: '0', xl: '3rem' }}
                 placeholder="Avaliação Cliente"
                 {...register('customerReview')}
@@ -202,25 +271,29 @@ export default function PanelRegistrationData() {
           </Flex>
 
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Observações</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.comments?.message}
+              flexDirection="column"
+              my="1rem"
+              // eslint-disable-next-line canonical/sort-keys
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
             >
               <Textarea
-                maxW="26.625rem"
-                w="26.625rem"
                 h="9rem"
-                resize="none"
+                maxW="26.625rem"
+                // eslint-disable-next-line canonical/sort-keys
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Descrição da empresa"
+                resize="none"
+                w="26.625rem"
                 {...register('comments')}
               />
             </InputLabel>
@@ -228,15 +301,28 @@ export default function PanelRegistrationData() {
 
           <Divider my="2rem" />
 
-          <Flex justify="flex-end" align="center">
-            <ButtonOutline w="5.5rem" h="2.5rem">
+          <Flex
+            align="center"
+            justify="flex-end"
+          >
+            <Button
+              h="2.5rem"
+              variant="outline"
+              w="5.5rem"
+            >
               Cancelar
-            </ButtonOutline>
-            <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">
+            </Button>
+            <Button
+              h="2.5rem"
+              ml="1.5rem"
+              type="submit"
+              variant="solid"
+              w="8rem"
+            >
               Salvar
-            </ButtonPrimary>
+            </Button>
           </Flex>
-        </Form>
+        </form>
       </Box>
     </TabPanel>
   );

@@ -3,14 +3,16 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
-    __progress: { start: () => void; stop: () => void; };
+    __progress: { start: () => void; stop: () => void };
   }
 }
 
 const isSameURL = (target: URL, current: URL) => {
-  const cleanTarget = target.protocol + '//' + target.host + target.pathname;
-  const cleanCurrent = current.protocol + '//' + current.host + current.pathname;
+  const clean = (url: URL) => url.protocol + '//' + url.host + url.pathname;
+  const cleanTarget = clean(target);
+  const cleanCurrent = clean(current);
   return cleanTarget === cleanCurrent;
 };
 
@@ -95,7 +97,11 @@ export function ProgressBar() {
     mutationObserver.observe(document, { childList: true, subtree: true });
 
     window.history.pushState = new Proxy(window.history.pushState, {
-      apply: (target, thisArg, argArray: [any, string, string | URL | null | undefined]) => {
+      apply: (
+        target,
+        thisArg,
+        argArray: [any, string, string | URL | null | undefined],
+      ) => {
         window.__progress.stop();
         return target.apply(thisArg, argArray);
       },

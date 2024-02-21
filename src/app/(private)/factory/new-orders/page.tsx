@@ -1,8 +1,5 @@
 'use client';
 
-import { isPrivatePage } from 'src/contexts/AuthContext';
-import { useParams } from 'next/navigation';
-import { PrivateLayout } from 'src/components/PrivateLayout';
 import {
   Box,
   Button,
@@ -12,6 +9,7 @@ import {
   Flex,
   Heading,
   Icon,
+  Image,
   Input,
   Menu,
   MenuButton,
@@ -21,18 +19,26 @@ import {
   Tbody,
   Td,
   Text,
-  Tr,
-  Image,
   Thead,
+  Tr,
   useToast,
 } from '@chakra-ui/react';
-import { MdArrowDropDown, MdCheckCircle, MdClose, MdDescription, MdMoreHoriz } from 'react-icons/md';
-import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { IoMdTrash } from 'react-icons/io';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { BiSolidEditAlt } from 'react-icons/bi';
+import { IoMdTrash } from 'react-icons/io';
+import {
+  MdArrowDropDown,
+  MdCheckCircle,
+  MdClose,
+  MdDescription,
+  MdMoreHoriz,
+} from 'react-icons/md';
 import { formatCurrency } from 'src/commons/formatters';
+import { PrivateLayout } from 'src/components/PrivateLayout';
+import { ButtonOutline } from 'src/components/ui/ButtonOutline';
+import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
+import { isPrivatePage } from 'src/contexts/AuthContext';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 
@@ -122,87 +128,186 @@ function ShowOrderPage() {
     <PrivateLayout>
       <Box p="2rem">
         <Flex alignItems="end">
-          <Heading w="40%" color="#898989" fontSize="24px" display="flex" alignItems="baseline">
+          <Heading
+            alignItems="baseline"
+            color="#898989"
+            display="flex"
+            fontSize="24px"
+            w="40%"
+          >
             Pedidos/
             {pageStatus === 'create' ? (
               <Flex align="center">
-                <Input w="50%" h="2rem" mx="1rem" bg="#fff" placeholder="Nome ou CNPJ" />
-                <Button w="10rem" bg="#775DA620" color="#1E93FF">
+                <Input
+                  bg="#fff"
+                  h="2rem"
+                  mx="1rem"
+                  placeholder="Nome ou CNPJ"
+                  w="50%"
+                />
+                <Button
+                  bg="#775DA620"
+                  color="#1E93FF"
+                  w="10rem"
+                >
                   Novo Pedido
                 </Button>
               </Flex>
             ) : (
-              <Text as="span" color="#202020">
+              <Text
+                as="span"
+                color="#202020"
+              >
                 {isValidParam ? params?.id : ''}
               </Text>
             )}
           </Heading>
-          <Flex align="flex-end" justify="flex-end" w="60%" gap="1rem">
+          <Flex
+            align="flex-end"
+            gap="1rem"
+            justify="flex-end"
+            w="60%"
+          >
             {['create', 'edit'].includes(pageStatus) ? (
               <>
-                <ButtonPrimary w="9rem" p="0 1rem">
+                <ButtonPrimary
+                  p="0 1rem"
+                  w="9rem"
+                >
                   Salvar
                 </ButtonPrimary>
                 <ButtonOutline>Cancelar</ButtonOutline>
               </>
             ) : (
-              <>
-                <ButtonPrimary w="9rem" p="0 1rem">
-                  Enviar Pedido
-                </ButtonPrimary>
-              </>
+              <ButtonPrimary
+                p="0 1rem"
+                w="9rem"
+              >
+                Enviar Pedido
+              </ButtonPrimary>
             )}
           </Flex>
         </Flex>
-        <Flex w="100%" my="2rem" direction={{ sm: 'column', md: 'column', lg: 'column', xl: 'row', '2xl': 'row' }}>
-          <Flex w={{ sm: '100%', md: '100%', lg: '100%', xl: '70%', '2xl': '70%', '3xl': '70%' }} direction="column">
-            <Card minW="29.5rem" px="1rem">
-              <CardHeader display="flex" justifyContent="space-between">
+        <Flex
+          my="2rem"
+          w="100%"
+          direction={{
+            'sm': 'column',
+            'md': 'column',
+            'lg': 'column',
+            'xl': 'row',
+            '2xl': 'row',
+          }}
+        >
+          <Flex
+            direction="column"
+            w={{
+              'sm': '100%',
+              'md': '100%',
+              'lg': '100%',
+              'xl': '70%',
+              '2xl': '70%',
+              '3xl': '70%',
+            }}
+          >
+            <Card
+              minW="29.5rem"
+              px="1rem"
+            >
+              <CardHeader
+                display="flex"
+                justifyContent="space-between"
+              >
                 <Text>--</Text>
                 <Menu placement="bottom-end">
                   <MenuButton>
-                    <Icon as={MdMoreHoriz} h="24px" w="24px" cursor="pointer" />
+                    <Icon
+                      as={MdMoreHoriz}
+                      cursor="pointer"
+                      h="24px"
+                      w="24px"
+                    />
                   </MenuButton>
                   <MenuList>
                     <MenuItem
                       fontWeight="500"
                       onClick={() =>
                         pageStatus === 'create'
-                          ? toast({ status: 'error', description: 'Não é possivel editar o pedido no momento' })
+                          ? toast({
+                              status: 'error',
+                              description:
+                                'Não é possivel editar o pedido no momento',
+                            })
                           : setPageStatus('edit')
                       }
                     >
-                      <Icon h="20px" w="20px" as={BiSolidEditAlt} mr="1rem" />
+                      <Icon
+                        as={BiSolidEditAlt}
+                        h="20px"
+                        mr="1rem"
+                        w="20px"
+                      />
                       Editar Pedido
                     </MenuItem>
                     <MenuItem
                       fontWeight="500"
                       onClick={() =>
                         pageStatus === 'create'
-                          ? toast({ status: 'error', description: 'Não é possivel cancelar o pedido no momento' })
+                          ? toast({
+                              status: 'error',
+                              description:
+                                'Não é possivel cancelar o pedido no momento',
+                            })
                           : console.log('cancelar')
                       }
                     >
-                      <Icon h="20px" w="20px" as={IoMdTrash} mr="1rem" />
+                      <Icon
+                        as={IoMdTrash}
+                        h="20px"
+                        mr="1rem"
+                        w="20px"
+                      />
                       Cancelar
                     </MenuItem>
                   </MenuList>
                 </Menu>
               </CardHeader>
               <Divider />
-              <Box display="flex" h="13rem">
-                <Box p="1rem" w="50%">
-                  <Flex justify="space-between" align="center">
+              <Box
+                display="flex"
+                h="13rem"
+              >
+                <Box
+                  p="1rem"
+                  w="50%"
+                >
+                  <Flex
+                    align="center"
+                    justify="space-between"
+                  >
                     <Text color="#898989">CNPJ</Text>
                     {pageStatus === 'create' ? (
-                      <Input w="50%" h="2rem" bg="#fff" placeholder="Nome ou CNPJ" />
+                      <Input
+                        bg="#fff"
+                        h="2rem"
+                        placeholder="Nome ou CNPJ"
+                        w="50%"
+                      />
                     ) : (
                       <Text>20.360.416/0001-28</Text>
                     )}
                   </Flex>
-                  <Flex justify="space-between" my="1rem">
+                  <Flex
+                    justify="space-between"
+                    my="1rem"
+                  >
                     <Text color="#898989">Endereço</Text>
-                    <Flex direction="column" align="flex-end" gap=".75rem" minW="6rem">
+                    <Flex
+                      align="flex-end"
+                      direction="column"
+                      gap=".75rem"
+                      minW="6rem"
+                    >
                       <Text>Rua, Número</Text>
                       <Text>Cidade - Estado</Text>
                       <Text>CEP</Text>
@@ -214,7 +319,12 @@ function ShowOrderPage() {
                   </Flex>
                 </Box>
                 <Divider orientation="vertical" />
-                <Flex p="1rem" w="50%" direction="column" justify="space-between">
+                <Flex
+                  direction="column"
+                  justify="space-between"
+                  p="1rem"
+                  w="50%"
+                >
                   <Flex justify="space-between">
                     <Text color="#898989">Data do Pedido</Text>
                     <Text>10 Fev 2023 às 13h43</Text>
@@ -234,11 +344,20 @@ function ShowOrderPage() {
                 </Flex>
               </Box>
               <Divider />
-              <Flex w="100%" direction="column">
+              <Flex
+                direction="column"
+                w="100%"
+              >
                 {['create', 'edit'].includes(pageStatus) && (
                   <>
-                    <Flex w="100%" my="1rem">
-                      <Text w="30%" pl="1rem">
+                    <Flex
+                      my="1rem"
+                      w="100%"
+                    >
+                      <Text
+                        pl="1rem"
+                        w="30%"
+                      >
                         Produto
                       </Text>
                       <Text w="17.5%">Qtd. (Cx)</Text>
@@ -249,65 +368,132 @@ function ShowOrderPage() {
 
                     {Array.apply(0, Array(3)).map((_, index) => (
                       <Flex
-                        w="100%"
-                        h="4rem"
+                        key={`create-edit-${index}`}
                         align="center"
                         color="#898989"
+                        h="4rem"
                         position="relative"
-                        key={`create-edit-${index}`}
+                        w="100%"
                       >
-                        <Text bg="#fff" w="30%" pl="1rem">
+                        <Text
+                          bg="#fff"
+                          pl="1rem"
+                          w="30%"
+                        >
                           Nome ou Código
                         </Text>
-                        <Text bg="#fff" w="17.5%" pl="1rem">
+                        <Text
+                          bg="#fff"
+                          pl="1rem"
+                          w="17.5%"
+                        >
                           Qtd.
                         </Text>
-                        <Text bg="#fff" w="17.5%">
+                        <Text
+                          bg="#fff"
+                          w="17.5%"
+                        >
                           918237
                         </Text>
-                        <Text bg="#fff" w="17.5%">
+                        <Text
+                          bg="#fff"
+                          w="17.5%"
+                        >
                           R$ --
                         </Text>
-                        <Text bg="#fff" w="17.5%">
+                        <Text
+                          bg="#fff"
+                          w="17.5%"
+                        >
                           R$ --
                         </Text>
-                        <Button w="2rem" h="2rem" bg="#fff" variant="outline" position="absolute" top="25%" right="0">
-                          <Icon as={IoMdTrash} h="16px" w="16px" />
+                        <Button
+                          bg="#fff"
+                          h="2rem"
+                          position="absolute"
+                          right="0"
+                          top="25%"
+                          variant="outline"
+                          w="2rem"
+                        >
+                          <Icon
+                            as={IoMdTrash}
+                            h="16px"
+                            w="16px"
+                          />
                         </Button>
                       </Flex>
                     ))}
                     <Flex
-                      w="100%"
+                      align="center"
+                      bg="#F9F9F9"
                       borderBottom="1px solid #DCDCDC"
                       borderTop="1px solid #DCDCDC"
-                      bg="#F9F9F9"
-                      h="4rem"
-                      align="center"
                       color="#898989"
+                      h="4rem"
+                      w="100%"
                     >
-                      <Input bg="#fff" w="20%" ml=".5rem" mr="4.5rem" pl="1rem" placeholder="Nome ou Código" />
-                      <Input bg="#fff" w="10%" mr="12rem" placeholder="Qtd." />
-                      <Input bg="#fff" w="20%" placeholder="R$ --" />
-                      <Icon as={MdClose} ml="auto" mr="1rem" h="24px" w="24px" />
+                      <Input
+                        bg="#fff"
+                        ml=".5rem"
+                        mr="4.5rem"
+                        pl="1rem"
+                        placeholder="Nome ou Código"
+                        w="20%"
+                      />
+                      <Input
+                        bg="#fff"
+                        mr="12rem"
+                        placeholder="Qtd."
+                        w="10%"
+                      />
+                      <Input
+                        bg="#fff"
+                        placeholder="R$ --"
+                        w="20%"
+                      />
+                      <Icon
+                        as={MdClose}
+                        h="24px"
+                        ml="auto"
+                        mr="1rem"
+                        w="24px"
+                      />
                     </Flex>
                   </>
                 )}
 
                 {pageStatus === 'show' && (
-                  <Table w="100%" variant="striped" colorScheme="gray">
+                  <Table
+                    colorScheme="gray"
+                    variant="striped"
+                    w="100%"
+                  >
                     <Thead>
                       <Tr>
-                        <Td pl="1rem" w="25%">
+                        <Td
+                          pl="1rem"
+                          w="25%"
+                        >
                           Produto
                         </Td>
                         <Td w="20%">Qtd. (Cx)</Td>
-                        <Td px="0" w="20%">
+                        <Td
+                          px="0"
+                          w="20%"
+                        >
                           Código
                         </Td>
-                        <Td px="0" w="20%">
+                        <Td
+                          px="0"
+                          w="20%"
+                        >
                           Valor Cx. (R$)
                         </Td>
-                        <Td px="0" w="20%">
+                        <Td
+                          px="0"
+                          w="20%"
+                        >
                           Total (R$)
                         </Td>
                       </Tr>
@@ -315,32 +501,58 @@ function ShowOrderPage() {
                     <Tbody>
                       {productsExample.map((product, index) => (
                         <Tr key={`product-${index}`}>
-                          <Td pl="1rem" w="20%">
+                          <Td
+                            pl="1rem"
+                            w="20%"
+                          >
                             <Flex align="center">
-                              <Image src="/product-oil.jpg" alt="product photo" h="32px" w="32px" />
+                              <Image
+                                alt="product photo"
+                                h="32px"
+                                src="/product-oil.jpg"
+                                w="32px"
+                              />
                               <Text
-                                ml="1rem"
                                 as="span"
-                                textOverflow="ellipsis"
-                                overflow="hidden"
-                                whiteSpace="nowrap"
                                 maxW="10rem"
+                                ml="1rem"
+                                overflow="hidden"
+                                textOverflow="ellipsis"
+                                whiteSpace="nowrap"
                               >
                                 {product.name}
                               </Text>
                             </Flex>
                           </Td>
-                          <Td pl="3rem" w="20%">
+                          <Td
+                            pl="3rem"
+                            w="20%"
+                          >
                             {product.amount}
                           </Td>
-                          <Td px="0" w="20%">
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
                             {product.code}
                           </Td>
-                          <Td px="0" w="20%">
-                            {formatCurrency(Number(product.product_price_actor_default.price))}
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
+                            {formatCurrency(
+                              Number(product.product_price_actor_default.price),
+                            )}
                           </Td>
-                          <Td px="0" w="20%">
-                            {formatCurrency(Number(product.product_price_actor_default.price) * product.amount)}
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
+                            {formatCurrency(
+                              Number(
+                                product.product_price_actor_default.price,
+                              ) * product.amount,
+                            )}
                           </Td>
                         </Tr>
                       ))}
@@ -351,26 +563,47 @@ function ShowOrderPage() {
                 {['create', 'edit'].includes(pageStatus) ? (
                   <>
                     <Divider />
-                    <Button variant="ghost" color="#1E93FF" mt="1rem" mb="2.5rem">
+                    <Button
+                      color="#1E93FF"
+                      mb="2.5rem"
+                      mt="1rem"
+                      variant="ghost"
+                    >
                       Adicionar Novo Produto
                     </Button>
                   </>
                 ) : (
                   <Box my="1.5rem">
-                    <Flex justify="space-between" fontSize="14px">
+                    <Flex
+                      fontSize="14px"
+                      justify="space-between"
+                    >
                       <Text color="#898989">Total de CXs</Text>
-                      <Text>{productsExample.reduce((acc, product) => acc + Number(product.amount), 0)}</Text>
+                      <Text>
+                        {productsExample.reduce(
+                          (acc, product) => acc + Number(product.amount),
+                          0,
+                        )}
+                      </Text>
                     </Flex>
                     <Divider my="1rem" />
-                    <Flex justify="space-between" fontSize="14px" fontWeight="600">
+                    <Flex
+                      fontSize="14px"
+                      fontWeight="600"
+                      justify="space-between"
+                    >
                       <Text>TOTAL</Text>
                       <Text>
                         {formatCurrency(
                           productsExample.reduce(
                             (acc, product) =>
-                              acc + Number(product.product_price_actor_default.price) * Number(product.amount),
-                            0
-                          )
+                              acc +
+                              Number(
+                                product.product_price_actor_default.price,
+                              ) *
+                                Number(product.amount),
+                            0,
+                          ),
                         )}
                       </Text>
                     </Flex>
@@ -381,18 +614,46 @@ function ShowOrderPage() {
           </Flex>
 
           <Flex
-            w={{ sm: '100%', md: '100%', lg: '100%', xl: '30%', '2xl': '30%', '3xl': '30%' }}
             direction="column"
-            ml={{ sm: '0', md: '0', lg: '0', xl: '2rem', '2xl': '2rem' }}
-            mt={{ sm: '0', md: '2rem', lg: '2rem', xl: '0', '2xl': '0' }}
+            ml={{
+              'sm': '0',
+              'md': '0',
+              'lg': '0',
+              'xl': '2rem',
+              '2xl': '2rem',
+            }}
+            mt={{
+              'sm': '0',
+              'md': '2rem',
+              'lg': '2rem',
+              'xl': '0',
+              '2xl': '0',
+            }}
+            w={{
+              'sm': '100%',
+              'md': '100%',
+              'lg': '100%',
+              'xl': '30%',
+              '2xl': '30%',
+              '3xl': '30%',
+            }}
           >
-            <Card w="100%" mb="1rem">
+            <Card
+              mb="1rem"
+              w="100%"
+            >
               <CardHeader>
                 <Flex justify="space-between">
-                  <Text fontWeight="600" fontSize="18px">
+                  <Text
+                    fontSize="18px"
+                    fontWeight="600"
+                  >
                     Tipo de Pedido
                   </Text>
-                  <Text fontWeight="400" fontSize="14px">
+                  <Text
+                    fontSize="14px"
+                    fontWeight="400"
+                  >
                     Venda
                   </Text>
                 </Flex>
@@ -400,36 +661,74 @@ function ShowOrderPage() {
             </Card>
             <Card>
               <CardHeader>
-                <Flex justify="space-between" align="center">
-                  <Text fontWeight="500" fontSize="16px">
+                <Flex
+                  align="center"
+                  justify="space-between"
+                >
+                  <Text
+                    fontSize="16px"
+                    fontWeight="500"
+                  >
                     Prazo de Faturamento
                   </Text>
-                  <Text fontWeight="400" fontSize="14px" mr="1rem">
+                  <Text
+                    fontSize="14px"
+                    fontWeight="400"
+                    mr="1rem"
+                  >
                     28d
                   </Text>
                 </Flex>
-                <Flex justify="space-between" align="baseline">
+                <Flex
+                  align="baseline"
+                  justify="space-between"
+                >
                   <Flex align="baseline">
-                    <Icon as={MdDescription} mx=".25rem" w="16px" h="16px" />
-                    <Text fontWeight="400" fontSize="14px">
+                    <Icon
+                      as={MdDescription}
+                      h="16px"
+                      mx=".25rem"
+                      w="16px"
+                    />
+                    <Text
+                      fontSize="14px"
+                      fontWeight="400"
+                    >
                       Pedido Total
                     </Text>
                   </Flex>
-                  <Flex align="center" mt="1.5rem">
-                    <Icon as={MdCheckCircle} mx=".25rem" w="16px" h="16px" color="#70B6C1" />
-                    <Text fontWeight="400" fontSize="14px">
+                  <Flex
+                    align="center"
+                    mt="1.5rem"
+                  >
+                    <Icon
+                      as={MdCheckCircle}
+                      color="#70B6C1"
+                      h="16px"
+                      mx=".25rem"
+                      w="16px"
+                    />
+                    <Text
+                      fontSize="14px"
+                      fontWeight="400"
+                    >
                       28d
                     </Text>
-                    <Icon as={MdArrowDropDown} ml=".25rem" w="16px" h="16px" />
+                    <Icon
+                      as={MdArrowDropDown}
+                      h="16px"
+                      ml=".25rem"
+                      w="16px"
+                    />
                   </Flex>
                 </Flex>
                 <ButtonOutline
-                  isDisabled={pageStatus === 'create'}
-                  color="#1E93FF"
                   borderColor="#1E93FF"
-                  w="100%"
+                  color="#1E93FF"
                   h="2rem"
+                  isDisabled={pageStatus === 'create'}
                   mt="1rem"
+                  w="100%"
                 >
                   Aprovar
                 </ButtonOutline>

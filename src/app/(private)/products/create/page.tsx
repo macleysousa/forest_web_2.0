@@ -1,13 +1,34 @@
 'use client';
-import { Box, Flex, FormControl, FormHelperText, FormLabel, Grid, GridItem, Heading, Icon, Image, Input, InputGroup, InputRightElement, Select, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Grid,
+  GridItem,
+  Heading,
+  Icon,
+  Image,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Select,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from '@chakra-ui/react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { FaCamera } from 'react-icons/fa';
 import { IoAdd } from 'react-icons/io5';
 import { PrivateLayout } from 'src/components/PrivateLayout';
-import { isPrivatePage } from 'src/contexts/AuthContext';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
+import { isPrivatePage } from 'src/contexts/AuthContext';
 
 function CreateProductPage() {
   const photoRef = useRef<HTMLInputElement>(null);
@@ -17,7 +38,9 @@ function CreateProductPage() {
     photoRef.current?.click();
   };
 
-  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     if (!event.target.files) return;
     const file = event.target.files.item(0);
 
@@ -39,26 +62,84 @@ function CreateProductPage() {
   return (
     <PrivateLayout>
       <Box padding="2rem">
-        <Grid templateColumns="repeat(12, minmax(0, 1fr))" gap="2rem">
+        <Grid
+          gap="2rem"
+          templateColumns="repeat(12, minmax(0, 1fr))"
+        >
           <GridItem colSpan={3}>
-            <Text fontSize="2xl" fontWeight="600">
-              <Text as="span" color="#898989">Produto /</Text> Criar Novo
+            <Text
+              fontSize="2xl"
+              fontWeight="600"
+            >
+              <Text
+                as="span"
+                color="#898989"
+              >
+                Produto /
+              </Text>{' '}
+              Criar Novo
             </Text>
-            <Box background="#FFFFFF" shadow="base" marginTop="1.5rem" padding="0.875rem 1.5rem" borderRadius="0.5rem">
-              <Flex maxWidth="12.5rem" aspectRatio="1 / 1" border="1px solid #DCDCDC" borderRadius="6.25rem" alignItems="center" justifyContent="center" marginLeft="auto" marginRight="auto" overflow="hidden">
-                {
-                  photo
-                    ? (<Image src={photo} alt="" width="100%" height="100%" objectFit="cover" />)
-                    : (<Icon as={FaCamera} width="4.5rem" height="4.5rem" color="#898989" />)
-                }
+            <Box
+              background="#FFFFFF"
+              borderRadius="0.5rem"
+              marginTop="1.5rem"
+              padding="0.875rem 1.5rem"
+              shadow="base"
+            >
+              <Flex
+                alignItems="center"
+                aspectRatio="1 / 1"
+                border="1px solid #DCDCDC"
+                borderRadius="6.25rem"
+                justifyContent="center"
+                marginLeft="auto"
+                marginRight="auto"
+                maxWidth="12.5rem"
+                overflow="hidden"
+              >
+                {photo ? (
+                  <Image
+                    alt=""
+                    height="100%"
+                    objectFit="cover"
+                    src={photo}
+                    width="100%"
+                  />
+                ) : (
+                  <Icon
+                    as={FaCamera}
+                    color="#898989"
+                    height="4.5rem"
+                    width="4.5rem"
+                  />
+                )}
               </Flex>
-              <Text textAlign="center" marginTop="1.5rem" color="#5A5A5A">
+              <Text
+                color="#5A5A5A"
+                marginTop="1.5rem"
+                textAlign="center"
+              >
                 Adicione uma foto para o produto na resolução 1024x800 pixels
               </Text>
             </Box>
-            <Box display="grid" marginTop="1rem">
-              <input ref={photoRef} type="file" style={{ display: 'none' }} accept="image/*" onChange={handlePhotoChange} />
-              <ButtonOutline size="xs" borderColor="#1E93FF" color="#1E93FF" background="#FFFFFF" onClick={handlePhotoAdd}>
+            <Box
+              display="grid"
+              marginTop="1rem"
+            >
+              <input
+                ref={photoRef}
+                accept="image/*"
+                style={{ display: 'none' }}
+                type="file"
+                onChange={handlePhotoChange}
+              />
+              <ButtonOutline
+                background="#FFFFFF"
+                borderColor="#1E93FF"
+                color="#1E93FF"
+                size="xs"
+                onClick={handlePhotoAdd}
+              >
                 Adicionar Foto
               </ButtonOutline>
             </Box>
@@ -71,7 +152,14 @@ function CreateProductPage() {
               </TabList>
               <TabPanels>
                 <TabPanel padding="1rem 0rem">
-                  <Grid templateColumns="repeat(12, minmax(0, 1fr))" background="#FFFFFF" padding="1rem 1.5rem 2.75rem 0.75rem" borderRadius="0.5rem" shadow="base" gap="1.5rem">
+                  <Grid
+                    background="#FFFFFF"
+                    borderRadius="0.5rem"
+                    gap="1.5rem"
+                    padding="1rem 1.5rem 2.75rem 0.75rem"
+                    shadow="base"
+                    templateColumns="repeat(12, minmax(0, 1fr))"
+                  >
                     <GridItem colSpan={5}>
                       <FormControl>
                         <FormLabel fontSize="sm">Código</FormLabel>
@@ -89,7 +177,11 @@ function CreateProductPage() {
                         <FormLabel fontSize="sm">Categoria</FormLabel>
                         <Flex gap="1.5rem">
                           <Input placeholder="Defina uma Categoria" />
-                          <ButtonOutline borderColor="#1E93FF" color="#1E93FF" leftIcon={<IoAdd />}>
+                          <ButtonOutline
+                            borderColor="#1E93FF"
+                            color="#1E93FF"
+                            leftIcon={<IoAdd />}
+                          >
                             Nova
                           </ButtonOutline>
                         </Flex>
@@ -103,11 +195,20 @@ function CreateProductPage() {
                     </GridItem>
                     <GridItem colSpan={6}>
                       <FormControl>
-                        <FormLabel fontSize="sm">Quantidade e Unidade de Venda</FormLabel>
+                        <FormLabel fontSize="sm">
+                          Quantidade e Unidade de Venda
+                        </FormLabel>
                         <InputGroup>
                           <Input placeholder="Ex.: 1" />
-                          <InputRightElement borderLeft="1px solid var(--chakra-colors-gray-300)" width="auto">
-                            <Select borderColor="transparent" borderLeftRadius="0" height="3rem">
+                          <InputRightElement
+                            borderLeft="1px solid var(--chakra-colors-gray-300)"
+                            width="auto"
+                          >
+                            <Select
+                              borderColor="transparent"
+                              borderLeftRadius="0"
+                              height="3rem"
+                            >
                               <option value="">Un</option>
                             </Select>
                           </InputRightElement>
@@ -121,19 +222,35 @@ function CreateProductPage() {
                       </FormControl>
                     </GridItem>
                   </Grid>
-                  <Flex justifyContent="flex-end" gap="1.5rem" marginTop="1.5rem">
-                    <Link href="/products" passHref legacyBehavior>
-                      <ButtonOutline as="a" height="2.5rem" color="#202020" borderColor="#DCDCDC" background="#FFFFFF">
+                  <Flex
+                    gap="1.5rem"
+                    justifyContent="flex-end"
+                    marginTop="1.5rem"
+                  >
+                    <Link
+                      href="/products"
+                      legacyBehavior
+                      passHref
+                    >
+                      <ButtonOutline
+                        as="a"
+                        background="#FFFFFF"
+                        borderColor="#DCDCDC"
+                        color="#202020"
+                        height="2.5rem"
+                      >
                         Cancelar
                       </ButtonOutline>
                     </Link>
-                    <ButtonPrimary height="2.5rem" background="#1E93FF">
+                    <ButtonPrimary
+                      background="#1E93FF"
+                      height="2.5rem"
+                    >
                       Salvar Novo
                     </ButtonPrimary>
                   </Flex>
                 </TabPanel>
-                <TabPanel padding="1rem 0rem">
-                </TabPanel>
+                <TabPanel padding="1rem 0rem"></TabPanel>
               </TabPanels>
             </Tabs>
           </GridItem>

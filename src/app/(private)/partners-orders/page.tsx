@@ -35,48 +35,86 @@ function PartnersOrdersPage() {
     <PrivateLayout>
       <Box p="2rem">
         <Flex>
-          <Heading w="30%" minW="30%">
+          <Heading
+            minW="30%"
+            w="30%"
+          >
             Visitas
           </Heading>
-          <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            <ButtonFilter placeContent="flex-start" w="22rem" />
-            <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
+          <Flex
+            align="flex-end"
+            gap="1rem"
+            justify="flex-end"
+            minW="70%"
+            w="70%"
+          >
+            <ButtonFilter
+              placeContent="flex-start"
+              w="22rem"
+            />
+            <ButtonOutline
+              borderColor="#1E93FF"
+              color="#1E93FF"
+            >
               Logs
             </ButtonOutline>
-            <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
+            <ButtonOutline
+              borderColor="#1E93FF"
+              color="#1E93FF"
+            >
               Importar
             </ButtonOutline>
-            <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
+            <ButtonOutline
+              borderColor="#1E93FF"
+              color="#1E93FF"
+            >
               Exportar
             </ButtonOutline>
           </Flex>
         </Flex>
-        <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 6 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">
+        <SimpleGrid
+          columns={{ sm: 2, md: 3, lg: 3, xl: 6 }}
+          p="2rem 0"
+          spacing={{ sm: 5, md: 5, lg: 7 }}
+        >
           {cardsContent.map((card, index) => (
             <Card
-              variant="outline"
-              w={{ base: '9rem', xl: '9rem', '2xl': '11rem' }}
-              h={{ base: '6rem', xl: '6rem', '2xl': '9rem' }}
-              justify="center"
-              align="center"
               key={index}
+              align="center"
+              h={{ 'base': '6rem', 'xl': '6rem', '2xl': '9rem' }}
+              justify="center"
+              variant="outline"
+              w={{ 'base': '9rem', 'xl': '9rem', '2xl': '11rem' }}
             >
-              <Text fontWeight="500" fontSize={{ base: '14px', xl: '14px', '2xl': '20px' }}>
+              <Text
+                fontSize={{ 'base': '14px', 'xl': '14px', '2xl': '20px' }}
+                fontWeight="500"
+              >
                 {card.name}
               </Text>
               <Text
-                w={index === 0 ? '6rem' : 'auto'}
-                textAlign={index === 0 ? 'center' : 'initial'}
+                fontSize={{ 'base': '12px', 'xl': '12px', '2xl': '18px' }}
                 fontWeight="700"
-                fontSize={{ base: '12px', xl: '12px', '2xl': '18px' }}
+                textAlign={index === 0 ? 'center' : 'initial'}
+                w={index === 0 ? '6rem' : 'auto'}
               >
                 {card.value}
               </Text>
             </Card>
           ))}
         </SimpleGrid>
-        <TableContainer p="1.5rem 1rem" bg="#fff" borderRadius="12px" mt="2rem">
-          <Table variant="striped" colorScheme="gray" size="xsm" fontSize="12px">
+        <TableContainer
+          bg="#fff"
+          borderRadius="12px"
+          mt="2rem"
+          p="1.5rem 1rem"
+        >
+          <Table
+            colorScheme="gray"
+            fontSize="12px"
+            size="xsm"
+            variant="striped"
+          >
             <Thead h="3rem">
               <Tr>
                 <Th pl="1rem">Status</Th>
@@ -90,9 +128,19 @@ function PartnersOrdersPage() {
             </Thead>
             <Tbody h="3rem">
               {Array.apply(0, Array(10)).map((_, index) => (
-                <Tr key={`tr-${index}`} h="3rem" fontSize="14px">
+                <Tr
+                  key={`tr-${index}`}
+                  fontSize="14px"
+                  h="3rem"
+                >
                   <Td pl="1rem">
-                    <Badge fontSize="12px" color="#F9837C" p="5px" borderRadius="8px" bg="#F9837C20">
+                    <Badge
+                      bg="#F9837C20"
+                      borderRadius="8px"
+                      color="#F9837C"
+                      fontSize="12px"
+                      p="5px"
+                    >
                       Pendente
                     </Badge>
                   </Td>

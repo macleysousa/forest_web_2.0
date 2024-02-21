@@ -1,21 +1,29 @@
-import { TabPanel, Flex, Select, Divider, Box, Input, Text } from '@chakra-ui/react';
-import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { InputLabel } from 'src/components/ui/InputLabel';
-import { Form } from 'src/components/ui/Form';
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Select,
+  TabPanel,
+  Text,
+} from '@chakra-ui/react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { InputLabel } from '../../../../components/InputLabel';
 
-export default function PanelSegmentation() {
+export function PanelSegmentation() {
   const schema = z.object({
-    segment: z.string().min(1, 'Segmento inválido'),
-    partner: z.string().min(1, 'Parceiro inválido'),
     flag: z.string(),
     net: z.string(),
+    partner: z.string().min(1, 'Parceiro inválido'),
+    segment: z.string().min(1, 'Segmento inválido'),
   });
 
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
+  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>(
+    { resolver: zodResolver(schema) },
+  );
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     console.log(data);
@@ -24,28 +32,36 @@ export default function PanelSegmentation() {
   return (
     <TabPanel p="2rem 0">
       <Box
-        maxW="53rem"
-        w={{ md: '100%', lg: '100%', xl: '53rem' }}
-        borderRadius="8px"
-        shadow="sm"
-        p="1rem 2rem 1rem 2rem"
         bg="#fff"
+        borderRadius="8px"
+        maxW="53rem"
+        p="1rem 2rem 1rem 2rem"
+        shadow="sm"
+        // eslint-disable-next-line canonical/sort-keys
+        w={{ md: '100%', lg: '100%', xl: '53rem' }}
       >
-        <Form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <form onSubmit={handleSubmit(onSubmit, console.error)}>
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             align={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Segmento</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.segment?.message}
+              flexDirection="column"
+              my="1rem"
+              // eslint-disable-next-line canonical/sort-keys
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
             >
-              <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Definir o Segmento" {...register('segment')}>
+              <Select
+                // eslint-disable-next-line canonical/sort-keys
+                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                placeholder="Definir o Segmento"
+                {...register('segment')}
+              >
                 <option value="option1">Option 1</option>
                 <option value="option2">Option 2</option>
                 <option value="option3">Option 3</option>
@@ -53,19 +69,26 @@ export default function PanelSegmentation() {
             </InputLabel>
           </Flex>
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Parceiro</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.partner?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
-              <Select ml={{ md: '0', lg: '0', xl: '4rem' }} placeholder="Definir o Parceiro" {...register('partner')}>
+              <Select
+                // eslint-disable-next-line canonical/sort-keys
+                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                placeholder="Definir o Parceiro"
+                {...register('partner')}
+              >
                 <option value="option1">Option 1</option>
                 <option value="option2">Option 2</option>
                 <option value="option3">Option 3</option>
@@ -73,19 +96,23 @@ export default function PanelSegmentation() {
             </InputLabel>
           </Flex>
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Bandeira</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.flag?.message}
+              flexDirection="column"
+              my="1rem"
+              // eslint-disable-next-line canonical/sort-keys
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
             >
               <Select
+                // eslint-disable-next-line canonical/sort-keys
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Definir a Bandeira (quando aplicável)"
                 {...register('flag')}
@@ -97,21 +124,29 @@ export default function PanelSegmentation() {
             </InputLabel>
           </Flex>
           <Flex
+            // eslint-disable-next-line canonical/sort-keys
             alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
+            // eslint-disable-next-line canonical/sort-keys
             flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="7rem">
+            <Text
+              // eslint-disable-next-line canonical/sort-keys
+              mb={{ base: '0', md: '1rem', lg: '1rem' }}
+              minW="7rem"
+            >
               Rede
             </Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.net?.message}
+              flexDirection="column"
+              my="1rem"
+              // eslint-disable-next-line canonical/sort-keys
+              w={{ md: '100%', lg: '100%', xl: '90%' }}
             >
               <Select
+                // eslint-disable-next-line canonical/sort-keys
                 ml={{ md: '0', lg: '0', xl: '4rem' }}
                 placeholder="Definir a Rede (quando aplicável)"
                 {...register('net')}
@@ -125,15 +160,28 @@ export default function PanelSegmentation() {
 
           <Divider my="2rem" />
 
-          <Flex justify="flex-end" align="center">
-            <ButtonOutline w="5.5rem" h="2.5rem">
+          <Flex
+            align="center"
+            justify="flex-end"
+          >
+            <Button
+              h="2.5rem"
+              variant="outline"
+              w="5.5rem"
+            >
               Cancelar
-            </ButtonOutline>
-            <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">
+            </Button>
+            <Button
+              h="2.5rem"
+              ml="1.5rem"
+              type="submit"
+              variant="solid"
+              w="8rem"
+            >
               Salvar
-            </ButtonPrimary>
+            </Button>
           </Flex>
-        </Form>
+        </form>
       </Box>
     </TabPanel>
   );

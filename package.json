@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build-css": "postcss ./src/app/tailwind.css -o ./public/css/styles.css"
+    "prepare": "husky"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.2.0",
@@ -17,8 +17,6 @@
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.4",
     "@tanstack/react-query": "^5.17.19",
-    "@tanstack/react-query-devtools": "^5.18.1",
-    "@types/react-input-mask": "^3.0.5",
     "axios": "^1.6.5",
     "chakra-dayzed-datepicker": "^0.2.10",
     "chart.js": "^4.4.1",
@@ -26,28 +24,35 @@
     "dayzed": "^3.2.3",
     "framer-motion": "^10.18.0",
     "next": "^14.1.0",
-    "nookies": "^2.5.2",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.3",
     "react-icons": "^5.0.1",
     "react-input-mask": "^3.0.0-alpha.2",
-    "react-query": "^3.39.3",
-    "styled-components": "^6.1.8",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@chakra-ui/cli": "^2.4.1",
-    "@types/node": "^20.11.5",
+    "@commitlint/cli": "^18.6.1",
+    "@commitlint/config-conventional": "^18.6.2",
+    "@types/node": "^18.19.17",
     "@types/react": "^18.2.48",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.4.17",
-    "eslint": "^8",
+    "@types/react-input-mask": "^3.0.5",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
-    "postcss": "^8.4.33",
-    "postcss-cli": "^11.0.0",
-    "postcss-preset-env": "^9.3.0",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-canonical": "^4.18.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-typescript-sort-keys": "^3.1.0",
+    "eslint-plugin-unicorn": "^51.0.1",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": "18",
+    "npm": "9"
   }
 }

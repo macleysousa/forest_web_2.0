@@ -1,9 +1,8 @@
 'use client';
-
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Loading } from 'src/components/Loader';
-import { useAuthContext } from 'src/contexts/AuthContext';
+import { Loading } from '../components/Loading';
+import { useAuthContext } from '../contexts/AuthContext';
 
 export default function HomePage() {
   const router = useRouter();
@@ -19,5 +18,5 @@ export default function HomePage() {
     }
   }, [auth.is, router]);
 
-  return <Loading fullScreen />;
+  return <Loading />;
 }
