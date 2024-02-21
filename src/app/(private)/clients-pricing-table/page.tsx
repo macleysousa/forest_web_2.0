@@ -35,7 +35,10 @@ import { ButtonOutline } from 'src/components/ui/ButtonOutline';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 
-const range = (stop: number) => new Array(stop).fill(null).map((_, i) => i);
+const range = (stop: number) =>
+  Array.from({ length: stop })
+    .fill(null)
+    .map((_, i) => i);
 
 function StandardPricingTable() {
   const [modal, setModal] = useState({ open: false, loading: false });
