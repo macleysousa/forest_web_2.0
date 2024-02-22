@@ -52,7 +52,7 @@ function ClientsPage() {
             <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
               Exportar
             </ButtonOutline>
-            <Link href="/clients/new-client" passHref legacyBehavior>
+            <Link href="/customers/new-client" passHref legacyBehavior>
               <ButtonPrimary as="a" w="9rem">
                 Novo
               </ButtonPrimary>
@@ -97,12 +97,10 @@ function ClientsPage() {
               {data?.map((customer, index) => (
                 <Tr key={`tr-${index}`} h="3rem">
                   <Td pl="1rem">{customer?.cnpj}</Td>
-                  <Td
-                    textDecor="underline"
-                    cursor="pointer"
-                    onClick={() => router.push(`/customers/${encodeURIComponent(customer?.id)}`)}
-                  >
-                    {customer?.social_name}
+                  <Td textDecor="underline" cursor="pointer">
+                    <Link href={`/customers/${encodeURIComponent(customer?.id)}`} passHref legacyBehavior>
+                      {customer?.social_name}
+                    </Link>
                   </Td>
                   <Td textAlign="center">{customer?.situation}</Td>
                   <Td textAlign="center">{customer?.validated}</Td>
