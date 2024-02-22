@@ -1,14 +1,17 @@
-import type { GenericAbortSignal } from 'axios';
 import { api } from '../api';
+import type { GenericAbortSignal } from 'axios';
 
-interface GetCustomersPlanningParams {
+/* eslint-disable typescript-sort-keys/interface */
+type GetCustomersPlanningParams = {
   page?: string | undefined;
   actor_id?: string | undefined;
   tree_id?: string | undefined;
   signal?: GenericAbortSignal;
-}
+};
+/* eslint-enable typescript-sort-keys/interface */
 
-interface GetCustomersPlanningResult {
+/* eslint-disable typescript-sort-keys/interface */
+type GetCustomersPlanningResult = {
   status: 'success';
   customers_planning: {
     current_page: number;
@@ -76,10 +79,16 @@ interface GetCustomersPlanningResult {
       sum_volume_mix_target_actors: string;
       diff_sum_volume_mix_target: number;
     };
-  }
-}
+  };
+};
+/* eslint-enable typescript-sort-keys/interface */
 
-export async function getCustomersPlanning({ page, actor_id, tree_id, signal }: GetCustomersPlanningParams) {
+export async function getCustomersPlanning({
+  page,
+  actor_id,
+  tree_id,
+  signal,
+}: GetCustomersPlanningParams) {
   const params: Record<string, string> = {};
 
   if (page !== undefined) params.page = page;
@@ -88,7 +97,7 @@ export async function getCustomersPlanning({ page, actor_id, tree_id, signal }: 
 
   const response = await api.get<GetCustomersPlanningResult>(
     '/v2/customers-planning',
-    { params, signal }
+    { params, signal },
   );
 
   return response.data;

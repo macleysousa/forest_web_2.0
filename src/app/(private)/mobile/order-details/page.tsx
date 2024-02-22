@@ -1,64 +1,76 @@
 'use client';
 
 import {
-  Box,
-  Heading,
-  Flex,
-  Icon,
-  Card,
-  SimpleGrid,
-  Text,
   Badge,
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Flex,
+  Heading,
+  Icon,
+  Select,
+  SimpleGrid,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
-  Select,
-  Button,
-  ButtonGroup,
   useToast,
 } from '@chakra-ui/react';
+
+import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MdApps, MdDescription, MdMail } from 'react-icons/md';
-import { useQuery } from '@tanstack/react-query';
-import { formatCurrency, formatDate, formatDateForQuery } from 'src/commons/formatters';
-import { PrivateLayout } from 'src/components/PrivateLayout';
-import { ButtonFilter } from 'src/components/ui/ButtonFilter';
-import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { isPrivatePage } from 'src/contexts/AuthContext';
-import { getCustomers } from 'src/services/api/customer';
-import { getOrders } from 'src/services/api/orders';
-import DatePicker from 'src/components/ui/DatePicker';
-import Link from 'next/link';
+import { ButtonFilter } from '../../../../components/ButtonFilter';
+import { DatePicker } from '../../../../components/DatePicker';
+import { getCustomers } from '../../../../services/api/customer';
+import { getOrders } from '../../../../services/api/orders';
 
-function OrderDetailsPage() {
+import {
+  formatCurrency,
+  formatDate,
+  formatDateForQuery,
+} from '../../../../utils/formatters';
+
+const cardsContent = [
+  { name: 'Pedidos', value: '374' },
+  { name: 'Pendentes', value: '239' },
+  { name: 'Faturados', value: '22' },
+  { name: 'Cobertura', value: '190' },
+  { name: 'Programados', value: '460' },
+];
+
+export default function OrderDetailsPage() {
   const toast = useToast();
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
-  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([
+    new Date(),
+    new Date(),
+  ]);
 
-  const cardsContent = [
-    { name: 'Pedidos', value: '374' },
-    { name: 'Pendentes', value: '239' },
-    { name: 'Faturados', value: '22' },
-    { name: 'Cobertura', value: '190' },
-    { name: 'Programados', value: '460' },
-  ];
-
-  const { data: customersData } = useQuery({ queryKey: ['customers'], retry: 5, queryFn: getCustomers });
+  const { data: customersData } = useQuery({
+    queryFn: getCustomers,
+    queryKey: ['customers'],
+    retry: 5,
+  });
 
   const {
     data: ordersData,
     error: ordersError,
     refetch: orderRefetch,
   } = useQuery({
+    queryFn: () =>
+      getOrders({
+        dateEnd: formatDateForQuery(selectedDates[1] as Date),
+        dateInit: formatDateForQuery(selectedDates[0] as Date),
+      }),
     queryKey: ['orders'],
     retry: 5,
-    queryFn: () =>
-      getOrders({ dateInit: formatDateForQuery(selectedDates[0]), dateEnd: formatDateForQuery(selectedDates[1]) }),
   });
 
   useEffect(() => {
@@ -74,144 +86,265 @@ function OrderDetailsPage() {
   if (ordersError) handleError(ordersError);
 
   const findCustomerName = (id: string | number) => {
-    const customer = customersData?.find((customer: any) => String(customer.id) === String(id));
-    return customer?.social_name;
+    const customerFound = customersData?.find(
+      (customer) => String(customer.id) === String(id),
+    );
+    return customerFound?.social_name;
   };
 
   return (
-    <PrivateLayout>
-      <Box p="2rem">
-        <Flex>
-          <Heading w="30%" minW="30%">
-            Pedidos App
-          </Heading>
-          <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            <DatePicker onChange={setSelectedDates} />
-            <ButtonFilter placeContent="flex-start" />
+    <Box p="2rem">
+      <Flex>
+        <Heading
+          minW="30%"
+          w="30%"
+        >
+          Pedidos App
+        </Heading>
+        <Flex
+          align="flex-end"
+          gap="1rem"
+          justify="flex-end"
+          minW="70%"
+          w="70%"
+        >
+          <DatePicker onChange={setSelectedDates} />
+          <ButtonFilter placeContent="flex-start" />
+          <Button
+            borderColor={!dashboardStatus ? '#89898970' : 'auto'}
+            color={!dashboardStatus ? '#898989' : 'inherit'}
+            p="0 1rem"
+            variant={!dashboardStatus ? 'outline' : 'primary'}
+            w="9rem"
+            onClick={() => setDashboardStatus(!dashboardStatus)}
+          >
+            <Icon
+              as={MdApps}
+              h="24px"
+              mr="1rem"
+              w="24px"
+            />
+            Dashboard
+          </Button>
+          <Button
+            borderColor="#1E93FF"
+            color="#1E93FF"
+            variant="outline"
+          >
+            Exportar
+          </Button>
+          <Link
+            href={`/mobile/order-details/${encodeURIComponent(' ')}`}
+            legacyBehavior
+            passHref
+          >
             <Button
-              w="9rem"
-              p="0 1rem"
-              onClick={() => setDashboardStatus(!dashboardStatus)}
-              color={!dashboardStatus ? '#898989' : 'inherit'}
-              variant={!dashboardStatus ? 'outline' : 'primary'}
-              borderColor={!dashboardStatus ? '#89898970' : 'auto'}
+              as="a"
+              variant="solid"
             >
-              <Icon as={MdApps} mr="1rem" h="24px" w="24px" />
-              Dashboard
+              Novo Pedido
             </Button>
-            <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
-              Exportar
-            </ButtonOutline>
-            <Link href={`/mobile/order-details/${encodeURIComponent(' ')}`} passHref legacyBehavior>
-              <ButtonPrimary as="a">Novo Pedido</ButtonPrimary>
-            </Link>
-          </Flex>
+          </Link>
         </Flex>
-        {dashboardStatus && (
-          <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 5 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">
-            {cardsContent.map((card, index) => (
-              <Card
-                variant="outline"
-                w={{ base: '9rem', xl: '9rem', '2xl': '11rem' }}
-                h={{ base: '6rem', xl: '6rem', '2xl': '9rem' }}
-                justify="center"
-                align="center"
-                key={index}
+      </Flex>
+      {dashboardStatus && (
+        <SimpleGrid
+          columns={{ lg: 3, md: 3, sm: 2, xl: 5 }}
+          p="2rem 0"
+          spacing={{ lg: 7, md: 5, sm: 5 }}
+        >
+          {cardsContent.map((card, index) => (
+            <Card
+              key={index}
+              align="center"
+              h={{ '2xl': '9rem', 'base': '6rem', 'xl': '6rem' }}
+              justify="center"
+              variant="outline"
+              w={{ '2xl': '11rem', 'base': '9rem', 'xl': '9rem' }}
+            >
+              <Text
+                fontSize={{ '2xl': '20px', 'base': '14px', 'xl': '14px' }}
+                fontWeight="500"
               >
-                <Text fontWeight="500" fontSize={{ base: '14px', xl: '14px', '2xl': '20px' }}>
-                  {card.name}
-                </Text>
-                <Text fontWeight="700" fontSize={{ base: '36px', xl: '36px', '2xl': '42px' }}>
-                  {card.value}
-                </Text>
-              </Card>
-            ))}
-          </SimpleGrid>
-        )}
-        <TableContainer p="1.5rem 1rem" bg="#fff" borderRadius="12px" mt={!dashboardStatus ? '2rem' : '0'}>
-          <Table variant="striped" colorScheme="gray" size="xsm" fontSize="12px">
-            <Thead h="3rem">
-              <Tr>
-                <Th pl="1rem" w="18%">
-                  Status
-                </Th>
-                <Th textAlign="center">Data</Th>
-                <Th textAlign="center">Pedido</Th>
-                <Th textAlign="center">Vendedor</Th>
-                <Th textAlign="center">Ator</Th>
-                <Th textAlign="center">Cliente</Th>
-                <Th textAlign="center">Pagamento</Th>
-                <Th textAlign="center">Valor Pedido</Th>
-              </Tr>
-            </Thead>
-            <Tbody h="3rem">
-              {ordersData?.orders.map((order, index) => (
-                <Tr key={`tr-${index}`} h="3rem" fontSize="14px">
-                  <Td pl="1rem">
-                    <Badge fontSize="12px" color="#1E93FF" p="5px" borderRadius="8px" bg="#1E93FF20">
-                      {order.status}
-                    </Badge>
-                  </Td>
-                  <Td textAlign="center">{formatDate({ date: order.date_sync, showHours: true })}</Td>
-                  <Td textDecor="underline" color="#1E93FF" textAlign="center" cursor="pointer">
-                    <Link href={`/mobile/order-details/${encodeURIComponent(order.id)}`} passHref legacyBehavior>
-                      {order.id}
-                    </Link>
-                  </Td>
-                  <Td textAlign="center">{order.customer_id}</Td>
-                  <Td textAlign="center">??</Td>
-                  <Td textAlign="center" w="15%">
-                    <Box maxW="10rem" overflow="hidden" textOverflow="ellipsis" as="span" display="inline-block">
-                      {findCustomerName(order.customer_id)}
-                    </Box>
-                    <Icon as={MdDescription} mx=".25rem" w="16px" h="16px" />
-                    <Icon as={MdMail} mx=".25rem" w="16px" h="16px" />
-                  </Td>
-                  <Td textAlign="center">{order.payment_option_id} ??</Td>
-                  <Td textAlign="center">{formatCurrency(Number(order.total_value))}</Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-        <Flex w="100%" justify="space-between" my="2rem" fontSize="14px" color="#898989">
-          <Flex w="50%" align="center">
-            <Text>Mostrando</Text>
-            <Select w="4.5rem" h="2rem" mx="1rem">
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-            </Select>
-            <Text>Itens por página</Text>
-          </Flex>
-          <Box>
-            <ButtonGroup spacing={6}>
-              <Button
-                h="2rem"
-                w="2rem"
+                {card.name}
+              </Text>
+              <Text
+                fontSize={{ '2xl': '42px', 'base': '36px', 'xl': '36px' }}
+                fontWeight="700"
+              >
+                {card.value}
+              </Text>
+            </Card>
+          ))}
+        </SimpleGrid>
+      )}
+      <TableContainer
+        bg="#fff"
+        borderRadius="12px"
+        mt={!dashboardStatus ? '2rem' : '0'}
+        p="1.5rem 1rem"
+      >
+        <Table
+          colorScheme="gray"
+          fontSize="12px"
+          size="xsm"
+          variant="striped"
+        >
+          <Thead h="3rem">
+            <Tr>
+              <Th
+                pl="1rem"
+                w="18%"
+              >
+                Status
+              </Th>
+              <Th textAlign="center">Data</Th>
+              <Th textAlign="center">Pedido</Th>
+              <Th textAlign="center">Vendedor</Th>
+              <Th textAlign="center">Ator</Th>
+              <Th textAlign="center">Cliente</Th>
+              <Th textAlign="center">Pagamento</Th>
+              <Th textAlign="center">Valor Pedido</Th>
+            </Tr>
+          </Thead>
+          <Tbody h="3rem">
+            {ordersData?.orders.map((order, index) => (
+              <Tr
+                key={`tr-${index}`}
                 fontSize="14px"
-                variant="outline"
-                colorScheme="white"
-                borderColor="#1E93FF"
-                color="#898989"
+                h="3rem"
               >
-                1
-              </Button>
-              <Button h="2rem" w="2rem" fontSize="14px" variant="ghost" color="#898989">
-                2
-              </Button>
-              <Button h="2rem" w="2rem" fontSize="14px" variant="ghost" color="#898989">
-                Prox.
-              </Button>
-              <Button h="2rem" w="2rem" fontSize="14px" variant="ghost" color="#898989">
-                Fim
-              </Button>
-            </ButtonGroup>
-          </Box>
+                <Td pl="1rem">
+                  <Badge
+                    bg="#1E93FF20"
+                    borderRadius="8px"
+                    color="#1E93FF"
+                    fontSize="12px"
+                    p="5px"
+                  >
+                    {order.status}
+                  </Badge>
+                </Td>
+                <Td textAlign="center">
+                  {formatDate({ date: order.date_sync, showHours: true })}
+                </Td>
+                <Td
+                  color="#1E93FF"
+                  cursor="pointer"
+                  textAlign="center"
+                  textDecor="underline"
+                >
+                  <Link
+                    href={`/mobile/order-details/${encodeURIComponent(order.id)}`}
+                    legacyBehavior
+                    passHref
+                  >
+                    {order.id}
+                  </Link>
+                </Td>
+                <Td textAlign="center">{order.customer_id}</Td>
+                <Td textAlign="center">??</Td>
+                <Td
+                  textAlign="center"
+                  w="15%"
+                >
+                  <Box
+                    as="span"
+                    display="inline-block"
+                    maxW="10rem"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                  >
+                    {findCustomerName(order.customer_id)}
+                  </Box>
+                  <Icon
+                    as={MdDescription}
+                    h="16px"
+                    mx=".25rem"
+                    w="16px"
+                  />
+                  <Icon
+                    as={MdMail}
+                    h="16px"
+                    mx=".25rem"
+                    w="16px"
+                  />
+                </Td>
+                <Td textAlign="center">{order.payment_option_id} ??</Td>
+                <Td textAlign="center">
+                  {formatCurrency(Number(order.total_value))}
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+      <Flex
+        color="#898989"
+        fontSize="14px"
+        justify="space-between"
+        my="2rem"
+        w="100%"
+      >
+        <Flex
+          align="center"
+          w="50%"
+        >
+          <Text>Mostrando</Text>
+          <Select
+            h="2rem"
+            mx="1rem"
+            w="4.5rem"
+          >
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </Select>
+          <Text>Itens por página</Text>
         </Flex>
-      </Box>
-    </PrivateLayout>
+        <Box>
+          <ButtonGroup spacing={6}>
+            <Button
+              borderColor="#1E93FF"
+              color="#898989"
+              colorScheme="white"
+              fontSize="14px"
+              h="2rem"
+              variant="outline"
+              w="2rem"
+            >
+              1
+            </Button>
+            <Button
+              color="#898989"
+              fontSize="14px"
+              h="2rem"
+              variant="ghost"
+              w="2rem"
+            >
+              2
+            </Button>
+            <Button
+              color="#898989"
+              fontSize="14px"
+              h="2rem"
+              variant="ghost"
+              w="2rem"
+            >
+              Prox.
+            </Button>
+            <Button
+              color="#898989"
+              fontSize="14px"
+              h="2rem"
+              variant="ghost"
+              w="2rem"
+            >
+              Fim
+            </Button>
+          </ButtonGroup>
+        </Box>
+      </Flex>
+    </Box>
   );
 }
-
-export default isPrivatePage(OrderDetailsPage);

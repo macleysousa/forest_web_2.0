@@ -1,19 +1,14 @@
 {
-  "editor.formatOnSave": true,
-  "explorer.compactFolders": false,
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.encoding": "utf8",
   "files.eol": "\n",
-  "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features",
-    "files.insertFinalNewline": false,
-  },
-  "[css]": {
-    "editor.defaultFormatter": "vscode.css-language-features"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit"
-  },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+  "[javascript]": { "editor.formatOnSave": true },
+  "[typescript]": { "editor.formatOnSave": true },
+  "[typescriptreact]": { "editor.formatOnSave": true },
 }

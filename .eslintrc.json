@@ -1,17 +1,89 @@
 {
-  "extends": "next/core-web-vitals",
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["canonical", "typescript-sort-keys", "unicorn"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/stylistic",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "next/core-web-vitals",
+    "plugin:prettier/recommended"
+  ],
+  "parserOptions": {
+    "project": "tsconfig.json"
+  },
+  "settings": {
+    "import/resolver": { "typescript": true }
+  },
   "rules": {
-    "quotes": [
+    // eslint rules
+    "no-shadow": "warn",
+    "sort-imports": ["warn", { "ignoreDeclarationSort": true }],
+
+    // unicorn rules
+    "unicorn/no-new-array": "warn",
+    "unicorn/explicit-length-check": "warn",
+    "unicorn/prefer-node-protocol": "warn",
+    // "unicorn/no-anonymous-default-export": "warn", /* unavaliable at present moment (2024-02-21) */
+
+    // import rules
+    "import/no-default-export": "warn",
+    "import/order": [
       "warn",
-      "single"
+      {
+        "groups": ["builtin", "external", "parent", "sibling", "index", "type"],
+        "alphabetize": { "order": "asc", "orderImportKind": "asc" }
+      }
     ],
-    "semi": [
+
+    // canonical rules
+    "canonical/sort-keys": ["warn", "asc", { "natural": true }],
+
+    // typescript-eslint rules
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-confusing-non-null-assertion": "error",
+    "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+    "@typescript-eslint/array-type": ["warn", { "default": "array-simple" }],
+
+    // typescript-sort-keys rule
+    "typescript-sort-keys/interface": [
       "warn",
-      "always"
+      "asc",
+      { "natural": true, "requiredFirst": false }
     ],
-    "comma-dangle": [
+
+    // react rules
+    "react/jsx-no-useless-fragment": "warn",
+    "react/jsx-sort-props": [
       "warn",
-      "always-multiline"
-    ]
-  }
+      {
+        "callbacksLast": true,
+        "shorthandLast": true,
+        "multiline": "last",
+        "reservedFirst": true
+      }
+    ],
+
+    // prettier rules
+    "prettier/prettier": "warn"
+  },
+  "overrides": [
+    {
+      // allow default export in next.js files
+      // https://nextjs.org/docs/app/api-reference/file-conventions
+      "files":[
+        "src/app/loading.tsx",
+        "src/app/**/template.tsx",
+        "src/app/**/layout.tsx",
+        "src/app/**/page.tsx"
+      ],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    }
+  ]
 }

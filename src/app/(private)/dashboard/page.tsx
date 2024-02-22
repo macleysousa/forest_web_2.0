@@ -14,53 +14,100 @@ import {
   Text,
 } from '@chakra-ui/react';
 
+import { useEffect, useState } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
-import { PrivateLayout } from 'src/components/PrivateLayout';
-import { ButtonFilter } from 'src/components/ui/ButtonFilter';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import CardGraphicList from 'src/components/ui/CardGraphicList';
-import CardInfo from 'src/components/ui/CardInfo';
-import DatePicker from 'src/components/ui/DatePicker';
-import { PrivatePageProps, isPrivatePage } from 'src/contexts/AuthContext';
+import { ButtonFilter } from '../../../components/ButtonFilter';
+import { CardGraphicList } from '../../../components/CardGraphicList';
+import { CardInfo } from '../../../components/CardInfo';
+import { DatePicker } from '../../../components/DatePicker';
+import { AuthUser, useAuthContext } from '../../../contexts/AuthContext';
 
-function DashboardPage({ user }: PrivatePageProps) {
-  const content = [
-    { name: 'Montadoras', value: '333.678' },
-    { name: 'Postos', value: '234.555' },
-    { name: 'Concessionárias Credenciadas', value: '123.456' },
-    { name: 'Oficinas', value: '98.765' },
-    { name: 'Revendedores', value: '210.987' },
-  ];
+const content = [
+  { name: 'Montadoras', value: '333.678' },
+  { name: 'Postos', value: '234.555' },
+  { name: 'Concessionárias Credenciadas', value: '123.456' },
+  { name: 'Oficinas', value: '98.765' },
+  { name: 'Revendedores', value: '210.987' },
+];
+
+export default function DashboardPage() {
+  const auth = useAuthContext();
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    setUser(auth.is === 'authenticated' ? auth.user : null);
+  }, [auth]);
 
   return (
-    <PrivateLayout>
+    <>
       <Box p="2rem">
-        <Flex w="100%" justify="space-between">
-          <Heading minW="30%" w="30%">
-            <Text fontSize="36px" fontWeight="600">
+        <Flex
+          justify="space-between"
+          w="100%"
+        >
+          <Heading
+            minW="30%"
+            w="30%"
+          >
+            <Text
+              fontSize="36px"
+              fontWeight="600"
+            >
               Olá, {user?.user.name}
             </Text>
-            <Text fontSize="14px" fontWeight="400" mt="1rem">
+            <Text
+              fontSize="14px"
+              fontWeight="400"
+              mt="1rem"
+            >
               Visualização das principais KPIs
             </Text>
           </Heading>
-          <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
+          <Flex
+            align="flex-end"
+            gap="1rem"
+            justify="flex-end"
+            minW="70%"
+            w="70%"
+          >
             <DatePicker onChange={(date) => console.log(date)} />
-
             <Popover>
               <PopoverTrigger>
-                <Button variant="outline" bg="#fff" w={{ lg: '12rem', xl: '16rem' }} p="0 1rem">
-                  <Text fontWeight="400" color="#898989" mr=".5rem">
+                <Button
+                  bg="#fff"
+                  p="0 1rem"
+                  variant="outline"
+                  w={{ lg: '12rem', xl: '16rem' }}
+                >
+                  <Text
+                    color="#898989"
+                    fontWeight="400"
+                    mr=".5rem"
+                  >
                     Ator:
                   </Text>
-                  <Text fontWeight="400" overflow="hidden" textOverflow="ellipsis">
+                  <Text
+                    fontWeight="400"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                  >
                     Defina os atores
                   </Text>
-                  <Icon ml="auto" as={MdArrowDropDown} />
+                  <Icon
+                    as={MdArrowDropDown}
+                    ml="auto"
+                  />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent w="17rem" p="1rem">
-                <Text fontWeight="600" fontSize="24px" mb=".75rem">
+              <PopoverContent
+                p="1rem"
+                w="17rem"
+              >
+                <Text
+                  fontSize="24px"
+                  fontWeight="600"
+                  mb=".75rem"
+                >
                   Atores
                 </Text>
                 <Checkbox my=".5rem">3R</Checkbox>
@@ -71,93 +118,109 @@ function DashboardPage({ user }: PrivatePageProps) {
                 <Checkbox my=".5rem">Eutotech</Checkbox>
               </PopoverContent>
             </Popover>
-
             <ButtonFilter w="8rem" />
-            <ButtonPrimary minW="5.5rem">Atualizar</ButtonPrimary>
+            <Button>Atualizar</Button>
           </Flex>
         </Flex>
       </Box>
-      <SimpleGrid columns={{ lg: 2, xl: 3, '2xl': 4, '3xl': 4 }} spacing={5} p="1rem 2rem">
+      <SimpleGrid
+        // eslint-disable-next-line canonical/sort-keys
+        columns={{ 'lg': 2, 'xl': 3, '2xl': 4, '3xl': 4 }}
+        p="1rem 2rem"
+        spacing={5}
+      >
         <CardInfo
+          h={{ '3xl': '11rem' }}
+          month="Jan"
           title="Faturamento"
+          type="down"
           value="R$22.880,50"
-          type="down"
           variation="21%"
-          month="Jan"
           w={{ '3xl': '25rem' }}
-          h={{ '3xl': '11rem' }}
         />
         <CardInfo
+          h={{ '3xl': '11rem' }}
+          month="Jan"
           title="Volume Mix"
-          value="715"
           type="up"
+          value="715"
           variation="21%"
-          month="Jan"
           w={{ '3xl': '25rem' }}
-          h={{ '3xl': '11rem' }}
         />
         <CardInfo
+          h={{ '3xl': '11rem' }}
+          month="Jan"
           title="Cobertura"
-          value="209"
           type="down"
+          value="209"
           variation="21%"
-          month="Jan"
           w={{ '3xl': '25rem' }}
-          h={{ '3xl': '11rem' }}
         />
         <CardInfo
+          h={{ '3xl': '11rem' }}
+          month="Jan"
           title="Ticket Médio"
+          type="up"
           value="R$685,90"
-          type="up"
           variation="+21%"
-          month="Jan"
           w={{ '3xl': '25rem' }}
-          h={{ '3xl': '11rem' }}
         />
         <CardInfo
-          title="Volume Mix"
-          value="715"
-          type="up"
-          variation="21%"
-          month="Jan"
-          w={{ '3xl': '25rem' }}
           h={{ '3xl': '11rem' }}
+          month="Jan"
+          title="Volume Mix"
+          type="up"
+          value="715"
+          variation="21%"
+          w={{ '3xl': '25rem' }}
         />
         <CardInfo
-          title="Volume Mix"
-          value="715"
-          type="up"
-          variation="21%"
-          month="Jan"
-          w={{ '3xl': '25rem' }}
           h={{ '3xl': '11rem' }}
+          month="Jan"
+          title="Volume Mix"
+          type="up"
+          value="715"
+          variation="21%"
+          w={{ '3xl': '25rem' }}
         />
         <CardInfo
-          title="Volume Mix"
-          value="715"
-          type="up"
-          variation="21%"
-          month="Jan"
-          w={{ '3xl': '25rem' }}
           h={{ '3xl': '11rem' }}
+          month="Jan"
+          title="Volume Mix"
+          type="up"
+          value="715"
+          variation="21%"
+          w={{ '3xl': '25rem' }}
         />
         <CardInfo
-          title="Volume Mix"
-          value="715"
-          type="up"
-          variation="21%"
-          month="Jan"
-          w={{ '3xl': '25rem' }}
           h={{ '3xl': '11rem' }}
+          month="Jan"
+          title="Volume Mix"
+          type="up"
+          value="715"
+          variation="21%"
+          w={{ '3xl': '25rem' }}
         />
       </SimpleGrid>
-      <SimpleGrid columns={{ md: 1, lg: 2, xl: 2, '2xl': 3 }} spacing={7} p="1rem 2rem">
-        <CardGraphicList data={content} title="Top Cidades" />
-        <CardGraphicList data={content} title="Top Segmentos" />
-        <CardGraphicList data={content} title="Top Parceiros" />
+      <SimpleGrid
+        // eslint-disable-next-line canonical/sort-keys
+        columns={{ 'md': 1, 'lg': 2, 'xl': 2, '2xl': 3 }}
+        p="1rem 2rem"
+        spacing={7}
+      >
+        <CardGraphicList
+          data={content}
+          title="Top Cidades"
+        />
+        <CardGraphicList
+          data={content}
+          title="Top Segmentos"
+        />
+        <CardGraphicList
+          data={content}
+          title="Top Parceiros"
+        />
       </SimpleGrid>
-    </PrivateLayout>
+    </>
   );
 }
-
-export default isPrivatePage(DashboardPage);
