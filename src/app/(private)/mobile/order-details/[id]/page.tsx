@@ -28,12 +28,15 @@ import {
   Image,
   Thead,
   useToast,
+  InputGroup,
+  Center,
 } from '@chakra-ui/react';
 import {
   MdArrowDropDown,
   MdCheckCircle,
   MdClose,
   MdDescription,
+  MdEventNote,
   MdFileDownload,
   MdLocalShipping,
   MdMoreHoriz,
@@ -47,89 +50,28 @@ import { IoMdEye, IoMdEyeOff, IoMdTrash } from 'react-icons/io';
 import { useEffect, useState } from 'react';
 import { BiSolidEditAlt } from 'react-icons/bi';
 import { formatCurrency } from 'src/commons/formatters';
+import { useQuery } from '@tanstack/react-query';
+import { getOrderById } from 'src/services/api/ordersDetailId';
+import { SingleDatepicker } from 'chakra-dayzed-datepicker';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 type CommentsType = 'order' | 'billing';
+type OrderProductType = { product: { name: string }; product_code: string; quantity: number; unity_price: string };
 
 function ShowOrderPage() {
-  const productsExample = [
-    {
-      id: 1,
-      code: 'ST-1231BR',
-      name: 'ST-1231BR - 1030003 - DIESEL OIL TREATMENT 12X450ML',
-      unity: 'CX',
-      amount: 12,
-      category_id: 1,
-      status: 1,
-      image: 'products/ST-1231BR.png',
-      inventory: null,
-      product_price_actor_default: {
-        id: 7109,
-        tree_id: 1,
-        actor_id: 838,
-        product_id: 1,
-        price: '586.38',
-        price_alt_1: '601.38',
-        price_alt_2: '616.38',
-        price_alt_3: '631.38',
-        price_alt_4: '646.38',
-        price_alt_5: '661.38',
-        price_alt_6: '676.38',
-        price_alt_7: null,
-        price_alt_8: null,
-        price_alt_9: null,
-        price_alt_10: null,
-        updated_by_user_id: 556,
-        deleted_by_user_id: null,
-        created_at: '2020-07-29T16:15:51.000000Z',
-        updated_at: '2020-07-29T16:15:51.000000Z',
-        deleted_at: null,
-      },
-    },
-    {
-      id: 2,
-      code: 'ST-1503BR',
-      name: 'ST-1503BR - 1030001 - OIL TREATMENT 24X450ML',
-      unity: 'CX',
-      amount: 24,
-      category_id: 1,
-      status: 1,
-      image: 'products/ST-1503BR.png',
-      inventory: null,
-      product_price_actor_default: {
-        id: 7111,
-        tree_id: 1,
-        actor_id: 838,
-        product_id: 2,
-        price: '786.98',
-        price_alt_1: '816.98',
-        price_alt_2: '846.98',
-        price_alt_3: '876.98',
-        price_alt_4: '906.98',
-        price_alt_5: '936.98',
-        price_alt_6: '966.98',
-        price_alt_7: null,
-        price_alt_8: null,
-        price_alt_9: null,
-        price_alt_10: null,
-        updated_by_user_id: 556,
-        deleted_by_user_id: null,
-        created_at: '2020-07-29T16:15:51.000000Z',
-        updated_at: '2020-07-29T16:15:51.000000Z',
-        deleted_at: null,
-      },
-    },
-  ];
-
   const params = useParams();
   const toast = useToast();
 
   const [isContentVisible, setIsContentVisible] = useState<boolean>(true);
   const [pageStatus, setPageStatus] = useState<PageStatusType>('create');
   const [currentComments, setCurrentComments] = useState<CommentsType>('order');
+  const [newProducts, setNewProducts] = useState<OrderProductType[]>([]);
+  const [date, setDate] = useState(new Date());
 
   const canShowContent = isContentVisible && pageStatus !== 'create';
   const isValidParam = params?.id !== ' ' && !!Number(params?.id);
+
+  const { data } = useQuery({ queryKey: ['order', params.id], queryFn: () => getOrderById(String(params?.id)) });
 
   useEffect(() => {
     if (isValidParam) setPageStatus('show');
@@ -161,7 +103,7 @@ function ShowOrderPage() {
                   Visualizar PDF
                 </ButtonOutline>
                 <ButtonPrimary w="9rem" p="0 1rem">
-                  [Status Pedido]
+                  [{data?.status}]
                 </ButtonPrimary>
               </>
             )}
@@ -177,7 +119,7 @@ function ShowOrderPage() {
                     <Icon as={MdViewWeek} color="#1E93FF" h="24px" w="24px" />
                   </Flex>
                   <Text my=".5rem" fontWeight="700" fontSize="24px">
-                    {canShowContent ? '29.8' : '--'}
+                    {canShowContent ? data?.total_quantity_mix : '--'}
                   </Text>
                 </CardHeader>
               </Card>
@@ -188,14 +130,14 @@ function ShowOrderPage() {
                     <Icon as={IoBagCheckSharp} color="#1E93FF" h="24px" w="24px" />
                   </Flex>
                   <Text my=".5rem" fontWeight="700" fontSize="24px">
-                    {canShowContent ? '31' : '--'} csx
+                    {canShowContent ? data?.total_quantity : '--'} csx
                   </Text>
                 </CardHeader>
               </Card>
               <Card w="17rem" h="8rem">
                 <CardHeader>
                   <Flex justify="space-between">
-                    <Text>Volume do Pedido</Text>
+                    <Text>Valor do Pedido</Text>
                     <Flex>
                       <Icon
                         onClick={() => setIsContentVisible(!isContentVisible)}
@@ -209,7 +151,7 @@ function ShowOrderPage() {
                     </Flex>
                   </Flex>
                   <Text my=".5rem" fontWeight="700" fontSize="24px">
-                    {canShowContent ? 'R$5.986,92' : 'R$ --'}
+                    {canShowContent ? data?.total_value : 'R$ --'}
                   </Text>
                 </CardHeader>
               </Card>
@@ -217,7 +159,7 @@ function ShowOrderPage() {
 
             <Card minW="29.5rem" px="1rem">
               <CardHeader display="flex" justifyContent="space-between">
-                <Text>--</Text>
+                <Text>{canShowContent ? data?.customer?.fantasy_name : '--'}</Text>
                 <Menu placement="bottom-end">
                   <MenuButton>
                     <Icon as={MdMoreHoriz} h="24px" w="24px" cursor="pointer" />
@@ -256,39 +198,63 @@ function ShowOrderPage() {
                     {pageStatus === 'create' ? (
                       <Input w="50%" h="2rem" bg="#fff" placeholder="Nome ou CNPJ" />
                     ) : (
-                      <Text>{canShowContent ? '20.360.416/0001-28' : '--'}</Text>
+                      <Text>{canShowContent ? data?.customer?.cnpj : '--'}</Text>
                     )}
                   </Flex>
                   <Flex justify="space-between" my="1rem">
                     <Text color="#898989">Endereço</Text>
                     <Flex direction="column" align="flex-end" gap=".75rem" minW="6rem">
-                      <Text>{canShowContent ? 'Rua, Número' : '--'}</Text>
-                      <Text>{canShowContent ? 'Cidade - Estado' : '--'}</Text>
-                      <Text>{canShowContent ? 'CEP' : '--'}</Text>
+                      <Text>
+                        {canShowContent ? `${data?.customer.address.address}, ${data?.customer.address.number}` : '--'}
+                      </Text>
+                      <Text>
+                        {canShowContent ? `${data?.customer.address.city} - ${data?.customer.address.state}` : '--'}
+                      </Text>
+                      <Text>{canShowContent ? data?.customer.address.zip : '--'}</Text>
                     </Flex>
                   </Flex>
                   <Flex justify="space-between">
                     <Text color="#898989">Grupo</Text>
-                    <Text>{canShowContent ? 'Postos JetOil' : ''}</Text>
+                    <Text>{canShowContent ? data?.customer.cnpj : ''}</Text>
                   </Flex>
                 </Box>
                 <Divider orientation="vertical" />
                 <Flex p="1rem" w="50%" direction="column" justify="space-between">
                   <Flex justify="space-between">
                     <Text color="#898989">Data do Pedido</Text>
-                    <Text>10 Fev 2023 às 13h43</Text>
+                    {pageStatus === 'create' ? (
+                      <Flex border="1px solid #DCDCDC" w="50%" align="center" pr="1rem" borderRadius={5}>
+                        <SingleDatepicker
+                          name="date-input"
+                          date={date}
+                          onDateChange={setDate}
+                          propsConfigs={{
+                            inputProps: {
+                              placeholder: 'Data do Pedido',
+                              w: '90%',
+                              h: '2rem',
+                              bg: '#fff',
+                              border: 'none',
+                            },
+                          }}
+                        />
+                        <Icon as={MdEventNote} />
+                      </Flex>
+                    ) : (
+                      <Text>{data?.date}</Text>
+                    )}
                   </Flex>
                   <Flex justify="space-between">
                     <Text color="#898989">Data do Envio</Text>
-                    <Text>-</Text>
+                    <Text>{data?.date_send || '-'}</Text>
                   </Flex>
                   <Flex justify="space-between">
                     <Text color="#898989">Data do Faturamento</Text>
-                    <Text>-</Text>
+                    <Text>{data?.date_billing || '-'}</Text>
                   </Flex>
                   <Flex justify="space-between">
                     <Text color="#898989">Nota Fiscal</Text>
-                    <Text>-</Text>
+                    <Text>{data?.order_nfes || '-'}</Text>
                   </Flex>
                 </Flex>
               </Box>
@@ -306,7 +272,7 @@ function ShowOrderPage() {
                       <Text w="17.5%">Total (R$)</Text>
                     </Flex>
 
-                    {Array.apply(0, Array(3)).map((_, index) => (
+                    {newProducts.map((product, index) => (
                       <Flex
                         w="100%"
                         h="4rem"
@@ -316,7 +282,7 @@ function ShowOrderPage() {
                         key={`create-edit-${index}`}
                       >
                         <Text bg="#fff" w="30%" pl="1rem">
-                          Nome ou Código
+                          {product.product_code}
                         </Text>
                         <Text bg="#fff" w="17.5%" pl="1rem">
                           Qtd.
@@ -372,7 +338,7 @@ function ShowOrderPage() {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      {productsExample.map((product, index) => (
+                      {data?.order_products.map((product, index) => (
                         <Tr key={`product-${index}`}>
                           <Td pl="1rem" w="20%">
                             <Flex align="center">
@@ -385,22 +351,22 @@ function ShowOrderPage() {
                                 whiteSpace="nowrap"
                                 maxW="10rem"
                               >
-                                {canShowContent ? product.name : '--'}
+                                {canShowContent ? product.product.name : '--'}
                               </Text>
                             </Flex>
                           </Td>
                           <Td pl="3rem" w="20%">
-                            {canShowContent ? product.amount : '--'}
+                            {canShowContent ? product.product.amount : '--'}
                           </Td>
                           <Td px="0" w="20%">
-                            {canShowContent ? product.code : '--'}
+                            {canShowContent ? product.product.code : '--'}
                           </Td>
                           <Td px="0" w="20%">
-                            {canShowContent ? formatCurrency(Number(product.product_price_actor_default.price)) : '--'}
+                            {canShowContent ? formatCurrency(Number(product.unity_price)) : '--'}
                           </Td>
                           <Td px="0" w="20%">
                             {canShowContent
-                              ? formatCurrency(Number(product.product_price_actor_default.price) * product.amount)
+                              ? formatCurrency(Number(product.unity_price) * product.product.amount)
                               : '--'}
                           </Td>
                         </Tr>
@@ -422,7 +388,7 @@ function ShowOrderPage() {
                       <Text color="#898989">Total de CXs</Text>
                       <Text>
                         {canShowContent
-                          ? productsExample.reduce((acc, product) => acc + Number(product.amount), 0)
+                          ? data?.order_products.reduce((acc, product) => acc + Number(product.product.amount), 0)
                           : '-'}
                       </Text>
                     </Flex>
@@ -431,14 +397,15 @@ function ShowOrderPage() {
                       <Text>TOTAL</Text>
                       <Text>
                         {canShowContent
-                          ? formatCurrency(
-                              productsExample.reduce(
-                                (acc, product) =>
-                                  acc + Number(product.product_price_actor_default.price) * Number(product.amount),
-                                0
-                              )
-                            )
-                          : '--'}
+                          ? 0
+                          : // ? formatCurrency(
+                            //     data?.order_products.reduce(
+                            //       (acc, product) =>
+                            //         acc + Number(product.total_price ?? 0) * Number(product.product.amount ?? 0),
+                            //       0
+                            //     )
+                            //   )
+                            '--'}
                       </Text>
                     </Flex>
                   </Box>
