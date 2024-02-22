@@ -18,9 +18,8 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MdApps } from 'react-icons/md';
 import { ButtonFilter } from '../../../../components/ButtonFilter';
@@ -29,8 +28,6 @@ import { getVisits } from '../../../../services/api/visits';
 import { formatDate, formatDateForQuery } from '../../../../utils/formatters';
 
 export default function VisitsPage() {
-  const router = useRouter();
-
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
   const [selectedDates, setSelectedDates] = useState<Date[]>([
     new Date(),
@@ -246,13 +243,14 @@ export default function VisitsPage() {
                   cursor="pointer"
                   textAlign="center"
                   textDecor="underline"
-                  onClick={() =>
-                    router.push(
-                      `/mobile/order-details/${encodeURIComponent(visit.id)}`,
-                    )
-                  }
                 >
-                  {visit.id} ??
+                  <Link
+                    href={`/mobile/order-details/${encodeURIComponent(visit.id)}`}
+                    legacyBehavior
+                    passHref
+                  >
+                    {visit.id + ' ??'}
+                  </Link>
                 </Td>
                 <Td textAlign="center">{visit.visit_comments || 'NC'}</Td>
                 <Td textAlign="center">

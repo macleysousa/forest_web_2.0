@@ -19,61 +19,27 @@ import {
 } from '@chakra-ui/react';
 
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ButtonFilter } from '../../../components/ButtonFilter';
 import { getCustomers } from '../../../services/api/customer';
 
 export default function ClientsPage() {
-  const router = useRouter();
-
   const { data } = useQuery({
     queryFn: getCustomers,
     queryKey: ['customers'],
     retry: 5,
   });
 
+  /* eslint-disable prettier/prettier */
   const cardsContent = [
-    {
-      name: 'Clientes',
-      value: data?.reduce((acc) => acc + 1, 0),
-    },
-    {
-      name: 'Inadimplentes',
-      value: '?',
-    },
-    {
-      name: 'Prospectos',
-      value: data?.reduce(
-        (acc, curr) => (curr.status === 'Prospect' ? acc + 1 : acc),
-        0,
-      ),
-    },
-    {
-      name: 'Inativos',
-      value: data?.reduce(
-        (acc, curr) => (curr.status === 'Inactive' ? acc + 1 : acc),
-        0,
-      ),
-    },
-    {
-      name: 'Ativos',
-      value: data?.reduce(
-        (acc, curr) => (curr.status === 'Active' ? acc + 1 : acc),
-        0,
-      ),
-    },
-    {
-      name: 'Roteirizados',
-      value: data?.reduce(
-        (acc, curr) => (curr.status === 'Routed' ? acc + 1 : acc),
-        0,
-      ),
-    },
+    { name: 'Clientes', value: data?.reduce((acc) => acc + 1, 0) },
+    { name: 'Inadimplentes', value: '?' },
+    { name: 'Prospectos', value: data?.reduce((acc, curr) => (curr.status === 'Prospect' ? acc + 1 : acc), 0) },
+    { name: 'Inativos', value: data?.reduce((acc, curr) => (curr.status === 'Inactive' ? acc + 1 : acc), 0) },
+    { name: 'Ativos', value: data?.reduce((acc, curr) => (curr.status === 'Active' ? acc + 1 : acc), 0) },
+    { name: 'Roteirizados', value: data?.reduce((acc, curr) => (curr.status === 'Routed' ? acc + 1 : acc), 0) },
   ];
-
-  const handleNewClient = () => {
-    router.push('/clients/new-client');
-  };
+  /* eslint-enable prettier/prettier */
 
   return (
     <Box p="2rem">
@@ -102,13 +68,19 @@ export default function ClientsPage() {
           >
             Exportar
           </Button>
-          <Button
-            variant="solid"
-            w="9rem"
-            onClick={handleNewClient}
+          <Link
+            href="/clients/new-client"
+            legacyBehavior
+            passHref
           >
-            Novo
-          </Button>
+            <Button
+              as="a"
+              variant="solid"
+              w="9rem"
+            >
+              Novo
+            </Button>
+          </Link>
         </Flex>
       </Flex>
       <SimpleGrid
@@ -123,7 +95,7 @@ export default function ClientsPage() {
             key={index}
             align="center"
             // eslint-disable-next-line canonical/sort-keys
-            h={{ '2xl': '9rem', 'base': '6rem', 'xl': '6rem' }}
+            h={{ 'base': '6rem', 'xl': '6rem', '2xl': '9rem' }}
             justify="center"
             variant="outline"
             // eslint-disable-next-line canonical/sort-keys
@@ -182,7 +154,7 @@ export default function ClientsPage() {
                 <Td textAlign="center">{customer.validated}</Td>
                 <Td textAlign="center">{customer.status.charAt(0)}</Td>
                 <Td>{customer.segment.name}</Td>
-                <Td>{customer.partner?.name || 'Não definido'}</Td>
+                <Td>{customer.partner || 'Não definido'}</Td>
                 <Td>
                   {customer.address.city} / {customer.address.state}
                 </Td>

@@ -17,7 +17,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ButtonFilter } from '../../../components/ButtonFilter';
 import { InputSearch } from '../../../components/InputSearch';
 
@@ -27,8 +27,6 @@ const range = (stop: number) =>
     .map((_, i) => i);
 
 export default function UsersPage() {
-  const router = useRouter();
-
   return (
     <Box p="2rem">
       <Flex align="center">
@@ -48,14 +46,20 @@ export default function UsersPage() {
           h="2.5rem"
           mr="1rem"
         />
-        <Button
-          h="2.5rem"
-          mr="1rem"
-          variant="solid"
-          onClick={() => router.push('/users/create')}
+        <Link
+          href="/users/create"
+          legacyBehavior
+          passHref
         >
-          Novo Usuário
-        </Button>
+          <Button
+            as="a"
+            h="2.5rem"
+            mr="1rem"
+            variant="solid"
+          >
+            Novo Usuário
+          </Button>
+        </Link>
       </Flex>
       <TableContainer
         bg="#FFFFFF"

@@ -42,7 +42,7 @@ export const theme = extendTheme({
     },
   },
 
-  fonts: { body: 'var(--font-rubik)', heading: 'var(--font-rubik)' },
+  fonts: { body: 'var(--font-inter)', heading: 'var(--font-inter)' },
 
   /* eslint-disable canonical/sort-keys */
   breakpoints: {

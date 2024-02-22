@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react';
 
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MdApps, MdDescription, MdMail } from 'react-icons/md';
 import { ButtonFilter } from '../../../../components/ButtonFilter';
@@ -46,10 +46,8 @@ const cardsContent = [
 ];
 
 export default function OrderDetailsPage() {
-  const router = useRouter();
   const toast = useToast();
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
-
   const [selectedDates, setSelectedDates] = useState<Date[]>([
     new Date(),
     new Date(),
@@ -91,7 +89,6 @@ export default function OrderDetailsPage() {
     const customerFound = customersData?.find(
       (customer) => String(customer.id) === String(id),
     );
-
     return customerFound?.social_name;
   };
 
@@ -136,45 +133,43 @@ export default function OrderDetailsPage() {
           >
             Exportar
           </Button>
-          <Button
-            variant="solid"
-            onClick={() =>
-              router.push(`/mobile/order-details/${encodeURIComponent(' ')}`)
-            }
+          <Link
+            href={`/mobile/order-details/${encodeURIComponent(' ')}`}
+            legacyBehavior
+            passHref
           >
-            Novo Pedido
-          </Button>
+            <Button
+              as="a"
+              variant="solid"
+            >
+              Novo Pedido
+            </Button>
+          </Link>
         </Flex>
       </Flex>
       {dashboardStatus && (
         <SimpleGrid
-          // eslint-disable-next-line canonical/sort-keys
-          columns={{ sm: 2, md: 3, lg: 3, xl: 5 }}
+          columns={{ lg: 3, md: 3, sm: 2, xl: 5 }}
           p="2rem 0"
-          // eslint-disable-next-line canonical/sort-keys
-          spacing={{ sm: 5, md: 5, lg: 7 }}
+          spacing={{ lg: 7, md: 5, sm: 5 }}
         >
           {cardsContent.map((card, index) => (
             <Card
               key={index}
               align="center"
-              // eslint-disable-next-line canonical/sort-keys
-              h={{ 'base': '6rem', 'xl': '6rem', '2xl': '9rem' }}
+              h={{ '2xl': '9rem', 'base': '6rem', 'xl': '6rem' }}
               justify="center"
               variant="outline"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ 'base': '9rem', 'xl': '9rem', '2xl': '11rem' }}
+              w={{ '2xl': '11rem', 'base': '9rem', 'xl': '9rem' }}
             >
               <Text
-                // eslint-disable-next-line canonical/sort-keys
-                fontSize={{ 'base': '14px', 'xl': '14px', '2xl': '20px' }}
+                fontSize={{ '2xl': '20px', 'base': '14px', 'xl': '14px' }}
                 fontWeight="500"
               >
                 {card.name}
               </Text>
               <Text
-                // eslint-disable-next-line canonical/sort-keys
-                fontSize={{ 'base': '36px', 'xl': '36px', '2xl': '42px' }}
+                fontSize={{ '2xl': '42px', 'base': '36px', 'xl': '36px' }}
                 fontWeight="700"
               >
                 {card.value}
@@ -238,13 +233,14 @@ export default function OrderDetailsPage() {
                   cursor="pointer"
                   textAlign="center"
                   textDecor="underline"
-                  onClick={() =>
-                    router.push(
-                      `/mobile/order-details/${encodeURIComponent(order.id)}`,
-                    )
-                  }
                 >
-                  {order.id}
+                  <Link
+                    href={`/mobile/order-details/${encodeURIComponent(order.id)}`}
+                    legacyBehavior
+                    passHref
+                  >
+                    {order.id}
+                  </Link>
                 </Td>
                 <Td textAlign="center">{order.customer_id}</Td>
                 <Td textAlign="center">??</Td>
