@@ -16,14 +16,15 @@ import {
   Td,
   Badge,
 } from '@chakra-ui/react';
+import Link from 'next/link';
 import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
 import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { useRouter } from 'next/navigation';
 import { isPrivatePage } from 'src/contexts/AuthContext';
 import { PrivateLayout } from 'src/components/PrivateLayout';
 import { getCustomers } from 'src/services/api/customer';
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 function ClientsPage() {
   const router = useRouter();
@@ -51,9 +52,11 @@ function ClientsPage() {
             <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
               Exportar
             </ButtonOutline>
-            <ButtonPrimary onClick={() => router.push(`/customers/${encodeURIComponent(' ')}`)} w="9rem">
-              Novo
-            </ButtonPrimary>
+            <Link href="/clients/new-client" passHref legacyBehavior>
+              <ButtonPrimary as="a" w="9rem">
+                Novo
+              </ButtonPrimary>
+            </Link>
           </Flex>
         </Flex>
         <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 6 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">

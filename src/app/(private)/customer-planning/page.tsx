@@ -1,33 +1,105 @@
 'use client';
-import { Badge, Box, Flex, Heading, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Heading, Menu, MenuButton, MenuItem, MenuList, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useToast } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { CgMenuGridR } from 'react-icons/cg';
+import { MdArrowDropDown, MdCheckBox, MdCheckBoxOutlineBlank } from 'react-icons/md';
 import { PrivateLayout } from 'src/components/PrivateLayout';
-import { ButtonFilter } from 'src/components/ui/ButtonFilter';
 import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { isPrivatePage } from 'src/contexts/AuthContext';
+import { isPrivatePage, useAuthContext } from 'src/contexts/AuthContext';
+import { getCustomersPlanning } from 'src/services/api/customers-planning';
+import { getUser } from 'src/services/api/user';
 
+type CustomerPlanning = Awaited<ReturnType<typeof getCustomersPlanning>>
+
+type ActorTree = Awaited<ReturnType<typeof getUser>>['actor_tree'][number];
 
 function CustomerPlanningPage() {
+  const toast = useToast();
+  const [customersPlanning, setCustomersPlanning] = useState<CustomerPlanning[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState('1');
+  const [actor, setActor] = useState<ActorTree | null>(null);
+  const auth = useAuthContext();
+
+  useEffect(() => {
+    setLoading(true);
+    const controller = new AbortController();
+
+    const params = {
+      actor_id: actor?.actor_id.toString(),
+      tree_id: actor?.tree_id.toString(),
+      page,
+    };
+
+    getCustomersPlanning({ ...params, signal: controller.signal })
+      .then((result) => setCustomersPlanning((prev) => prev.concat(result)))
+      .catch((error) => error.name !== 'CanceledError' && toast({ status: 'error', title: error.message }))
+      .finally(() => setLoading(false));
+
+    return () => controller.abort();
+  }, [toast, page, actor]);
+
+  const handleActorChange = (actorTree: ActorTree) => () => {
+    setCustomersPlanning([]);
+    setPage('1');
+
+    if (JSON.stringify(actor) === JSON.stringify(actorTree)) {
+      setActor(null);
+      return;
+    }
+
+    setActor(actorTree);
+  };
+
   return (
     <PrivateLayout>
       <Box p="2rem">
         <Flex alignItems="center">
-          <Heading marginRight="auto">
+          <Heading>
             Planejamento de Clientes
           </Heading>
-          <ButtonFilter width="22.5rem" marginRight="1rem" justifyContent="flex-start" isDisabled />
-          <ButtonPrimary leftIcon={<CgMenuGridR fontSize="1.5rem" />} isDisabled>
-            Dashboard
-          </ButtonPrimary>
+          <Flex marginLeft="auto" gap="1rem">
+            <Menu>
+              <MenuButton
+                as={Button}
+                size="sm"
+                h="2.5rem"
+                bg="white"
+                border="1px solid #DCDCDC"
+                fontWeight="400"
+                rightIcon={<MdArrowDropDown color="#898989" />}
+              >
+                <Text as="span" color="#898989" display="inline-block" mr="0.25rem">
+                  Ator:
+                </Text>
+                {actor ? actor.name : 'Selecione um ator'}
+              </MenuButton>
+              <MenuList>
+                {auth.is === 'authenticated' && auth.user.actor_tree.map((actorTree) => (
+                  <MenuItem
+                    key={JSON.stringify(actorTree)}
+                    fontSize="sm"
+                    onClick={handleActorChange(actorTree)}
+                    icon={JSON.stringify(actorTree) === JSON.stringify(actor) ? <MdCheckBox fontSize="1rem" /> : <MdCheckBoxOutlineBlank fontSize="1rem" />}
+                  >
+                    {actorTree.name}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
+            <ButtonPrimary leftIcon={<CgMenuGridR fontSize="1.5rem" />} h="2.5rem" isDisabled>
+              Dashboard
+            </ButtonPrimary>
+          </Flex>
         </Flex>
         <Flex marginTop="1.75rem" maxWidth="80rem" justifyContent="space-between" marginLeft="auto" marginRight="auto">
           {
             [
-              { label: 'Totais', value: 364 },
-              { label: 'Ativos', value: 364 },
-              { label: 'Inativos', value: 364 },
-              { label: 'Prospects', value: 364 },
-              { label: 'Volume Mix', value: 25 },
+              { label: 'Totais', value: customersPlanning.reduce((total, customerPlanning) => total + customerPlanning.customers_planning.totals.count_customers, 0) },
+              { label: 'Ativos', value: customersPlanning.reduce((total, customerPlanning) => total + customerPlanning.customers_planning.totals.count_active, 0) },
+              { label: 'Inativos', value: customersPlanning.reduce((total, customerPlanning) => total + customerPlanning.customers_planning.totals.count_inactive, 0) },
+              { label: 'Prospects', value: customersPlanning.reduce((total, customerPlanning) => total + customerPlanning.customers_planning.totals.count_prospect, 0) },
+              { label: 'Volume Mix', value: customersPlanning.reduce((total, customerPlanning) => total + customerPlanning.customers_planning.totals.sum_volume_mix_target, 0) },
             ]
               .map(({ label, value }) => (
                 <Flex
@@ -46,8 +118,8 @@ function CustomerPlanningPage() {
                     {label}
                   </Text>
                   <Flex flexGrow="1" justifyContent="center" alignItems="center">
-                    <Text fontSize="4xl" fontWeight="700">
-                      {value}
+                    <Text fontSize="2xl" fontWeight="700">
+                      {value.toLocaleString('pt-BR')}
                     </Text>
                   </Flex>
                 </Flex>
@@ -58,58 +130,57 @@ function CustomerPlanningPage() {
           <Table>
             <Thead>
               <Tr>
-                <Th>Região</Th>
-                <Th>Segmento</Th>
-                <Th>Parceiro</Th>
-                <Th>Bandeira</Th>
-                <Th>Cliente</Th>
-                <Th>Cidade</Th>
-                <Th>Status</Th>
-                <Th>Frentistas/Consultores</Th>
+                <Th textAlign="center">Região</Th>
+                <Th textAlign="center">Segmento</Th>
+                <Th textAlign="center">Parceiro</Th>
+                <Th textAlign="center">Bandeira</Th>
+                <Th textAlign="center">Cliente</Th>
+                <Th textAlign="center">Cidade</Th>
+                <Th textAlign="center">Status</Th>
+                <Th textAlign="center">Frentistas/Consultores</Th>
               </Tr>
             </Thead>
             <Tbody>
-              {
-                new Array(6).fill(null).map((_, i) => i).map((key, i) => (
-                  <Tr key={key} background={i % 2 === 0 ? '#FFFFFF' : '#F9F9F9'}>
+              {customersPlanning.map((customerPlanning) => customerPlanning.customers_planning.data.map((item, i) => ((
+                  <Tr key={item.id} background={i % 2 === 0 ? '#FFFFFF' : '#F9F9F9'}>
                     <Td padding="1.25rem 0.75rem" textAlign="center">
                       <Text as="span" fontSize="xs">
-                        3R - Vitória
+                        {item.actor_name}
                       </Text>
                     </Td>
                     <Td padding="1.25rem 0.75rem" textAlign="center">
                       <Text as="span" fontSize="xs">
-                        Outros
+                        {item.segment_name}
                       </Text>
                     </Td>
                     <Td padding="1.25rem 0.75rem" textAlign="center">
                       <Text as="span" fontSize="xs">
-                        Bosch
+                        {item.partner_name}
                       </Text>
                     </Td>
                     <Td padding="1.25rem 0.75rem" textAlign="center">
                       <Text as="span" fontSize="xs" display="inline-block" maxWidth="4rem" whiteSpace="normal" lineHeight="1rem">
-                        Bosch - Integração
+                        {item.flag_name}
                       </Text>
                     </Td>
-                    <Td padding="1.25rem 0.75rem">
-                      <Box display="inline-flex" flexDirection="column" gap="0.5rem">
+                    <Td padding="1.25rem 0.75rem" textAlign="center">
+                      <Box display="inline-flex" flexDirection="column" alignItems="center" gap="0.5rem">
                         <Text as="span" fontSize="xs" textDecoration="underline">
-                          DIVEL DISTRI DE VEICULOS LTDA
+                          {item.social_name}
                         </Text>
-                        <Text as="span" fontSize="xs" background="#E9F1F2" color="#70B6C1" textAlign="center">
-                          759.288.380/001-49
+                        <Text as="span" fontSize="xs" background="#E9F1F2" color="#70B6C1" textAlign="center" width="100%">
+                          {item.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5')}
                         </Text>
                       </Box>
                     </Td>
                     <Td padding="1.25rem 0.75rem" textAlign="center">
                       <Text as="span" fontSize="xs">
-                        Campinas
+                        {item.city}
                       </Text>
                     </Td>
                     <Td padding="1.25rem 0.75rem" textAlign="center">
                       <Badge background="#DBEEE7" color="#00A163">
-                        A
+                        {item.customer_status}
                       </Badge>
                     </Td>
                     <Td padding="1.25rem 0.75rem" textAlign="center">
@@ -118,11 +189,23 @@ function CustomerPlanningPage() {
                       </Text>
                     </Td>
                   </Tr>
-                ))
-              }
+              ))))}
             </Tbody>
           </Table>
         </TableContainer>
+        <Flex mt="2rem" justify="center">
+          <Button
+            size="sm"
+            h="2.5rem"
+            color="#1E93FF"
+            bg="#FFFFFF"
+            border="1px solid #1E93FF"
+            onClick={() => setPage(String(Number(page) + 1))}
+            isDisabled={loading || !customersPlanning.at(-1)?.customers_planning.next_page_url}
+          >
+            Carregar mais
+          </Button>
+        </Flex>
       </Box>
     </PrivateLayout>
   );
