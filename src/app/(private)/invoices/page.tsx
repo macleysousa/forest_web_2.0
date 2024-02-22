@@ -21,8 +21,9 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { RangeDatepicker } from 'chakra-dayzed-datepicker';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   MdArrowDownward,
@@ -32,9 +33,8 @@ import {
 } from 'react-icons/md';
 
 import { dayNames, monthNames } from '../../../configs/datepicker';
-import { getNFEs } from '../../../services/api/nfes';
-
-type Nfe = Awaited<ReturnType<typeof getNFEs>>['nfes']['data'][number];
+import { GetNFEsResult, getNFEs } from '../../../services/api/nfes';
+import type { DefaultError, InfiniteData } from '@tanstack/query-core';
 
 const OrderType = {
   date: 'Data',
@@ -51,76 +51,115 @@ const formatPeriod = (period: string) =>
 const formatCNPJ = (cnpj: string) =>
   cnpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
 
+const getVolume = (data: InfiniteData<GetNFEsResult, number>) =>
+  data.pages
+    .reduce((acc, result) => acc + result.nfes.totals.total_quantity, 0)
+    .toLocaleString('pt-BR');
+
+const getVolumeMix = (data: InfiniteData<GetNFEsResult, number>) =>
+  data.pages
+    .reduce((acc, result) => acc + result.nfes.totals.total_quantity_mix, 0)
+    .toLocaleString('pt-BR');
+
+const getCobertura = (data: InfiniteData<GetNFEsResult, number>) =>
+  data.pages
+    .reduce((acc, result) => acc + result.nfes.totals.cobertura, 0)
+    .toLocaleString('pt-BR');
+
+const getValorTotal = (data: InfiniteData<GetNFEsResult, number>) =>
+  data.pages
+    .reduce((acc, result) => acc + result.nfes.totals.value_total, 0)
+    .toLocaleString('pt-BR', { currency: 'BRL', style: 'currency' });
+
+const toSelectedDates = (period: string) =>
+  period
+    .split(' a ')
+    .map((value) => value.split('-').reverse().join('-'))
+    .map((value) => new Date(`${value}T00:00:00.000-03:00`));
+
+const Period: React.FC<{ period: string }> = ({ period }) => (
+  <>
+    de {formatPeriod(period).split(' a ')[0]}
+    <br />a {formatPeriod(period).split(' a ')[1]}
+  </>
+);
+
 export default function InvoicesPage() {
   const toast = useToast();
 
   const [state, setState] = useState({
-    cobertura: 0,
-    hasNextPage: false,
-    nfes: [] as Nfe[],
     order: 'desc' as keyof typeof Order,
     orderType: 'date' as keyof typeof OrderType,
-    page: '1',
     period: '01-01-2024 a 31-12-2024',
-    totalQuantity: 0,
-    totalQuantityMix: 0,
-    valueTotal: 0,
   });
 
+  const infiniteQuery = useInfiniteQuery<
+    GetNFEsResult,
+    DefaultError,
+    InfiniteData<GetNFEsResult, number>,
+    ['nfes', typeof state],
+    number
+  >({
+    getNextPageParam: (lastPage) =>
+      lastPage.nfes.current_page !== lastPage.nfes.last_page
+        ? lastPage.nfes.current_page + 1
+        : undefined,
+
+    initialPageParam: 1,
+
+    queryFn: ({ pageParam, signal }) =>
+      getNFEs({
+        has_filters: '1',
+        order: state.order,
+        order_type: state.orderType,
+        page: pageParam.toString(),
+        period: state.period,
+        signal,
+      }),
+
+    queryKey: ['nfes', state],
+  });
+
+  const loadMoreButtonRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
-    getNFEs({
-      has_filters: '1',
-      order: state.order,
-      order_type: state.orderType,
-      page: state.page,
-      period: state.period,
-    })
-      .then((result) => {
-        const { data, totals } = result.nfes;
-        const hasNextPage = result.nfes.next_page_url !== null;
+    if (!infiniteQuery.error) return;
+    console.log(infiniteQuery.error);
+    toast({ description: 'Não foi possível buscar NFEs', status: 'error' });
+  }, [infiniteQuery.error, toast]);
 
-        setState((prev) => {
-          // this prevents the same data from being concatenated when hot reload happens in dev mode
-          // there is a small chance of a bug? yes, but it is a risk taken
-          if (process.env.NODE_ENV !== 'production') {
-            if (JSON.stringify(data) === JSON.stringify(prev.nfes)) {
-              return { ...prev, hasNextPage };
-            }
-          }
+  useEffect(() => {
+    if (!loadMoreButtonRef.current) return;
+    const threshold = 1;
 
-          return {
-            ...prev,
-            cobertura: prev.cobertura + totals.cobertura,
-            hasNextPage,
-            nfes: prev.nfes.concat(data),
-            totalQuantity: prev.totalQuantity + totals.total_quantity,
-            totalQuantityMix: prev.totalQuantityMix + totals.total_quantity_mix,
-            valueTotal: prev.valueTotal + totals.value_total,
-          };
-        });
-      })
-      .catch((error) => {
-        toast({ status: 'error', title: error.message });
-      });
-  }, [state.order, state.orderType, state.period, state.page, toast]);
+    const observer = new IntersectionObserver(
+      (entries) =>
+        entries.some((entry) => entry.intersectionRatio === threshold) &&
+        !infiniteQuery.isFetching &&
+        infiniteQuery.fetchNextPage(),
+      { threshold },
+    );
+
+    observer.observe(loadMoreButtonRef.current);
+    return () => observer.disconnect();
+  }, [infiniteQuery]);
 
   const handleOrderChange = (order: keyof typeof Order) => () => {
     if (state.order === order) return;
-
-    setState({
-      ...state,
-      cobertura: 0,
-      nfes: [],
-      order,
-      page: '1',
-      totalQuantity: 0,
-      totalQuantityMix: 0,
-      valueTotal: 0,
-    });
+    setState({ ...state, order });
   };
 
-  const handleNextPage = () => {
-    setState({ ...state, page: String(Number(state.page) + 1) });
+  const handlePeriodChange = (dates: Date[]) => {
+    const parsedDates: string[] = [];
+
+    for (const date of dates) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate();
+      parsedDates.push(`${year}-${month}-${day}`);
+    }
+
+    setState({ ...state, period: parsedDates.join(' a ') });
   };
 
   return (
@@ -150,8 +189,10 @@ export default function InvoicesPage() {
             </Button>
             <RangeDatepicker
               configs={{ dayNames, firstDayOfWeek: 0, monthNames }}
+              selectedDates={toSelectedDates(state.period)}
               propsConfigs={{
                 inputProps: {
+                  cursor: 'pointer',
                   h: '2.5rem',
                   left: '0',
                   opacity: '0',
@@ -160,22 +201,17 @@ export default function InvoicesPage() {
                   w: '100%',
                 },
               }}
-              selectedDates={state.period
-                .split(' a ')
-                .map(
-                  (value) =>
-                    new Date(
-                      `${value.split('-').reverse().join('-')}T00:00:00.000-03:00`,
-                    ),
-                )}
-              onDateChange={(date) => console.log(date)}
+              onDateChange={handlePeriodChange}
             />
           </Box>
           <Menu>
             <MenuButton
+              _active={{ bg: 'gray.300' }}
+              _hover={{ _disabled: { bg: 'gray.200' }, bg: 'gray.200' }}
               as={Button}
               bg="white"
               border="1px solid #DCDCDC"
+              color="gray.800"
               fontWeight="400"
               h="2.5rem"
               rightIcon={<MdArrowDropDown color="#898989" />}
@@ -203,13 +239,17 @@ export default function InvoicesPage() {
           </Menu>
           <Menu>
             <MenuButton
+              _active={{ bg: 'gray.300' }}
+              _hover={{ _disabled: { bg: 'gray.200' }, bg: 'gray.200' }}
               as={Button}
               bg="white"
               border="1px solid #DCDCDC"
+              color="gray.800"
               fontWeight="400"
               h="2.5rem"
               rightIcon={<MdArrowDropDown color="#898989" />}
               size="sm"
+              variant=""
             >
               <Text
                 as="span"
@@ -244,6 +284,7 @@ export default function InvoicesPage() {
             color="#1E93FF"
             h="2.5rem"
             size="sm"
+            variant="outline"
             isDisabled
           >
             Exportar
@@ -261,40 +302,32 @@ export default function InvoicesPage() {
           {
             label: 'Período',
             size: 'lg',
-            value: (
-              <>
-                de {formatPeriod(state.period).split(' a ')[0]}
-                <br />a {formatPeriod(state.period).split(' a ')[1]}
-              </>
-            ),
+            value: <Period period={state.period} />,
           },
           {
             label: 'Volume',
             size: '2xl',
-            value: state.totalQuantity.toLocaleString('pt-BR'),
+            value: infiniteQuery.data ? getVolume(infiniteQuery.data) : '-',
           },
           {
             label: 'Volume Mix',
             size: '2xl',
-            value: state.totalQuantityMix.toLocaleString('pt-BR'),
+            value: infiniteQuery.data ? getVolumeMix(infiniteQuery.data) : '-',
           },
           {
             label: 'Cobertura',
             size: '4xl',
-            value: state.cobertura.toLocaleString('pt-BR'),
+            value: infiniteQuery.data ? getCobertura(infiniteQuery.data) : '-',
           },
           {
             label: 'Produtos',
             size: '4xl',
-            value: '00',
+            value: '-',
           },
           {
             label: 'Valor Total',
             size: 'sm',
-            value: state.valueTotal.toLocaleString('pt-BR', {
-              currency: 'BRL',
-              style: 'currency',
-            }),
+            value: infiniteQuery.data ? getValorTotal(infiniteQuery.data) : '-',
           },
         ].map(({ label, value, size }) => (
           <Flex
@@ -374,154 +407,160 @@ export default function InvoicesPage() {
             </Tr>
           </Thead>
           <Tbody>
-            {state.nfes.map((nfe, i) => (
-              <Tr
-                key={`${nfe.id}-${i}`}
-                background={i % 2 === 0 ? '#FFFFFF' : '#F9F9F9'}
-              >
-                <Td padding="1.25rem 0.75rem">
-                  <Box
-                    alignItems="center"
-                    display="inline-flex"
-                    flexDirection="column"
-                    gap="0.5rem"
-                    w="100%"
-                  >
-                    <Text
-                      as="span"
-                      fontSize="xs"
-                      textDecoration="underline"
-                    >
-                      {nfe.customer_emitter_social_name}
-                    </Text>
-                    <Text
-                      as="span"
-                      background="#E9F1F2"
-                      color="#70B6C1"
-                      fontSize="xs"
-                      textAlign="center"
+            {infiniteQuery.data?.pages
+              .flatMap((page) => page.nfes.data)
+              .map((nfe, i) => (
+                <Tr
+                  key={`${nfe.id}-${i}`}
+                  background={i % 2 === 0 ? '#FFFFFF' : '#F9F9F9'}
+                >
+                  <Td padding="1.25rem 0.75rem">
+                    <Box
+                      alignItems="center"
+                      display="inline-flex"
+                      flexDirection="column"
+                      gap="0.5rem"
                       w="100%"
                     >
-                      {formatCNPJ(nfe.customer_emitter_cnpj)}
-                    </Text>
-                  </Box>
-                </Td>
-                <Td
-                  padding="1.25rem 0.75rem"
-                  textAlign="center"
-                >
-                  <Text
-                    as="span"
-                    fontSize="xs"
-                  >
-                    {nfe.number_nfe}
-                  </Text>
-                </Td>
-                <Td
-                  padding="1.25rem 0.75rem"
-                  textAlign="center"
-                >
-                  <Badge
-                    background="#E9E6EF"
-                    color="#775DA6"
-                  >
-                    {nfe.type}
-                  </Badge>
-                </Td>
-                <Td
-                  padding="1.25rem 0.75rem"
-                  textAlign="center"
-                >
-                  <Text
-                    as="span"
-                    fontSize="xs"
-                  >
-                    {(nfe.date.split(' ')[0] ?? '')
-                      .split('-')
-                      .reverse()
-                      .join('/')}
-                  </Text>
-                  <br />
-                  <Text
-                    as="span"
-                    fontSize="xs"
-                  >
-                    {(nfe.date.split(' ')[1] ?? '').replace(
-                      /^(\d{2}:\d{2}):\d{2}$/,
-                      '$1',
-                    )}
-                  </Text>
-                </Td>
-                <Td padding="1.25rem 0.75rem">
-                  <Box
-                    alignItems="center"
-                    display="inline-flex"
-                    flexDirection="column"
-                    gap="0.5rem"
-                    w="100%"
+                      <Text
+                        as="span"
+                        fontSize="xs"
+                        textDecoration="underline"
+                      >
+                        {nfe.customer_emitter_social_name}
+                      </Text>
+                      <Text
+                        as="span"
+                        background="#E9F1F2"
+                        color="#70B6C1"
+                        fontSize="xs"
+                        textAlign="center"
+                        w="100%"
+                      >
+                        {formatCNPJ(nfe.customer_emitter_cnpj)}
+                      </Text>
+                    </Box>
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
                   >
                     <Text
                       as="span"
                       fontSize="xs"
-                      textDecoration="underline"
                     >
-                      {nfe.customer_receiver_social_name}
+                      {nfe.number_nfe}
                     </Text>
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Badge
+                      background="#E9E6EF"
+                      color="#775DA6"
+                    >
+                      {nfe.type}
+                    </Badge>
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
                     <Text
                       as="span"
-                      background="#E9F1F2"
-                      color="#70B6C1"
                       fontSize="xs"
-                      textAlign="center"
+                    >
+                      {(nfe.date.split(' ')[0] ?? '')
+                        .split('-')
+                        .reverse()
+                        .join('/')}
+                    </Text>
+                    <br />
+                    <Text
+                      as="span"
+                      fontSize="xs"
+                    >
+                      {(nfe.date.split(' ')[1] ?? '').replace(
+                        /^(\d{2}:\d{2}):\d{2}$/,
+                        '$1',
+                      )}
+                    </Text>
+                  </Td>
+                  <Td padding="1.25rem 0.75rem">
+                    <Box
+                      alignItems="center"
+                      display="inline-flex"
+                      flexDirection="column"
+                      gap="0.5rem"
                       w="100%"
                     >
-                      {formatCNPJ(nfe.customer_receiver_cnpj)}
+                      <Text
+                        as="span"
+                        fontSize="xs"
+                        textDecoration="underline"
+                      >
+                        {nfe.customer_receiver_social_name}
+                      </Text>
+                      <Text
+                        as="span"
+                        background="#E9F1F2"
+                        color="#70B6C1"
+                        fontSize="xs"
+                        textAlign="center"
+                        w="100%"
+                      >
+                        {formatCNPJ(nfe.customer_receiver_cnpj)}
+                      </Text>
+                    </Box>
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Text
+                      as="span"
+                      fontSize="xs"
+                    >
+                      {nfe.city} - {nfe.state}
                     </Text>
-                  </Box>
-                </Td>
-                <Td
-                  padding="1.25rem 0.75rem"
-                  textAlign="center"
-                >
-                  <Text
-                    as="span"
-                    fontSize="xs"
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
                   >
-                    {nfe.city} - {nfe.state}
-                  </Text>
-                </Td>
-                <Td
-                  padding="1.25rem 0.75rem"
-                  textAlign="center"
-                >
-                  <Text
-                    as="span"
-                    fontSize="xs"
-                  >
-                    {nfe.segment_name}
-                  </Text>
-                </Td>
-              </Tr>
-            ))}
+                    <Text
+                      as="span"
+                      fontSize="xs"
+                    >
+                      {nfe.segment_name}
+                    </Text>
+                  </Td>
+                </Tr>
+              ))}
           </Tbody>
         </Table>
       </TableContainer>
-      <Flex
-        justify="center"
-        mt="2rem"
-      >
-        <Button
-          bg="#FFFFFF"
-          border="1px solid #1E93FF"
-          color="#1E93FF"
-          h="2.5rem"
-          isDisabled={!state.hasNextPage}
-          size="sm"
-          onClick={handleNextPage}
+      {infiniteQuery.hasNextPage && (
+        <Flex
+          justify="center"
+          mt="2rem"
         >
-          Carregar mais
-        </Button>
-      </Flex>
+          <Button
+            ref={loadMoreButtonRef}
+            bg="#FFFFFF"
+            border="1px solid #1E93FF"
+            color="#1E93FF"
+            h="2.5rem"
+            isDisabled={infiniteQuery.isFetching}
+            size="sm"
+            variant="outline"
+            onClick={() => infiniteQuery.fetchNextPage()}
+          >
+            Carregar mais
+          </Button>
+        </Flex>
+      )}
     </Box>
   );
 }
