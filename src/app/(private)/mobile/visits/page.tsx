@@ -16,9 +16,9 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { MdApps } from 'react-icons/md';
 import { PrivateLayout } from 'src/components/PrivateLayout';
@@ -29,10 +29,19 @@ import { getVisits } from 'src/services/api/visits';
 import { useQuery } from '@tanstack/react-query';
 import { formatDate, formatDateForQuery } from 'src/commons/formatters';
 import DatePicker from 'src/components/ui/DatePicker';
+import Link from 'next/link';
+
+type NotSaleReasonType = {
+  id: number;
+  title: string;
+  reason: string;
+};
+
+const findNotSaleReason = (id: number, notSaleReasons: NotSaleReasonType[]) => {
+  return notSaleReasons?.find((reason: any) => reason?.id === id);
+};
 
 function VisitsPage() {
-  const router = useRouter();
-
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
   const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
 
@@ -41,6 +50,8 @@ function VisitsPage() {
     queryFn: () =>
       getVisits({ dateInit: formatDateForQuery(selectedDates[0]), dateEnd: formatDateForQuery(selectedDates[1]) }),
   });
+
+  const { data: notSaleReasonsData } = useQuery({ queryKey: ['notSaleReasons'], queryFn: getNotSaleReasons });
 
   useEffect(() => {
     refetch();
@@ -157,17 +168,22 @@ function VisitsPage() {
                     {visit.customer.address.city} / {visit.customer.address.state}
                   </Td>
                   <Td textAlign="center">{visit.customer.social_name}</Td>
-                  <Td
-                    textDecor="underline"
-                    color="#1E93FF"
-                    textAlign="center"
-                    cursor="pointer"
-                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(visit.id)}`)}
-                  >
-                    {visit.id} ??
+                  <Td textDecor="underline" color="#1E93FF" textAlign="center" cursor="pointer">
+                    <Link href={`/mobile/order-details/${encodeURIComponent(visit.id)}`} passHref legacyBehavior>
+                      {visit.id}
+                    </Link>
                   </Td>
-                  <Td textAlign="center">{visit.visit_comments || 'NC'}</Td>
-                  <Td textAlign="center">{visit.not_sale_reason_id || 'NC'} ??</Td>
+                  <Td textAlign="center">
+                    <Tooltip label={visit.visit_comments || 'NC'}>
+                      <Box maxW="8rem" overflow="hidden" textOverflow="ellipsis" as="span" display="inline-block">
+                        {visit.visit_comments || 'NC'}
+                      </Box>
+                    </Tooltip>
+                  </Td>
+                  <Td textAlign="center">
+                    {findNotSaleReason(visit.not_sale_reason_id || 0, notSaleReasonsData as NotSaleReasonType[])
+                      ?.reason || 'NC'}
+                  </Td>
                 </Tr>
               ))}
             </Tbody>
@@ -179,3 +195,10 @@ function VisitsPage() {
 }
 
 export default isPrivatePage(VisitsPage);
+function getNotSaleReasons(context: {
+  queryKey: string[];
+  signal: AbortSignal;
+  meta: Record<string, unknown> | undefined;
+}): unknown {
+  throw new Error('Function not implemented.');
+}

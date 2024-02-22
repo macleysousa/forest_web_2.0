@@ -28,8 +28,6 @@ import {
   Image,
   Thead,
   useToast,
-  InputGroup,
-  Center,
 } from '@chakra-ui/react';
 import {
   MdArrowDropDown,
@@ -53,6 +51,7 @@ import { formatCurrency } from 'src/commons/formatters';
 import { useQuery } from '@tanstack/react-query';
 import { getOrderById } from 'src/services/api/ordersDetailId';
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
+import { useRouter } from 'next/navigation';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 type CommentsType = 'order' | 'billing';
@@ -61,6 +60,7 @@ type OrderProductType = { product: { name: string }; product_code: string; quant
 function ShowOrderPage() {
   const params = useParams();
   const toast = useToast();
+  const router = useRouter();
 
   const [isContentVisible, setIsContentVisible] = useState<boolean>(true);
   const [pageStatus, setPageStatus] = useState<PageStatusType>('create');
@@ -94,7 +94,7 @@ function ShowOrderPage() {
                 <ButtonPrimary w="9rem" p="0 1rem">
                   Salvar
                 </ButtonPrimary>
-                <ButtonOutline>Cancelar</ButtonOutline>
+                <ButtonOutline onClick={() => router.replace('/mobile/order-details')}>Cancelar</ButtonOutline>
               </>
             ) : (
               <>

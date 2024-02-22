@@ -172,7 +172,7 @@ function OrderDetailsPage() {
                     <Icon as={MdDescription} mx=".25rem" w="16px" h="16px" />
                     <Icon as={MdMail} mx=".25rem" w="16px" h="16px" />
                   </Td>
-                  <Td textAlign="center">{order.payment_option_id} ??</Td>
+                  <Td textAlign="center">{order.payment_option_name}</Td>
                   <Td textAlign="center">{formatCurrency(Number(order.total_value))}</Td>
                 </Tr>
               ))}
