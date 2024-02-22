@@ -44,6 +44,7 @@ const schema = z.object({
   ie: z.string(),
   im: z.string(),
   situation: z.string(),
+  incentive: z.boolean().optional(),
   customerReview: z.string(),
   comments: z.string(),
   segment: configSelectSchema,
@@ -77,11 +78,11 @@ function NewCustomerPage() {
   const customerStoreMutation = useMutation({
     mutationFn: postCustomerStore,
     onSuccess: (data: { status: string; message: string; customer_id: number }) => {
-      router.replace('/customers');
+      router.replace(`/customers/${data?.customer_id}`);
       toast({ status: 'success', description: 'Cliente cadastrado com sucesso' });
     },
     onError: (error) => {
-      console.log('customerStoreMutationError', error);
+      console.error('customerStoreMutationError', error);
       toast({ status: 'error', description: 'Erro ao cadastrar cliente' });
     },
   });
@@ -92,7 +93,7 @@ function NewCustomerPage() {
       toast({ status: 'success', description: 'Cliente atualizado com sucesso' });
     },
     onError: (error) => {
-      console.log('customerUpdateMutationError', error);
+      console.error('customerUpdateMutationError', error);
       toast({ status: 'error', description: 'Erro ao atualizar cliente' });
     },
   });
@@ -119,6 +120,7 @@ function NewCustomerPage() {
       setValue('ie', customerData.ie ?? '');
       setValue('im', customerData.im ?? '');
       setValue('situation', customerData.situation);
+      setValue('incentive', customerData.incentive ?? false);
       // setValue('customerReview', customerData.validated ?? 0);
       setValue('comments', customerData.comments ?? '');
       setValue('segment', customerData.segment_id);

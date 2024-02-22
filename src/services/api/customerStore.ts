@@ -73,6 +73,6 @@ interface CustomerStore {
 
 export async function postCustomerStore(data: CustomerStore) {
     const response = await api.post('/v2/customers/store', data);
-    return response.data.customers;
+    return response.data;
 }
 
