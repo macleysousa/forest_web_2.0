@@ -7,11 +7,12 @@ type GetNFEsParams = {
   period: string;
   page: string;
   has_filters: string;
+  signal: AbortController['signal'];
 };
 /* eslint-enable typescript-sort-keys/interface */
 
 /* eslint-disable typescript-sort-keys/interface */
-type GetNFEsResult = {
+export type GetNFEsResult = {
   status: 'success';
   nfes: {
     current_page: number;
@@ -83,7 +84,7 @@ type GetNFEsResult = {
 };
 /* eslint-enable typescript-sort-keys/interface */
 
-export async function getNFEs(params: GetNFEsParams) {
-  const response = await api.get<GetNFEsResult>('/v2/nfes', { params });
+export async function getNFEs({ signal, ...params }: GetNFEsParams) {
+  const response = await api.get<GetNFEsResult>('/v2/nfes', { params, signal });
   return response.data;
 }
