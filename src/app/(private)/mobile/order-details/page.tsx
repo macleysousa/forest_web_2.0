@@ -21,7 +21,6 @@ import {
   ButtonGroup,
   useToast,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { MdApps, MdDescription, MdMail } from 'react-icons/md';
 import { useQuery } from '@tanstack/react-query';
@@ -34,9 +33,9 @@ import { isPrivatePage } from 'src/contexts/AuthContext';
 import { getCustomers } from 'src/services/api/customer';
 import { getOrders } from 'src/services/api/orders';
 import DatePicker from 'src/components/ui/DatePicker';
+import Link from 'next/link';
 
 function OrderDetailsPage() {
-  const router = useRouter();
   const toast = useToast();
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
   const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
@@ -103,9 +102,9 @@ function OrderDetailsPage() {
             <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
               Exportar
             </ButtonOutline>
-            <ButtonPrimary onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(' ')}`)}>
-              Novo Pedido
-            </ButtonPrimary>
+            <Link href={`/mobile/order-details/${encodeURIComponent(' ')}`} passHref legacyBehavior>
+              <ButtonPrimary as="a">Novo Pedido</ButtonPrimary>
+            </Link>
           </Flex>
         </Flex>
         {dashboardStatus && (
@@ -154,14 +153,10 @@ function OrderDetailsPage() {
                     </Badge>
                   </Td>
                   <Td textAlign="center">{formatDate({ date: order.date_sync, showHours: true })}</Td>
-                  <Td
-                    textDecor="underline"
-                    color="#1E93FF"
-                    textAlign="center"
-                    cursor="pointer"
-                    onClick={() => router.push(`/mobile/order-details/${encodeURIComponent(order.id)}`)}
-                  >
-                    {order.id}
+                  <Td textDecor="underline" color="#1E93FF" textAlign="center" cursor="pointer">
+                    <Link href={`/mobile/order-details/${encodeURIComponent(order.id)}`} passHref legacyBehavior>
+                      {order.id}
+                    </Link>
                   </Td>
                   <Td textAlign="center">{order.customer_id}</Td>
                   <Td textAlign="center">??</Td>
