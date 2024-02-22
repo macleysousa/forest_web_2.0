@@ -26,6 +26,7 @@ Altere o `.env.local` com os valores corretos para seu ambiente
 ```
 npm run dev
 ```
+
 ### Modo de produção
 
 ```
@@ -36,3 +37,5 @@ npm run start
 ## Links Úteis
 
 - Figma: https://www.figma.com/file/p5cZ1y0KCPvHcrHHcMl6HI/Novo-Forest-PG?type=design&node-id=147%3A5&mode=design&t=9fIkVK9u2Ao6s0dR-1
+- Swagger: https://forest-dev.petroplus.com.br/api/documentation
+- Chakra UI: https://chakra-ui.com
