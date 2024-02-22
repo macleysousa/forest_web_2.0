@@ -41,7 +41,7 @@
     ],
 
     // canonical rules
-    // "canonical/sort-keys": ["warn", "asc", { "natural": true }],
+    "canonical/sort-keys": ["warn", "asc", { "natural": true }],
 
     // typescript-eslint rules
     "@typescript-eslint/no-explicit-any": "off",
