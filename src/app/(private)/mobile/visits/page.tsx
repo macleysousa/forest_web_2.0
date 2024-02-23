@@ -19,39 +19,46 @@ import {
   Tooltip,
   Tr,
 } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MdApps } from 'react-icons/md';
-import { PrivateLayout } from 'src/components/PrivateLayout';
-import { ButtonFilter } from 'src/components/ui/ButtonFilter';
-import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { isPrivatePage } from 'src/contexts/AuthContext';
-import { getVisits } from 'src/services/api/visits';
-import { useQuery } from '@tanstack/react-query';
-import { formatDate, formatDateForQuery } from 'src/commons/formatters';
-import DatePicker from 'src/components/ui/DatePicker';
-import Link from 'next/link';
+import { ButtonFilter } from '../../../../components/ButtonFilter';
+import { DatePicker } from '../../../../components/DatePicker';
+import { getNotSaleReason } from '../../../../services/api/notSaleReason';
+import { getVisits } from '../../../../services/api/visits';
+import { formatDate, formatDateForQuery } from '../../../../utils/formatters';
 
 type NotSaleReasonType = {
   id: number;
-  title: string;
   reason: string;
+  title: string;
 };
 
 const findNotSaleReason = (id: number, notSaleReasons: NotSaleReasonType[]) => {
   return notSaleReasons?.find((reason: any) => reason?.id === id);
 };
 
-function VisitsPage() {
+export default function VisitsPage() {
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
-  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date(), new Date()]);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([
+    new Date(),
+    new Date(),
+  ]);
 
   const { data, refetch } = useQuery({
-    queryKey: ['visits'],
     queryFn: () =>
-      getVisits({ dateInit: formatDateForQuery(selectedDates[0]), dateEnd: formatDateForQuery(selectedDates[1]) }),
+      getVisits({
+        dateEnd: formatDateForQuery(selectedDates[1] as Date),
+        dateInit: formatDateForQuery(selectedDates[0] as Date),
+      }),
+    queryKey: ['visits'],
   });
 
-  const { data: notSaleReasonsData } = useQuery({ queryKey: ['notSaleReasons'], queryFn: getNotSaleReasons });
+  const { data: notSaleReasonsData } = useQuery({
+    queryFn: () => getNotSaleReason(),
+    queryKey: ['notSaleReasons'],
+  });
 
   useEffect(() => {
     refetch();
@@ -59,146 +66,227 @@ function VisitsPage() {
   }, [selectedDates]);
 
   const cardsContent = [
-    { name: 'Válidas', value: data?.visits.reduce((acc, curr) => (curr.status === 'Válida' ? acc + 1 : acc), 0) },
-    { name: 'Inválidas', value: data?.visits.reduce((acc, curr) => (curr.status === 'Inválida' ? acc + 1 : acc), 0) },
+    {
+      name: 'Válidas',
+      value: data?.visits.reduce(
+        (acc, curr) => (curr.status === 'Válida' ? acc + 1 : acc),
+        0,
+      ),
+    },
+    {
+      name: 'Inválidas',
+      value: data?.visits.reduce(
+        (acc, curr) => (curr.status === 'Inválida' ? acc + 1 : acc),
+        0,
+      ),
+    },
     {
       name: 'Fora de Rota',
-      value: data?.visits.reduce((acc, curr) => (curr.status === 'Fora de Rota' ? acc + 1 : acc), 0),
+      value: data?.visits.reduce(
+        (acc, curr) => (curr.status === 'Fora de Rota' ? acc + 1 : acc),
+        0,
+      ),
     },
     {
       name: 'Fora de Roteiro',
-      value: data?.visits.reduce((acc, curr) => (curr.status === 'Fora de Roteiro' ? acc + 1 : acc), 0),
+      value: data?.visits.reduce(
+        (acc, curr) => (curr.status === 'Fora de Roteiro' ? acc + 1 : acc),
+        0,
+      ),
     },
-    { name: 'Ignoradas', value: data?.visits.reduce((acc, curr) => (curr.status === 'Ignorada' ? acc + 1 : acc), 0) },
+    {
+      name: 'Ignoradas',
+      value: data?.visits.reduce(
+        (acc, curr) => (curr.status === 'Ignorada' ? acc + 1 : acc),
+        0,
+      ),
+    },
     {
       name: 'Tempo Médio',
       value: (
-        Number(data?.visits.reduce((acc, curr) => acc + curr.duration, 0)) / Number(data?.visits.length) || 0
+        Number(data?.visits.reduce((acc, curr) => acc + curr.duration, 0)) /
+          Number(data?.visits.length) || 0
       ).toFixed(2),
     },
   ];
 
   return (
-    <PrivateLayout>
-      <Box p="2rem">
-        <Flex>
-          <Heading w="30%" minW="30%">
-            Visitas
-          </Heading>
-          <Flex align="flex-end" justify="flex-end" minW="70%" w="70%" gap="1rem">
-            <DatePicker onChange={setSelectedDates} />
-            <ButtonFilter placeContent="flex-start" />
-            <Button
-              color={!dashboardStatus ? '#898989' : 'inherit'}
-              variant={!dashboardStatus ? 'outline' : 'primary'}
-              borderColor={!dashboardStatus ? '#89898970' : 'auto'}
-              onClick={() => setDashboardStatus(!dashboardStatus)}
-              w="9rem"
-              p="0 1rem"
-            >
-              <Icon as={MdApps} mr="1rem" h="24px" w="24px" />
-              Dashboard
-            </Button>
-            <ButtonOutline color="#1E93FF" borderColor="#1E93FF">
-              Exportar
-            </ButtonOutline>
-          </Flex>
+    <Box p="2rem">
+      <Flex>
+        <Heading
+          minW="30%"
+          w="30%"
+        >
+          Visitas
+        </Heading>
+        <Flex
+          align="flex-end"
+          gap="1rem"
+          justify="flex-end"
+          minW="70%"
+          w="70%"
+        >
+          <DatePicker onChange={setSelectedDates} />
+          <ButtonFilter placeContent="flex-start" />
+          <Button
+            borderColor={!dashboardStatus ? '#89898970' : 'auto'}
+            color={!dashboardStatus ? '#898989' : 'inherit'}
+            p="0 1rem"
+            variant={!dashboardStatus ? 'outline' : 'primary'}
+            w="9rem"
+            onClick={() => setDashboardStatus(!dashboardStatus)}
+          >
+            <Icon
+              as={MdApps}
+              h="24px"
+              mr="1rem"
+              w="24px"
+            />
+            Dashboard
+          </Button>
+          <Button
+            borderColor="#1E93FF"
+            color="#1E93FF"
+            variant="outline"
+          >
+            Exportar
+          </Button>
         </Flex>
-        {dashboardStatus && (
-          <SimpleGrid columns={{ sm: 2, md: 3, lg: 3, xl: 6 }} spacing={{ sm: 5, md: 5, lg: 7 }} p="2rem 0">
-            {cardsContent.map((card, index) => (
-              <Card
-                variant="outline"
-                w={{ base: '9rem', xl: '9rem', '2xl': '11rem' }}
-                h={{ base: '6rem', xl: '6rem', '2xl': '9rem' }}
-                justify="center"
-                align="center"
-                key={index}
+      </Flex>
+      {dashboardStatus && (
+        <SimpleGrid
+          columns={{ lg: 3, md: 3, sm: 2, xl: 6 }}
+          p="2rem 0"
+          spacing={{ lg: 7, md: 5, sm: 5 }}
+        >
+          {cardsContent.map((card, index) => (
+            <Card
+              key={index}
+              align="center"
+              h={{ '2xl': '9rem', 'base': '6rem', 'xl': '6rem' }}
+              justify="center"
+              variant="outline"
+              w={{ '2xl': '11rem', 'base': '9rem', 'xl': '9rem' }}
+            >
+              <Text
+                fontSize={{ '2xl': '20px', 'base': '14px', 'xl': '14px' }}
+                fontWeight="500"
               >
-                <Text fontWeight="500" fontSize={{ base: '14px', xl: '14px', '2xl': '20px' }}>
-                  {card.name}
-                </Text>
-                <Text fontWeight="700" fontSize={{ base: '36px', xl: '36px', '2xl': '42px' }}>
-                  {card.value}
-                </Text>
-              </Card>
-            ))}
-          </SimpleGrid>
-        )}
-        <TableContainer p="1.5rem 1rem" bg="#fff" borderRadius="12px" mt={!dashboardStatus ? '2rem' : '0'}>
-          <Table variant="striped" colorScheme="gray" size="xsm" fontSize="12px">
-            <Thead h="3rem">
-              <Tr>
-                <Th pl="1rem">Status</Th>
-                <Th textAlign="center">Data Checkin</Th>
-                <Th textAlign="center">Vendedor</Th>
-                <Th textAlign="center">Região</Th>
-                <Th textAlign="center">Cliente</Th>
-                <Th textAlign="center">Pedido</Th>
-                <Th textAlign="center">Observação</Th>
-                <Th textAlign="center">Motivo Não-Venda</Th>
+                {card.name}
+              </Text>
+              <Text
+                fontSize={{ '2xl': '42px', 'base': '36px', 'xl': '36px' }}
+                fontWeight="700"
+              >
+                {card.value}
+              </Text>
+            </Card>
+          ))}
+        </SimpleGrid>
+      )}
+      <TableContainer
+        bg="#fff"
+        borderRadius="12px"
+        mt={!dashboardStatus ? '2rem' : '0'}
+        p="1.5rem 1rem"
+      >
+        <Table
+          colorScheme="gray"
+          fontSize="12px"
+          size="xsm"
+          variant="striped"
+        >
+          <Thead h="3rem">
+            <Tr>
+              <Th pl="1rem">Status</Th>
+              <Th textAlign="center">Data Checkin</Th>
+              <Th textAlign="center">Vendedor</Th>
+              <Th textAlign="center">Região</Th>
+              <Th textAlign="center">Cliente</Th>
+              <Th textAlign="center">Pedido</Th>
+              <Th textAlign="center">Observação</Th>
+              <Th textAlign="center">Motivo Não-Venda</Th>
+            </Tr>
+          </Thead>
+          <Tbody h="3rem">
+            {data?.visits.map((visit, index) => (
+              <Tr
+                key={`tr-${index}`}
+                fontSize="14px"
+                h="3.5rem"
+              >
+                <Td pl="1rem">
+                  {visit.status === 'Válida' && (
+                    <Badge
+                      bg="#1E93FF20"
+                      borderRadius="8px"
+                      color="#1E93FF"
+                      fontSize="12px"
+                      p=".75rem"
+                    >
+                      {visit.status}
+                    </Badge>
+                  )}
+                  {['Inválida', 'Ignorada'].includes(visit.status) && (
+                    <Badge
+                      bg="#775DA620"
+                      borderRadius="8px"
+                      color="#775DA6"
+                      fontSize="12px"
+                      p=".75rem"
+                      textAlign="center"
+                      w="5.5rem"
+                    >
+                      {visit.status}
+                    </Badge>
+                  )}
+                </Td>
+                <Td textAlign="center">
+                  {formatDate({ date: visit.date_checkin, showHours: true })}
+                </Td>
+                <Td textAlign="center">{visit.actor_id} ??</Td>
+                <Td textAlign="center">
+                  {visit.customer.address.city} / {visit.customer.address.state}
+                </Td>
+                <Td textAlign="center">{visit.customer.social_name}</Td>
+                <Td
+                  color="#1E93FF"
+                  cursor="pointer"
+                  textAlign="center"
+                  textDecor="underline"
+                >
+                  <Link
+                    href={`/mobile/order-details/${encodeURIComponent(visit.id)}`}
+                    legacyBehavior
+                    passHref
+                  >
+                    {visit.id}
+                  </Link>
+                </Td>
+                <Td textAlign="center">
+                  <Tooltip label={visit.visit_comments || 'NC'}>
+                    <Box
+                      as="span"
+                      display="inline-block"
+                      maxW="8rem"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                    >
+                      {visit.visit_comments || 'NC'}
+                    </Box>
+                  </Tooltip>
+                </Td>
+                <Td textAlign="center">
+                  {findNotSaleReason(
+                    visit.not_sale_reason_id || 0,
+                    notSaleReasonsData as NotSaleReasonType[],
+                  )?.reason || 'NC'}
+                </Td>
               </Tr>
-            </Thead>
-            <Tbody h="3rem">
-              {data?.visits.map((visit, index) => (
-                <Tr key={`tr-${index}`} h="3.5rem" fontSize="14px">
-                  <Td pl="1rem">
-                    {visit.status === 'Válida' && (
-                      <Badge fontSize="12px" color="#1E93FF" p=".75rem" borderRadius="8px" bg="#1E93FF20">
-                        {visit.status}
-                      </Badge>
-                    )}
-                    {['Inválida', 'Ignorada'].includes(visit.status) && (
-                      <Badge
-                        fontSize="12px"
-                        color="#775DA6"
-                        p=".75rem"
-                        borderRadius="8px"
-                        bg="#775DA620"
-                        w="5.5rem"
-                        textAlign="center"
-                      >
-                        {visit.status}
-                      </Badge>
-                    )}
-                  </Td>
-                  <Td textAlign="center">{formatDate({ date: visit.date_checkin, showHours: true })}</Td>
-                  <Td textAlign="center">{visit.actor_id} ??</Td>
-                  <Td textAlign="center">
-                    {visit.customer.address.city} / {visit.customer.address.state}
-                  </Td>
-                  <Td textAlign="center">{visit.customer.social_name}</Td>
-                  <Td textDecor="underline" color="#1E93FF" textAlign="center" cursor="pointer">
-                    <Link href={`/mobile/order-details/${encodeURIComponent(visit.id)}`} passHref legacyBehavior>
-                      {visit.id}
-                    </Link>
-                  </Td>
-                  <Td textAlign="center">
-                    <Tooltip label={visit.visit_comments || 'NC'}>
-                      <Box maxW="8rem" overflow="hidden" textOverflow="ellipsis" as="span" display="inline-block">
-                        {visit.visit_comments || 'NC'}
-                      </Box>
-                    </Tooltip>
-                  </Td>
-                  <Td textAlign="center">
-                    {findNotSaleReason(visit.not_sale_reason_id || 0, notSaleReasonsData as NotSaleReasonType[])
-                      ?.reason || 'NC'}
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </Box>
-    </PrivateLayout>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
-}
-
-export default isPrivatePage(VisitsPage);
-function getNotSaleReasons(context: {
-  queryKey: string[];
-  signal: AbortSignal;
-  meta: Record<string, unknown> | undefined;
-}): unknown {
-  throw new Error('Function not implemented.');
 }

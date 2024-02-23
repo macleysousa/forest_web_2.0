@@ -1,16 +1,24 @@
 'use client';
 
-import { Box, Flex, Heading, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
-import PanelRegistrationData from './PanelRegistrationData';
-import PanelContactData from './PanelContactData';
-import PanelLocation from './PanelLocation';
-import PanelSegmentation from './PanelSegmentation';
-import { PrivateLayout } from 'src/components/PrivateLayout';
-import { isPrivatePage } from 'src/contexts/AuthContext';
+import {
+  Box,
+  Flex,
+  Heading,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from '@chakra-ui/react';
 
-function NewClientPage() {
+import { PanelContactData } from './PanelContactData';
+import { PanelLocation } from './PanelLocation';
+import { PanelRegistrationData } from './PanelRegistrationData';
+import { PanelSegmentation } from './PanelSegmentation';
+
+export default function NewClientPage() {
   return (
-    <PrivateLayout>
+    <>
       <Box p="2rem">
         <Flex>
           <Heading>Clientes/</Heading>
@@ -39,8 +47,6 @@ function NewClientPage() {
           <TabPanel>Six</TabPanel>
         </TabPanels>
       </Tabs>
-    </PrivateLayout>
+    </>
   );
 }
-
-export default isPrivatePage(NewClientPage);

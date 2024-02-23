@@ -1,24 +1,28 @@
 import { useToast } from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { Loading } from 'src/components/Loader';
-import { getUser } from 'src/services/api/user';
+// import { Loading } from '../components/Loading';
+import { getUser } from '../services/api/user';
 
-type User = Awaited<ReturnType<typeof getUser>>;
+export type AuthUser = Awaited<ReturnType<typeof getUser>>;
 
 type AuthContextState =
-  | { is: 'authenticated'; user: User }
+  | { is: 'authenticated'; user: AuthUser }
   | { is: 'unauthenticated' }
   | { is: 'loading' };
 
 type AuthContextValue = AuthContextState & {
   login: (accessToken: string) => void;
-  logout: () => void
+  logout: () => void;
+};
+
+type AuthContextProviderProps = {
+  children: React.ReactNode;
 };
 
 const AuthContext = createContext({} as AuthContextValue);
 
-export function AuthContextProvider({ children }: { children: React.ReactNode }) {
+export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const toast = useToast();
   const [state, setState] = useState<AuthContextState>({ is: 'loading' });
 
@@ -35,7 +39,9 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
 
     getUser()
       .then((user) => setState({ is: 'authenticated', user }))
-      .catch((err) => toast({ status: 'error', description: err?.message ?? String(err) }));
+      .catch((err) =>
+        toast({ description: err?.message ?? String(err), status: 'error' }),
+      );
   }, [toast]);
 
   const login: AuthContextValue['login'] = (accessToken) => {
@@ -43,7 +49,9 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
 
     getUser()
       .then((user) => setState({ is: 'authenticated', user }))
-      .catch((err) => toast({ status: 'error', description: err?.message ?? String(err) }));
+      .catch((err) =>
+        toast({ description: err?.message ?? String(err), status: 'error' }),
+      );
   };
 
   const logout: AuthContextValue['logout'] = () => {
@@ -60,44 +68,3 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
 export function useAuthContext() {
   return useContext(AuthContext);
 }
-
-export type PrivatePageProps = { user: User };
-
-export function isPrivatePage<P extends PrivatePageProps = PrivatePageProps>(Page: React.FC<P>) {
-  return function PrivatePage(props: P & JSX.IntrinsicAttributes) {
-    const auth = useAuthContext();
-    const router = useRouter();
-
-    useEffect(() => {
-      if (auth.is === 'unauthenticated') {
-        router.push('/login');
-      }
-    }, [auth.is, router]);
-
-    if (auth.is !== 'authenticated') {
-      return <Loading fullScreen />;
-    }
-
-    return <Page {...props} user={auth.user} />;
-  };
-}
-
-export function isPublicPage<P = {}>(Page: React.FC<P>) {
-  return function PublicPage(props: P & JSX.IntrinsicAttributes) {
-    const auth = useAuthContext();
-    const router = useRouter();
-
-    useEffect(() => {
-      if (auth.is === 'authenticated') {
-        router.push('/dashboard');
-      }
-    }, [auth.is, router]);
-
-    if (auth.is !== 'unauthenticated') {
-      return <Loading fullScreen />;
-    }
-
-    return <Page {...props} />;
-  };
-}
-

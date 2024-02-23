@@ -1,18 +1,24 @@
 'use client';
+import { CacheProvider } from '@chakra-ui/next-js';
+import { ChakraProvider } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { setDefaultOptions } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { theme } from '../configs/chakra';
+import { AuthContextProvider } from '../contexts/AuthContext';
 
-import { StyledProvider } from 'src/providers/styled.provider';
-import { ThemeProvider } from 'src/providers/theme.provider';
-import { AuthContextProvider } from 'src/contexts/AuthContext';
-import { ReactQueryProvider } from 'src/providers/reactQuery.provider';
+setDefaultOptions({ locale: ptBR });
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
-      <StyledProvider>
-        <AuthContextProvider>
-          <ReactQueryProvider>{children}</ReactQueryProvider>
-        </AuthContextProvider>
-      </StyledProvider>
-    </ThemeProvider>
+    <CacheProvider>
+      <ChakraProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <AuthContextProvider>{children}</AuthContextProvider>
+        </QueryClientProvider>
+      </ChakraProvider>
+    </CacheProvider>
   );
 }

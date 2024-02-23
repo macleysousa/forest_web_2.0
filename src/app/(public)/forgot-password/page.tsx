@@ -1,90 +1,100 @@
 'use client';
+import { Link } from '@chakra-ui/next-js';
 
-import { Card, Center, Flex, Grid, Image, Link, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Text,
+  useToast,
+} from '@chakra-ui/react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { InputLabel } from 'src/components/ui/InputLabel';
-import { InputText } from 'src/components/ui/InputText';
-import { Form } from 'src/components/ui/Form';
 import { z } from 'zod';
-import { isPublicPage } from 'src/contexts/AuthContext';
 
 const schema = z.object({
   email: z
     .string()
-    .min(0, 'O email é obrigatório')
+    .min(1, 'O email é obrigatório')
     .email('Formato de email inválido'),
 });
 
-function ForgotPasswordPage() {
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
+export default function ForgotPasswordPage() {
+  const toast = useToast();
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    console.log(data);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<z.infer<typeof schema>>({
+    defaultValues: { email: '' },
+    resolver: zodResolver(schema),
+  });
+
+  const handleValid = async () => {
+    toast({
+      description: 'Ação não disponível no momento',
+      status: 'error',
+    });
   };
 
   return (
-    <Center gap={4}>
-      <Flex
-        bg='url("background-login.png")'
-        className="min-h-screen min-w-full absolute bg-cover bg-no-repeat blur-sm contrast-50"
-      />
-
-      <Image
-        src="/petroplus.png"
-        alt="petroplus logo"
-        h="96px"
-        w="400px"
-        zIndex={1}
-      />
-
-      <Card className="p-8 rounded-md" h="433px" w="459px">
-        <Form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
-          <Grid className="gap-4" templateColumns="1fr" w="100%">
-            <Text fontSize="24px" fontWeight="semibold">
-              Esqueceu seu senha?
-            </Text>
-            <Text
-              fontSize="14px"
-              fontWeight="regular"
-              color="#5A5A5A"
-              width="80%"
-            >
-              Nao se preocupe... Digite o e-mail da sua conta cadastrada que
-              enviaremos um link para você reiniciar a sua senha
-            </Text>
-
-            <InputLabel error={formState.errors.email?.message}>
-              Email da Conta
-              <InputText
-                mt={2}
-                placeholder="Digite seu email"
-                {...register('email')}
-              />
-            </InputLabel>
-
-            <Flex>
-              <ButtonPrimary flex={1} type="submit">
-                Quero reiniciar minha senha
-              </ButtonPrimary>
-            </Flex>
-
-            <Flex align="center" justify="center" marginTop="1.5rem">
-              <Center>
-                <InputLabel>
-                  Lembrou?{'  '}
-                  <Link href="/login" color="#1E93FF">
-                    Entrar
-                  </Link>
-                </InputLabel>
-              </Center>
-            </Flex>
-          </Grid>
-        </Form>
-      </Card>
-    </Center>
+    <form onSubmit={handleSubmit(handleValid)}>
+      <Text
+        fontSize="2xl"
+        fontWeight="semibold"
+        lineHeight="shorter"
+      >
+        Esqueceu seu senha?
+      </Text>
+      <Text
+        color="#5A5A5A"
+        fontSize="sm"
+        lineHeight="tall"
+        mt={6}
+      >
+        Nao se preocupe... Digite o e-mail da sua conta cadastrada que
+        enviaremos um link para você reiniciar a sua senha
+      </Text>
+      <FormControl
+        isDisabled={isSubmitting}
+        isInvalid={!!errors.email?.message}
+        mt={7}
+      >
+        <FormLabel>Email da Conta</FormLabel>
+        <Input
+          placeholder="Digite seu email"
+          type="email"
+          {...register('email')}
+        />
+        {errors.email?.message && (
+          <FormErrorMessage>{errors.email.message}</FormErrorMessage>
+        )}
+      </FormControl>
+      <Box mt={8}>
+        <Button
+          type="submit"
+          w="100%"
+        >
+          Quero reiniciar minha senha
+        </Button>
+      </Box>
+      <Box
+        mt={8}
+        textAlign="center"
+      >
+        Lembrou?{' '}
+        <Link
+          color="blue.500"
+          href="/login"
+        >
+          Entrar
+        </Link>
+      </Box>
+    </form>
   );
 }
-
-export default isPublicPage(ForgotPasswordPage);
