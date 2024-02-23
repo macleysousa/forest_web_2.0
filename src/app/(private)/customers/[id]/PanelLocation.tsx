@@ -4,7 +4,6 @@ import {
   Checkbox,
   Divider,
   Flex,
-  FormControl,
   Icon,
   Image,
   Input,
@@ -45,7 +44,7 @@ export function PanelLocation({
         shadow="sm"
         w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <FormControl onSubmit={handleSubmit(onSubmit, onError)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
             alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
             flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
@@ -220,7 +219,7 @@ export function PanelLocation({
               Salvar
             </Button>
           </Flex>
-        </FormControl>
+        </form>
       </Box>
     </TabPanel>
   );

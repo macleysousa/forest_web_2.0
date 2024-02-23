@@ -4,7 +4,6 @@ import {
   Checkbox,
   Divider,
   Flex,
-  FormControl,
   Image,
   Input,
   Select,
@@ -70,7 +69,7 @@ export function PanelRegistrationData({
         shadow="sm"
         w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <FormControl onSubmit={handleSubmit(onSubmit, onError)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
             align={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
             direction={{ lg: 'column', md: 'column', xl: 'row' }}
@@ -286,7 +285,12 @@ export function PanelRegistrationData({
                   <option value="Regular">Regular</option>
                   <option value="Irregular">Irregular</option>
                 </Select>
-                <Checkbox ml="2rem">Termo de incentivo</Checkbox>
+                <Checkbox
+                  ml="2rem"
+                  {...register('incentive')}
+                >
+                  Termo de incentivo
+                </Checkbox>
               </Box>
             </InputLabel>
           </Flex>
@@ -361,7 +365,7 @@ export function PanelRegistrationData({
               Salvar
             </Button>
           </Flex>
-        </FormControl>
+        </form>
       </Box>
     </TabPanel>
   );

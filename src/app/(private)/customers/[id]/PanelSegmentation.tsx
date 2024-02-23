@@ -3,7 +3,6 @@ import {
   Button,
   Divider,
   Flex,
-  FormControl,
   Select,
   TabPanel,
   Text,
@@ -60,7 +59,7 @@ export function PanelSegmentation({
         shadow="sm"
         w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <FormControl onSubmit={handleSubmit(onSubmit, onError)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
             align={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
             flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
@@ -215,7 +214,7 @@ export function PanelSegmentation({
               Salvar
             </Button>
           </Flex>
-        </FormControl>
+        </form>
       </Box>
     </TabPanel>
   );

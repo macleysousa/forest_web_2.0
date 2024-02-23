@@ -3,7 +3,6 @@ import {
   Button,
   Divider,
   Flex,
-  FormControl,
   Input,
   TabPanel,
   Text,
@@ -39,7 +38,7 @@ export function PanelContactData({
         shadow="sm"
         w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <FormControl onSubmit={handleSubmit(onSubmit, onError)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
             alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
             flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
@@ -175,7 +174,7 @@ export function PanelContactData({
               Salvar
             </Button>
           </Flex>
-        </FormControl>
+        </form>
       </Box>
     </TabPanel>
   );

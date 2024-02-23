@@ -51,7 +51,10 @@ const schema = z.object({
   flag: configSelectSchema,
   ie: z.string(),
   im: z.string(),
-  incentive: z.boolean().optional(),
+  incentive: z
+    .boolean()
+    .transform((val) => Boolean(val))
+    .optional(),
   neighborhood: z.string(),
   number: z.string(),
   partner: configSelectSchema,
@@ -215,6 +218,7 @@ export default function NewCustomerPage() {
         flag_id: data.flag,
         ie: data.ie,
         im: data.im,
+        incentive: data.incentive ?? false,
         partner_id: data.partner,
         phone: data.phoneNumber,
         segment_id: data.segment,
@@ -328,6 +332,7 @@ export default function NewCustomerPage() {
         flag_id: data.flag,
         ie: data.ie,
         im: data.im,
+        incentive: data.incentive ?? false,
         partner_id: data.partner,
         phone: data.phoneNumber,
         segment_id: data.segment,
