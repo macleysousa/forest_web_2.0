@@ -29,7 +29,7 @@ import {
 
 import { useQuery } from '@tanstack/react-query';
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { BiSolidEditAlt } from 'react-icons/bi';
 import { IoMdEye, IoMdEyeOff, IoMdTrash } from 'react-icons/io';
@@ -49,7 +49,7 @@ import {
 } from 'react-icons/md';
 
 import { getOrderById } from '../../../../../services/api/ordersDetailId';
-import { formatCurrency } from '../../../../../utils/formatters';
+import { formatCurrency, formatDate } from '../../../../../utils/formatters';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 type CommentsType = 'order' | 'billing';
@@ -63,6 +63,7 @@ type OrderProductType = {
 export default function ShowOrderPage() {
   const params = useParams();
   const toast = useToast();
+  const router = useRouter();
 
   const [isContentVisible, setIsContentVisible] = useState<boolean>(true);
   const [pageStatus, setPageStatus] = useState<PageStatusType>('create');
@@ -77,6 +78,11 @@ export default function ShowOrderPage() {
     queryFn: () => getOrderById(String(params?.id)),
     queryKey: ['order', params.id],
   });
+
+  const handleCancel = () => {
+    if (pageStatus === 'create') router.replace('/mobile/order-details');
+    else if (pageStatus === 'edit') setPageStatus('show');
+  };
 
   useEffect(() => {
     if (isValidParam) setPageStatus('show');
@@ -116,7 +122,10 @@ export default function ShowOrderPage() {
               >
                 Salvar
               </Button>
-              <Button variant="outline onClick={() => router.replace('/mobile/order-details')}">
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+              >
                 Cancelar
               </Button>
             </>
@@ -147,27 +156,27 @@ export default function ShowOrderPage() {
         </Flex>
       </Flex>
       <Flex
-        // eslint-disable-next-line canonical/sort-keys, prettier/prettier
         my="2rem"
         w="100%"
         direction={{
-          '2xl': 'row',
           'lg': 'column',
           'md': 'column',
           'sm': 'column',
           'xl': 'row',
+          // eslint-disable-next-line canonical/sort-keys
+          '2xl': 'row',
         }}
       >
         <Flex
           direction="column"
-          // eslint-disable-next-line canonical/sort-keys, prettier/prettier
           w={{
-            '2xl': '70%',
-            '3xl': '70%',
             'lg': '100%',
             'md': '100%',
             'sm': '100%',
             'xl': '70%',
+            // eslint-disable-next-line canonical/sort-keys
+            '2xl': '70%',
+            '3xl': '70%',
           }}
         >
           <Flex
@@ -245,14 +254,14 @@ export default function ShowOrderPage() {
                       w="24px"
                     />
                   </Flex>
-                  <Text
-                    fontSize="24px"
-                    fontWeight="700"
-                    my=".5rem"
-                  >
-                    {canShowContent ? data?.total_value : 'R$ --'}
-                  </Text>
                 </Flex>
+                <Text
+                  fontSize="24px"
+                  fontWeight="700"
+                  my=".5rem"
+                >
+                  {canShowContent ? data?.total_value : 'R$ --'}
+                </Text>
               </CardHeader>
             </Card>
           </Flex>
@@ -324,7 +333,7 @@ export default function ShowOrderPage() {
             <Divider />
             <Box
               display="flex"
-              h="13rem"
+              h="15rem"
             >
               <Box
                 p="1rem"
@@ -357,7 +366,14 @@ export default function ShowOrderPage() {
                     gap=".75rem"
                     minW="6rem"
                   >
-                    <Text>
+                    <Text
+                      maxH="3rem"
+                      maxW="80%"
+                      overflow="hidden"
+                      textAlign="end"
+                      textOverflow="ellipsis"
+                      w="80%"
+                    >
                       {canShowContent
                         ? `${data?.customer.address.address}, ${data?.customer.address.number}`
                         : '--'}
@@ -411,20 +427,41 @@ export default function ShowOrderPage() {
                       <Icon as={MdEventNote} />
                     </Flex>
                   ) : (
-                    <Text>{data?.date}</Text>
+                    <Text>
+                      {(canShowContent &&
+                        formatDate({
+                          date: data?.date ?? '',
+                          showHours: true,
+                        })) ||
+                        '-'}
+                    </Text>
                   )}
                 </Flex>
                 <Flex justify="space-between">
                   <Text color="#898989">Data do Envio</Text>
-                  <Text>{data?.date_send || '-'}</Text>
+                  <Text>
+                    {(canShowContent &&
+                      formatDate({
+                        date: data?.date_send ?? '',
+                        showHours: true,
+                      })) ||
+                      '-'}
+                  </Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text color="#898989">Data do Faturamento</Text>
-                  <Text>{data?.date_billing || '-'}</Text>
+                  <Text>
+                    {(canShowContent &&
+                      formatDate({
+                        date: data?.date_billing ?? '',
+                        showHours: true,
+                      })) ||
+                      '-'}
+                  </Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text color="#898989">Nota Fiscal</Text>
-                  <Text>{data?.order_nfes || '-'}</Text>
+                  <Text>{(canShowContent && data?.order_nfes_str) || '-'}</Text>
                 </Flex>
               </Flex>
             </Box>
@@ -681,18 +718,21 @@ export default function ShowOrderPage() {
                     fontWeight="600"
                     justify="space-between"
                   >
-                    <Text>TOTAL</Text>
+                    <Text>Total</Text>
                     <Text>
                       {canShowContent
-                        ? 0
-                        : // ? formatCurrency(
-                          //     data?.order_products.reduce(
-                          //       (acc, product) =>
-                          //         acc + Number(product.total_price ?? 0) * Number(product.product.amount ?? 0),
-                          //       0
-                          //     )
-                          //   )
-                          '--'}
+                        ? formatCurrency(
+                            Number(
+                              data?.order_products.reduce(
+                                (acc, product) =>
+                                  acc +
+                                  (Number(product.unity_price) ?? 0) *
+                                    product.product.amount,
+                                0,
+                              ),
+                            ),
+                          )
+                        : '--'}
                     </Text>
                   </Flex>
                 </Box>
@@ -727,13 +767,15 @@ export default function ShowOrderPage() {
                   fontSize="18px"
                   fontWeight="600"
                 >
-                  Tipo de Pedido
+                  {pageStatus === 'create'
+                    ? 'Tipo de pedido'
+                    : `Pedido ${data?.id}`}
                 </Text>
                 <Text
                   fontSize="14px"
                   fontWeight="400"
                 >
-                  Venda
+                  {pageStatus === 'create' ? 'Venda' : data?.status}
                 </Text>
               </Flex>
             </CardHeader>

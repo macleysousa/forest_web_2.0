@@ -45,6 +45,28 @@ const cardsContent = [
   { name: 'Programados', value: '460' },
 ];
 
+const statusColors = [
+  { color: '#1E93FF', status: 'aprovado' },
+  { color: '#FFC107', status: 'aguardando aprovação' },
+  { color: '#F44336', status: 'cancelado' },
+  { color: '#4CAF50', status: 'enviado para faturamento' },
+  { color: '#FF9800', status: 'enviado para separação' },
+  { color: '#00897B', status: 'faturado' },
+  { color: '#FFEB3B', status: 'faturado parcial' },
+  { color: '#E91E63', status: 'outras pendências' },
+  { color: '#FF5722', status: 'pendência financeira' },
+  { color: '#9C27B0', status: 'pendente de estoque' },
+  { color: '#00BCD4', status: 'recebido' },
+  { color: '#D32F2F', status: 'reprovado' },
+];
+
+const setStatusColor = (status: string) => {
+  const statusFound = statusColors.find(
+    (color) => color.status === status.toLowerCase(),
+  );
+  return statusFound?.color;
+};
+
 export default function OrderDetailsPage() {
   const toast = useToast();
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
@@ -112,9 +134,9 @@ export default function OrderDetailsPage() {
           <ButtonFilter placeContent="flex-start" />
           <Button
             borderColor={!dashboardStatus ? '#89898970' : 'auto'}
-            color={!dashboardStatus ? '#898989' : 'inherit'}
+            color={!dashboardStatus ? '#898989' : '#fff'}
             p="0 1rem"
-            variant={!dashboardStatus ? 'outline' : 'primary'}
+            variant={!dashboardStatus ? 'outline' : 'solid'}
             w="9rem"
             onClick={() => setDashboardStatus(!dashboardStatus)}
           >
@@ -216,9 +238,9 @@ export default function OrderDetailsPage() {
               >
                 <Td pl="1rem">
                   <Badge
-                    bg="#1E93FF20"
+                    bg={setStatusColor(order.status) + '20' || '#1E93FF20'}
                     borderRadius="8px"
-                    color="#1E93FF"
+                    color={setStatusColor(order.status) || '#1E93FF'}
                     fontSize="12px"
                     p="5px"
                   >
@@ -270,7 +292,7 @@ export default function OrderDetailsPage() {
                     w="16px"
                   />
                 </Td>
-                <Td textAlign="center">{order.payment_option_id} ??</Td>
+                <Td textAlign="center">{order.payment_option_name}</Td>
                 <Td textAlign="center">
                   {formatCurrency(Number(order.total_value))}
                 </Td>

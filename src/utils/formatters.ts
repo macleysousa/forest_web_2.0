@@ -23,7 +23,9 @@ export const formatDate = ({ date, showHours }: FormatDateProps) => {
     year: 'numeric',
   };
 
-  return new Date(date).toLocaleString('pt-BR', options);
+  const newDate = new Date(date).toLocaleString('pt-BR', options);
+
+  return newDate === 'Invalid Date' ? null : newDate;
 };
 
 export const formatDateForQuery = (date: Date) => {
