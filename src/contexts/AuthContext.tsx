@@ -44,14 +44,14 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       );
   }, [toast]);
 
-  const login: AuthContextValue['login'] = (accessToken) => {
-    document.cookie = `forest_access_token=${accessToken};maxAge=3600;path=/;`;
-
-    getUser()
-      .then((user) => setState({ is: 'authenticated', user }))
-      .catch((err) =>
-        toast({ description: err?.message ?? String(err), status: 'error' }),
-      );
+  const login: AuthContextValue['login'] = async (accessToken) => {
+    try {
+      const user = await getUser();
+      setState({ is: 'authenticated', user });
+      document.cookie = `forest_access_token=${accessToken};maxAge=3600;path=/;`;
+    } catch (error) {
+      toast({ description: error.message, status: 'error' });
+    }
   };
 
   const logout: AuthContextValue['logout'] = () => {
