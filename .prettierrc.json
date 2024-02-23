@@ -1,5 +1,6 @@
 {
   "quoteProps": "consistent",
   "singleQuote": true,
-  "singleAttributePerLine": true
+  "singleAttributePerLine": true,
+  "endOfLine": "lf"
 }
