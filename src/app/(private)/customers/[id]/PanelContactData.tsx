@@ -1,21 +1,27 @@
-import { Box, Divider, Flex, TabPanel, Text, Input } from '@chakra-ui/react';
-import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { InputLabel } from 'src/components/ui/InputLabel';
-import { InputText } from 'src/components/ui/InputText';
-import { Form } from 'src/components/ui/Form';
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  FormControl,
+  Input,
+  TabPanel,
+  Text,
+} from '@chakra-ui/react';
 import InputMask from 'react-input-mask';
+import { InputLabel } from '../../../../components/InputLabel';
+import { InputText } from '../../../../components/InputText';
 
-interface PanelContactDataProps {
+type PanelContactDataProps = {
   formState: any;
-  register: any;
   handleSubmit: any;
-  onSubmit: any;
-  onError: any;
   onCancel: any;
-}
+  onError: any;
+  onSubmit: any;
+  register: any;
+};
 
-export default function PanelContactData({
+export function PanelContactData({
   formState,
   register,
   handleSubmit,
@@ -26,104 +32,119 @@ export default function PanelContactData({
   return (
     <TabPanel p="2rem 0">
       <Box
-        maxW="53rem"
-        w={{ md: '100%', lg: '100%', xl: '53rem' }}
-        borderRadius="8px"
-        shadow="sm"
-        p="1rem 2rem 1rem 2rem"
         bg="#fff"
+        borderRadius="8px"
+        maxW="53rem"
+        p="1rem 2rem 1rem 2rem"
+        shadow="sm"
+        w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <Form onSubmit={handleSubmit(onSubmit, onError)}>
+        <FormControl onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="9rem">
               Nome do Contato
-              <Box as="span" color="red.500" ml="0.25rem">
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
                 *
               </Box>
             </Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.contactName?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <InputText
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="Nome do Contato"
                 {...register('contactName')}
               />
             </InputLabel>
           </Flex>
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="9rem">Telefone</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.phoneNumber?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Input
+                alwaysShowMask={false}
                 as={InputMask}
-                //   mask={[/^(\d{2})\D*(\d{5}|\d{4})\D*(\d{4})$/]}
                 mask="(99) 9 9999-9999"
                 maskChar={null}
-                alwaysShowMask={false}
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="Telefone"
+                //   mask={[/^(\d{2})\D*(\d{5}|\d{4})\D*(\d{4})$/]}
                 {...register('phoneNumber')}
               />
             </InputLabel>
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="9rem">
               E-Mail
-              <Box as="span" color="red.500" ml="0.25rem">
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
                 *
               </Box>
             </Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.email?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
-              <InputText ml={{ md: '0', lg: '0', xl: '3rem' }} placeholder="E-Mail Comercial" {...register('email')} />
+              <InputText
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
+                placeholder="E-Mail Comercial"
+                {...register('email')}
+              />
             </InputLabel>
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW="9rem">
+            <Text
+              mb={{ base: '0', lg: '1rem', md: '1rem' }}
+              minW="9rem"
+            >
               E-Mail Financeiro
             </Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.financialEmail?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <InputText
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="E-Mail Financeiro"
                 {...register('financialEmail')}
               />
@@ -132,15 +153,29 @@ export default function PanelContactData({
 
           <Divider my="2rem" />
 
-          <Flex justify="flex-end" align="center">
-            <ButtonOutline onClick={onCancel} w="5.5rem" h="2.5rem">
+          <Flex
+            align="center"
+            justify="flex-end"
+          >
+            <Button
+              h="2.5rem"
+              variant="outline"
+              w="5.5rem"
+              onClick={onCancel}
+            >
               Cancelar
-            </ButtonOutline>
-            <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">
+            </Button>
+            <Button
+              h="2.5rem"
+              ml="1.5rem"
+              type="submit"
+              variant="solid"
+              w="8rem"
+            >
               Salvar
-            </ButtonPrimary>
+            </Button>
           </Flex>
-        </Form>
+        </FormControl>
       </Box>
     </TabPanel>
   );

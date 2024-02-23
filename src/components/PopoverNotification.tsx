@@ -1,73 +1,83 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   Icon,
+  Image,
   Popover,
-  PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
   StackDivider,
   Text,
   VStack,
-  Image,
-  Center,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+
 import { FaBell } from 'react-icons/fa';
 
-export interface PopoverNotificationProps {
+export type PopoverNotificationProps = {
   haveNotifications: boolean;
-}
+};
 
-export default function PopoverNotification({
+const notifications = [
+  {
+    avatar: '/empty-profile-picture.webp',
+    isNew: true,
+    message: 'NF 9128374612 via XML',
+    title: 'Nota Fiscal Importada',
+  },
+  {
+    avatar: '/empty-profile-picture.webp',
+    isNew: true,
+    message: 'NF 9128374612 via XML',
+    title: 'Nota Fiscal Importada',
+  },
+  {
+    avatar: '/empty-profile-picture.webp',
+    isNew: true,
+    message: 'NF 9128374612 via XML',
+    title: 'Nota Fiscal Importada',
+  },
+];
+
+export function PopoverNotification({
   haveNotifications,
 }: PopoverNotificationProps) {
   const { isOpen, onToggle, onClose } = useDisclosure();
 
-  const [notifications, setNotifications] = useState([
-    {
-      avatar: '/empty-profile-picture.webp',
-      message: 'NF 9128374612 via XML',
-      title: 'Nota Fiscal Importada',
-      isNew: true,
-    },
-    {
-      avatar: '/empty-profile-picture.webp',
-      message: 'NF 9128374612 via XML',
-      title: 'Nota Fiscal Importada',
-      isNew: true,
-    },
-    {
-      avatar: '/empty-profile-picture.webp',
-      message: 'NF 9128374612 via XML',
-      title: 'Nota Fiscal Importada',
-      isNew: true,
-    },
-  ]);
-
   return (
     <>
-      <Popover isOpen={isOpen} onClose={onClose}>
+      <Popover
+        isOpen={isOpen}
+        onClose={onClose}
+      >
         <PopoverTrigger>
-          <Button colorScheme="white" variant="link" onClick={onToggle}>
+          <Button
+            colorScheme="white"
+            variant="link"
+            onClick={onToggle}
+          >
             <Icon as={FaBell} />
             <Box
-              h="7px"
-              w="7px"
               bg="#b86560"
-              borderRadius="50%"
               border="1px solid #150f2e"
+              borderRadius="50%"
               display={haveNotifications ? 'block' : 'none'}
+              h="7px"
+              left="-4px"
               position="relative"
               top="-7px"
-              left="-4px"
+              w="7px"
             />
           </Button>
         </PopoverTrigger>
-        <PopoverContent w="17rem" mt="1.25rem" position="relative">
+        <PopoverContent
+          mt="1.25rem"
+          position="relative"
+          w="17rem"
+        >
           {/* <PopoverArrow
             shadow="none"
             className="scale-600"
@@ -76,45 +86,58 @@ export default function PopoverNotification({
             }}
           /> */}
           <Box
-            transform="rotate(45deg)"
-            top="0"
-            left="19.9%"
-            w="10rem"
-            h="10rem"
-            position="absolute"
-            zIndex="-3"
             bg="inherit"
             borderRadius="5px"
+            h="10rem"
+            left="19.9%"
+            position="absolute"
+            top="0"
+            transform="rotate(45deg)"
+            w="10rem"
+            zIndex="-3"
           />
           <PopoverBody>
             <VStack divider={<StackDivider borderColor="gray.200" />}>
               {notifications.map((notification, index) => (
-                <Flex key={index} fontSize="14px" h="5.5rem">
+                <Flex
+                  key={index}
+                  fontSize="14px"
+                  h="5.5rem"
+                >
                   <Center>
                     <Image
-                      src={notification.avatar ?? '/empty-profile-picture.webp'}
                       alt="avatar image"
-                      h="28px"
-                      w="28px"
                       borderRadius="50%"
+                      h="28px"
                       mr="1.25rem"
+                      src={notification.avatar ?? '/empty-profile-picture.webp'}
+                      w="28px"
                     />
-                    <Flex position="relative" direction="column">
-                      <Text color="#202020" fontWeight="500">
+                    <Flex
+                      direction="column"
+                      position="relative"
+                    >
+                      <Text
+                        color="#202020"
+                        fontWeight="500"
+                      >
                         {notification.title}
                       </Text>
-                      <Text color="#898989" fontWeight="400">
+                      <Text
+                        color="#898989"
+                        fontWeight="400"
+                      >
                         {notification.message}
                       </Text>
                       <Box
-                        h="9px"
-                        w="9px"
                         bg="#1E93FF"
                         borderRadius="50%"
                         display={notification.isNew ? 'block' : 'none'}
+                        h="9px"
                         position="absolute"
                         right="-18px"
                         top="50%"
+                        w="9px"
                       />
                     </Flex>
                   </Center>
@@ -125,15 +148,15 @@ export default function PopoverNotification({
         </PopoverContent>
       </Popover>
       <Box
+        bg="rgba(0, 0, 0, .5)"
         display={isOpen ? 'block' : 'none'}
-        width="100vw"
         height="calc(103vh - 1rem)"
+        left="0"
         mt="-1rem"
         position="absolute"
-        left="0"
         right="0"
+        width="100vw"
         zIndex="9"
-        bg="rgba(0, 0, 0, .5)"
       />
     </>
   );

@@ -1,34 +1,34 @@
 import {
-  ButtonProps,
-  ModalProps,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  Icon,
-  useDisclosure,
-  ModalBody,
-  ModalFooter,
-  Text,
-  ModalBodyProps,
-  Input,
   Box,
+  Button,
+  ButtonProps,
+  Icon,
+  Input,
+  Modal,
+  ModalBody,
+  ModalBodyProps,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  ModalProps,
+  Text,
+  useDisclosure,
 } from '@chakra-ui/react';
+
+import { useState } from 'react';
 import { MdClose, MdFileDownload } from 'react-icons/md';
-import { ButtonPrimary } from './ui/ButtonPrimary';
-import { InputLabel } from './ui/InputLabel';
-import React from 'react';
+import { InputLabel } from './InputLabel';
 
-interface ModalFactoryImportProps {
+type ModalFactoryImportProps = {
   buttonProps?: ButtonProps;
-  modalProps?: Omit<ModalProps, 'children' | 'isOpen' | 'onClose'>;
-  modalBodyProps?: ModalBodyProps;
   buttonTitle: string;
+  modalBodyProps?: ModalBodyProps;
+  modalProps?: Omit<ModalProps, 'children' | 'isOpen' | 'onClose'>;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
-}
+};
 
-export default function ModalFactoryImport({
+export function ModalFactoryImport({
   buttonProps,
   modalProps,
   modalBodyProps,
@@ -36,70 +36,111 @@ export default function ModalFactoryImport({
   onChange,
 }: ModalFactoryImportProps) {
   const { isOpen = true, onOpen, onClose } = useDisclosure();
-
-  const [fileName, setFileName] = React.useState<string>();
+  const [fileName, setFileName] = useState<string>();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
       const fileNames = Array.from(files).map((file) => file.name);
-      setFileName(fileNames.length > 0 ? fileNames.join(', ') : 'Nenhum arquivo selecionado');
+      setFileName(
+        fileNames.length > 0
+          ? fileNames.join(', ')
+          : 'Nenhum arquivo selecionado',
+      );
     }
     onChange?.call(null, event);
   };
 
   return (
     <>
-      <Button {...buttonProps} onClick={onOpen}>
+      <Button
+        {...buttonProps}
+        onClick={onOpen}
+      >
         {buttonTitle}
       </Button>
 
-      <Modal size="xl" {...modalProps} isOpen={isOpen} onClose={onClose}>
+      <Modal
+        size="xl"
+        {...modalProps}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader display="flex" alignItems="center" justifyContent="space-between">
+          <ModalHeader
+            alignItems="center"
+            display="flex"
+            justifyContent="space-between"
+          >
             <Text>Importar Pedido de Fábrica</Text>
-            <Icon cursor="pointer" as={MdClose} onClick={onClose} />
+            <Icon
+              as={MdClose}
+              cursor="pointer"
+              onClick={onClose}
+            />
           </ModalHeader>
           <ModalBody
             {...modalBodyProps}
-            h="14rem"
-            w="100%"
-            display="flex"
             alignContent="center"
-            justifyContent="center"
+            display="flex"
             flexDirection="column"
+            h="14rem"
+            justifyContent="center"
+            w="100%"
           >
             <InputLabel
             // error="Não foi possivel importar o arquivo"
             >
               Escolher o arquivo
-              <Input onChange={handleChange} type="file" id="factory-import-file" name="factory-import-file" hidden />
+              <Input
+                id="factory-import-file"
+                name="factory-import-file"
+                type="file"
+                hidden
+                onChange={handleChange}
+              />
               <Box
+                alignItems="center"
                 border="1px solid #00000020"
                 borderRadius={5}
-                w="100%"
-                h="3rem"
                 color="#898989"
                 display="flex"
-                alignItems="center"
+                h="3rem"
                 mt=".25rem"
                 pl=".5rem"
+                w="100%"
               >
                 {fileName || 'Defina o arquivo'}
               </Box>
             </InputLabel>
 
-            <Button w="14rem" mt="4rem" alignSelf="center" gap=".5rem" bg="#fff" variant="outline" color="#202020">
-              <Icon h="24px" w="24px" as={MdFileDownload} />
+            <Button
+              alignSelf="center"
+              bg="#fff"
+              color="#202020"
+              gap=".5rem"
+              mt="4rem"
+              variant="outline"
+              w="14rem"
+            >
+              <Icon
+                as={MdFileDownload}
+                h="24px"
+                w="24px"
+              />
               <Text>Baixar Planilha Modelo</Text>
             </Button>
           </ModalBody>
 
           <ModalFooter mt="1rem">
-            <ButtonPrimary width="100%" onClick={onClose}>
+            <Button
+              variant="primary"
+              width="100%"
+              onClick={onClose}
+            >
               Enviar
-            </ButtonPrimary>
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

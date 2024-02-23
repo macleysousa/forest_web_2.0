@@ -1,35 +1,42 @@
 'use client';
-
 import { Box, Flex, Heading, Select, Text } from '@chakra-ui/react';
+
+// eslint-disable-next-line import/no-named-as-default
 import Chart, { ChartType } from 'chart.js/auto';
-import { useRef, useEffect } from 'react';
-import { PrivateLayout } from 'src/components/PrivateLayout';
-import { isPrivatePage } from 'src/contexts/AuthContext';
-import { generateRandomId } from 'src/commons/randomId';
+
+import { useEffect, useId, useRef } from 'react';
 
 const generateRandomArray = (quantity: number) =>
   Array.from({ length: quantity }, () => Math.floor(Math.random() * 101));
 
-interface ChartProps {
+type ChartProps = {
   chartData: number[];
-}
+};
 
-const labels = ['ST-723BR', 'ST-98234BR', 'ST-843BR', 'ST-723BR', 'ST-98234BR', 'ST-843BR', 'ST-394BR'];
+const labels = [
+  'ST-723BR',
+  'ST-98234BR',
+  'ST-843BR',
+  'ST-723BR',
+  'ST-98234BR',
+  'ST-843BR',
+  'ST-394BR',
+];
 
 const formatData = (data: number[]) => ({
-  labels: labels,
   datasets: [
     {
-      data: data,
-      borderColor: '#7cb5ec',
       backgroundColor: '#7cb5ec',
+      borderColor: '#7cb5ec',
+      data: data,
       type: 'bar' as ChartType,
     },
   ],
+  labels: labels,
 });
 
 const MyChart = ({ chartData }: ChartProps) => {
-  const id = generateRandomId();
+  const id = useId();
   const chartRef = useRef<Chart | null>(null);
 
   if (chartRef.current) chartRef.current.destroy();
@@ -40,25 +47,23 @@ const MyChart = ({ chartData }: ChartProps) => {
     const ctx = canvasElement?.getContext('2d');
     if (ctx) {
       chartRef.current = new Chart(ctx, {
-        type: 'bar',
         data: {
-          labels: labels,
           datasets: [
             {
-              label: 'Dataset 1',
-              data: [0, 0, 0, 0, 0, 0, 0],
-              borderColor: '#7cb5ec',
               backgroundColor: '#7cb5ec',
+              borderColor: '#7cb5ec',
+              data: [0, 0, 0, 0, 0, 0, 0],
+              label: 'Dataset 1',
               order: 1,
               type: undefined,
             },
           ],
+          labels: labels,
         },
         options: {
           interaction: {
             intersect: true,
           },
-          responsive: true,
           maintainAspectRatio: false,
           onResize: () => {
             if (chartRef?.current) return;
@@ -69,7 +74,9 @@ const MyChart = ({ chartData }: ChartProps) => {
               display: false,
             },
           },
+          responsive: true,
         },
+        type: 'bar',
       });
     }
   };
@@ -81,43 +88,60 @@ const MyChart = ({ chartData }: ChartProps) => {
     }
   }, [chartData]);
 
-  return <canvas id={id} ref={canvasCallback}></canvas>;
+  return (
+    <canvas
+      ref={canvasCallback}
+      id={id}
+    ></canvas>
+  );
 };
 
-function DistributorStockPage() {
+export default function DistributorStockPage() {
   return (
-    <PrivateLayout>
-      <Box p="2rem">
-        <Flex align="flex-end" justify="space-between">
-          <Heading width="60%">Estoque Clientes</Heading>
-          <Flex
-            border="1px solid #00000020"
-            borderRadius={5}
-            justify="center"
-            align="center"
-            h="2.5rem"
-            w="20rem"
-            bg="white"
+    <Box p="2rem">
+      <Flex
+        align="flex-end"
+        justify="space-between"
+      >
+        <Heading width="60%">Estoque Clientes</Heading>
+        <Flex
+          align="center"
+          bg="white"
+          border="1px solid #00000020"
+          borderRadius={5}
+          h="2.5rem"
+          justify="center"
+          w="20rem"
+        >
+          <Text
+            color="#898989"
+            mx="10px"
           >
-            <Text color="#898989" mx="10px">
-              Distribuidor:
-            </Text>
-            <Select variant="unstyled" placeholder="Escolha um da lista">
-              <option value="">Escolha um da lista</option>
-            </Select>
-          </Flex>
-        </Flex>
-        <Flex direction="column" mt="2rem">
-          <Text mb="1rem" fontSize="24px" fontStyle="700">
-            15 Produtos mais vendidos
+            Distribuidor:
           </Text>
-          <Box height="20rem">
-            <MyChart chartData={generateRandomArray(7)} />
-          </Box>
+          <Select
+            placeholder="Escolha um da lista"
+            variant="unstyled"
+          >
+            <option value="">Escolha um da lista</option>
+          </Select>
         </Flex>
-      </Box>
-    </PrivateLayout>
+      </Flex>
+      <Flex
+        direction="column"
+        mt="2rem"
+      >
+        <Text
+          fontSize="24px"
+          fontStyle="700"
+          mb="1rem"
+        >
+          15 Produtos mais vendidos
+        </Text>
+        <Box height="20rem">
+          <MyChart chartData={generateRandomArray(7)} />
+        </Box>
+      </Flex>
+    </Box>
   );
 }
-
-export default isPrivatePage(DistributorStockPage);

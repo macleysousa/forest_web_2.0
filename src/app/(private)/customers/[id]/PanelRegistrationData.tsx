@@ -1,36 +1,47 @@
-import { TabPanel, Flex, Select, Checkbox, Textarea, Divider, Box, Text, Input, Image } from '@chakra-ui/react';
-import { ButtonOutline } from 'src/components/ui/ButtonOutline';
-import { ButtonPrimary } from 'src/components/ui/ButtonPrimary';
-import { InputLabel } from 'src/components/ui/InputLabel';
-import { InputText } from 'src/components/ui/InputText';
-import { Form } from 'src/components/ui/Form';
-import InputMask from 'react-input-mask';
-import { useState, useRef } from 'react';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Flex,
+  FormControl,
+  Image,
+  Input,
+  Select,
+  TabPanel,
+  Text,
+  Textarea,
+} from '@chakra-ui/react';
+import { useRef, useState } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
+import InputMask from 'react-input-mask';
+import { InputLabel } from '../../../../components/InputLabel';
+import { InputText } from '../../../../components/InputText';
 
-interface PanelRegistrationDataProps {
+type PanelRegistrationDataProps = {
   formState: any;
-  register: any;
   handleSubmit: any;
-  onSubmit: any;
-  onError: any;
   onCancel: any;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
-}
+  onError: any;
+  onSubmit: any;
+  register: any;
+};
 
-export default function PanelRegistrationData({
+export function PanelRegistrationData({
   formState,
   register,
   handleSubmit,
   onSubmit,
   onError,
   onCancel,
-  onChange,
 }: PanelRegistrationDataProps) {
   const [photo, setPhoto] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     if (!event.target.files) return;
     const file = event.target.files.item(0);
 
@@ -52,69 +63,104 @@ export default function PanelRegistrationData({
   return (
     <TabPanel p="2rem 0">
       <Box
-        maxW="53rem"
-        w={{ md: '100%', lg: '100%', xl: '53rem' }}
-        borderRadius="8px"
-        shadow="sm"
-        p="3rem 2rem 1rem 2rem"
         bg="#fff"
+        borderRadius="8px"
+        maxW="53rem"
+        p="3rem 2rem 1rem 2rem"
+        shadow="sm"
+        w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <Form onSubmit={handleSubmit(onSubmit, onError)}>
+        <FormControl onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
-            align={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            direction={{ md: 'column', lg: 'column', xl: 'row' }}
+            align={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            direction={{ lg: 'column', md: 'column', xl: 'row' }}
             mb="1rem"
           >
-            <Text mb={{ base: '0', md: '1rem', lg: '1rem' }} minW={{ md: 'auto', lg: 'auto', xl: '7rem' }}>
+            <Text
+              mb={{ base: '0', lg: '1rem', md: '1rem' }}
+              minW={{ lg: 'auto', md: 'auto', xl: '7rem' }}
+            >
               Avatar
             </Text>
-            <Flex ml={{ base: '0', lg: '0', xl: '4rem' }} align="center">
+            <Flex
+              align="center"
+              ml={{ base: '0', lg: '0', xl: '4rem' }}
+            >
               {photo ? (
-                <Image src={photo} alt="" h="72px" w="72px" borderRadius="50%" objectFit="cover" />
+                <Image
+                  alt=""
+                  borderRadius="50%"
+                  h="72px"
+                  objectFit="cover"
+                  src={photo}
+                  w="72px"
+                />
               ) : (
-                <Box h="72px" w="72px" borderRadius="50%" bg="#84818A" />
+                <Box
+                  bg="#84818A"
+                  borderRadius="50%"
+                  h="72px"
+                  w="72px"
+                />
               )}
-              <ButtonPrimary onClick={() => fileInput.current?.click()} ml="2rem" h="2rem" w="9rem">
+              <Button
+                h="2rem"
+                ml="2rem"
+                variant="solid"
+                w="9rem"
+                onClick={() => fileInput.current?.click()}
+              >
                 Alterar Foto
-              </ButtonPrimary>
+              </Button>
               <Input
                 ref={fileInput}
-                onChange={handlePhotoChange}
-                type="file"
                 id="import-file"
                 name="import-file"
+                type="file"
                 hidden
+                onChange={handlePhotoChange}
               />
-              <ButtonOutline ml="1rem" h="2rem" w="9rem" color="#1E93FF" borderColor="#1E93FF">
+              <Button
+                borderColor="#1E93FF"
+                color="#1E93FF"
+                h="2rem"
+                ml="1rem"
+                variant="outline"
+                w="9rem"
+              >
                 Apagar Foto
-              </ButtonOutline>
+              </Button>
             </Flex>
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">
               CNPJ
-              <Box as="span" color="red.500" ml="0.25rem">
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
                 *
               </Box>
             </Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.cnpj?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Input
+                alwaysShowMask={false}
                 as={InputMask}
                 mask="99.999.999/9999-99"
                 maskChar={null}
-                alwaysShowMask={false}
-                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="CNPJ"
                 {...register('cnpj')}
               />
@@ -122,25 +168,29 @@ export default function PanelRegistrationData({
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">
               Razão Social
-              <Box as="span" color="red.500" ml="0.25rem">
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
                 *
               </Box>
             </Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.socialName?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <InputText
-                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="Nome da Empresa"
                 {...register('socialName')}
               />
@@ -148,25 +198,29 @@ export default function PanelRegistrationData({
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">
               Nome Fantasia
-              <Box as="span" color="red.500" ml="0.25rem">
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
                 *
               </Box>
             </Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.fantasyName?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <InputText
-                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="Nome Fantasia (Se houver)"
                 {...register('fantasyName')}
               />
@@ -174,51 +228,60 @@ export default function PanelRegistrationData({
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">IE / IM</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w="100%"
+              display="flex"
               error={formState.errors.fantasyName?.message}
+              flexDirection="column"
+              my="1rem"
+              w="100%"
             >
               <Flex w="100%">
                 <InputText
-                  ml={{ md: '0', lg: '0', xl: '4rem' }}
-                  w="100%"
+                  ml={{ lg: '0', md: '0', xl: '4rem' }}
                   placeholder="Inscrição Estadual"
+                  w="100%"
                   {...register('ie')}
                 />
-                <InputText ml="2rem" w="100%" placeholder="Inscrição Municipal" {...register('im')} />
+                <InputText
+                  ml="2rem"
+                  placeholder="Inscrição Municipal"
+                  w="100%"
+                  {...register('im')}
+                />
               </Flex>
             </InputLabel>
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Situação</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w="100%"
+              display="flex"
               error={formState.errors.fantasyName?.message}
+              flexDirection="column"
+              my="1rem"
+              w="100%"
             >
-              <Box width="100%" display="flex" alignItems="center">
+              <Box
+                alignItems="center"
+                display="flex"
+                width="100%"
+              >
                 <Select
-                  ml={{ md: '0', lg: '0', xl: '4rem' }}
-                  w="25rem"
+                  ml={{ lg: '0', md: '0', xl: '4rem' }}
                   placeholder="Situação"
+                  w="25rem"
                   {...register('situation')}
-                  icon={<MdArrowDropDown />}
                   fontFamily="sans-serif"
+                  icon={<MdArrowDropDown />}
                 >
                   <option value="Regular">Regular</option>
                   <option value="Irregular">Irregular</option>
@@ -229,20 +292,20 @@ export default function PanelRegistrationData({
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="8rem">Avaliação Cliente</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '92.5%' }}
+              display="flex"
               error={formState.errors.customerReview?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '92.5%' }}
             >
               <InputText
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="Avaliação Cliente"
                 {...register('customerReview')}
               />
@@ -250,25 +313,25 @@ export default function PanelRegistrationData({
           </Flex>
 
           <Flex
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Observações</Text>
             <InputLabel
-              my="1rem"
-              display="flex"
               alignItems="baseline"
-              flexDirection="column"
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              display="flex"
               error={formState.errors.comments?.message}
+              flexDirection="column"
+              my="1rem"
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Textarea
-                maxW="26.625rem"
-                w="26.625rem"
                 h="9rem"
-                resize="none"
-                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                maxW="26.625rem"
+                ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="Descrição da empresa"
+                resize="none"
+                w="26.625rem"
                 {...register('comments')}
               />
             </InputLabel>
@@ -276,15 +339,29 @@ export default function PanelRegistrationData({
 
           <Divider my="2rem" />
 
-          <Flex justify="flex-end" align="center">
-            <ButtonOutline w="5.5rem" h="2.5rem" onClick={onCancel}>
+          <Flex
+            align="center"
+            justify="flex-end"
+          >
+            <Button
+              h="2.5rem"
+              variant="outline"
+              w="5.5rem"
+              onClick={onCancel}
+            >
               Cancelar
-            </ButtonOutline>
-            <ButtonPrimary type="submit" ml="1.5rem" w="8rem" h="2.5rem">
+            </Button>
+            <Button
+              h="2.5rem"
+              ml="1.5rem"
+              type="submit"
+              variant="solid"
+              w="8rem"
+            >
               Salvar
-            </ButtonPrimary>
+            </Button>
           </Flex>
-        </Form>
+        </FormControl>
       </Box>
     </TabPanel>
   );
