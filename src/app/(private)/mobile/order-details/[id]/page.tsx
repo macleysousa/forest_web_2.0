@@ -18,19 +18,21 @@ import {
   MenuItem,
   MenuList,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Text,
   Textarea,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
 } from '@chakra-ui/react';
 
 import { useQuery } from '@tanstack/react-query';
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BiSolidEditAlt } from 'react-icons/bi';
 import { IoMdEye, IoMdEyeOff, IoMdTrash } from 'react-icons/io';
 import { IoBagCheckSharp } from 'react-icons/io5';
@@ -54,6 +56,7 @@ import {
   formatCurrency,
   formatDate,
 } from '../../../../../utils/formatters';
+import { CancelOrderDialog } from './CancelOrderDialog';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 type CommentsType = 'order' | 'billing';
@@ -63,20 +66,47 @@ type OrderProductType = {
   quantity: number;
   unity_price: string;
 };
+type InputProductType = {
+  product_name: string;
+  quantity: number;
+  unity_price: string;
+};
 
 export default function ShowOrderPage() {
   const params = useParams();
   const toast = useToast();
   const router = useRouter();
 
+  const {
+    isOpen: isDialogOpen,
+    onOpen: onDialogOpen,
+    onClose: onDialogClose,
+  } = useDisclosure();
+  const cancelDialogRef = useRef<HTMLButtonElement>();
+
   const [isContentVisible, setIsContentVisible] = useState<boolean>(true);
   const [pageStatus, setPageStatus] = useState<PageStatusType>('create');
   const [currentComments, setCurrentComments] = useState<CommentsType>('order');
-  const [newProducts] = useState<OrderProductType[]>([]);
+  const [newProducts, setNewProducts] = useState<OrderProductType[]>([
+    {
+      product: { name: 'Produto 1' },
+      product_code: '123123',
+      quantity: 10,
+      unity_price: '10.00',
+    },
+    {
+      product: { name: 'Produto 1' },
+      product_code: '123123',
+      quantity: 10,
+      unity_price: '10.00',
+    },
+  ]);
+  const [inputProduct, setInputProduct] = useState<InputProductType>({
+    product_name: '',
+    quantity: 0,
+    unity_price: '',
+  });
   const [date, setDate] = useState(new Date());
-
-  const canShowContent = isContentVisible && pageStatus !== 'create';
-  const isValidParam = params?.id !== ' ' && !!Number(params?.id);
 
   const { data } = useQuery({
     queryFn: () => getOrderById(String(params?.id)),
@@ -87,6 +117,27 @@ export default function ShowOrderPage() {
     if (pageStatus === 'create') router.replace('/mobile/order-details');
     else if (pageStatus === 'edit') setPageStatus('show');
   };
+
+  const handleOrderCancel = () => {
+    if (pageStatus === 'create')
+      toast({
+        description: 'Não é possivel cancelar o pedido no momento',
+        status: 'error',
+      });
+    else onDialogOpen();
+  };
+
+  const handleRemoveProduct = (index: number) => {
+    const array = [...newProducts].filter((_, i) => i !== index);
+    setNewProducts([...array]);
+  };
+
+  const handleAddProduct = () => {
+    console.log('add product', inputProduct);
+  };
+
+  const canShowContent = isContentVisible && pageStatus !== 'create';
+  const isValidParam = params?.id !== ' ' && !!Number(params?.id);
 
   useEffect(() => {
     if (isValidParam) setPageStatus('show');
@@ -312,25 +363,19 @@ export default function ShowOrderPage() {
                     />
                     Editar Pedido
                   </MenuItem>
-                  <MenuItem
-                    fontWeight="500"
-                    onClick={() =>
-                      pageStatus === 'create'
-                        ? toast({
-                            description:
-                              'Não é possivel cancelar o pedido no momento',
-                            status: 'error',
-                          })
-                        : console.log('cancelar')
-                    }
-                  >
+                  <MenuItem fontWeight="500">
                     <Icon
                       as={IoMdTrash}
                       h="20px"
                       mr="1rem"
                       w="20px"
                     />
-                    Cancelar
+                    <Button
+                      variant="ghost"
+                      onClick={handleOrderCancel}
+                    >
+                      Cancelar
+                    </Button>
                   </MenuItem>
                 </MenuList>
               </Menu>
@@ -481,80 +526,109 @@ export default function ShowOrderPage() {
             >
               {['create', 'edit'].includes(pageStatus) && (
                 <>
-                  <Flex
-                    my="1rem"
-                    w="100%"
-                  >
-                    <Text
-                      pl="1rem"
-                      w="30%"
-                    >
-                      Produto
-                    </Text>
-                    <Text w="17.5%">Qtd. (Cx)</Text>
-                    <Text w="17.5%">Código</Text>
-                    <Text w="17.5%">Valor Cx. (R$)</Text>
-                    <Text w="17.5%">Total (R$)</Text>
-                  </Flex>
-
-                  {newProducts.map((product, index) => (
-                    <Flex
-                      key={`create-edit-${index}`}
-                      align="center"
-                      color="#898989"
-                      h="4rem"
-                      position="relative"
-                      w="100%"
-                    >
-                      <Text
-                        bg="#fff"
-                        pl="1rem"
-                        w="30%"
-                      >
-                        {product.product_code}
-                      </Text>
-                      <Text
-                        bg="#fff"
-                        pl="1rem"
-                        w="17.5%"
-                      >
-                        Qtd.
-                      </Text>
-                      <Text
-                        bg="#fff"
-                        w="17.5%"
-                      >
-                        918237
-                      </Text>
-                      <Text
-                        bg="#fff"
-                        w="17.5%"
-                      >
-                        R$ --
-                      </Text>
-                      <Text
-                        bg="#fff"
-                        w="17.5%"
-                      >
-                        R$ --
-                      </Text>
-                      <Button
-                        bg="#fff"
-                        h="2rem"
-                        position="absolute"
-                        right="0"
-                        top="25%"
-                        variant="outline"
-                        w="2rem"
-                      >
-                        <Icon
-                          as={IoMdTrash}
-                          h="16px"
-                          w="16px"
-                        />
-                      </Button>
-                    </Flex>
-                  ))}
+                  <TableContainer>
+                    <Table variant="striped">
+                      <Thead>
+                        <Tr>
+                          <Td
+                            pl="1rem"
+                            w="25%"
+                          >
+                            Produto
+                          </Td>
+                          <Td w="20%">Qtd. (Cx)</Td>
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
+                            Código
+                          </Td>
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
+                            Valor Cx. (R$)
+                          </Td>
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
+                            Total (R$)
+                          </Td>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {newProducts.map((product, index) => (
+                          <Tr key={`create-edit-${index}`}>
+                            <Td
+                              pl="1rem"
+                              w="20%"
+                            >
+                              <Flex align="center">
+                                <Image
+                                  alt="product photo"
+                                  h="32px"
+                                  src="/product-oil.jpg"
+                                  w="32px"
+                                />
+                                <Text
+                                  as="span"
+                                  maxW="10rem"
+                                  ml="1rem"
+                                  overflow="hidden"
+                                  textOverflow="ellipsis"
+                                  whiteSpace="nowrap"
+                                >
+                                  {product.product.name}
+                                </Text>
+                              </Flex>
+                            </Td>
+                            <Td
+                              pl="3rem"
+                              w="20%"
+                            >
+                              {product.quantity}
+                            </Td>
+                            <Td
+                              px="0"
+                              w="20%"
+                            >
+                              {product.product_code}
+                            </Td>
+                            <Td
+                              px="0"
+                              w="20%"
+                            >
+                              {formatCurrency(Number(product.unity_price))}
+                            </Td>
+                            <Td
+                              px="0"
+                              w="20%"
+                            >
+                              {formatCurrency(
+                                Number(product.unity_price) * product.quantity,
+                              )}
+                            </Td>
+                            <Td>
+                              <Button
+                                bg="#fff"
+                                h="2rem"
+                                variant="outline"
+                                w="2rem"
+                              >
+                                <Icon
+                                  as={IoMdTrash}
+                                  h="16px"
+                                  w="16px"
+                                  onClick={() => handleRemoveProduct(index)}
+                                />
+                              </Button>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
                   <Flex
                     align="center"
                     bg="#F9F9F9"
@@ -567,21 +641,39 @@ export default function ShowOrderPage() {
                     <Input
                       bg="#fff"
                       ml=".5rem"
-                      mr="4.5rem"
+                      mr="3.5rem"
                       pl="1rem"
                       placeholder="Nome ou Código"
                       w="20%"
+                      onChange={(e) =>
+                        setInputProduct({
+                          ...inputProduct,
+                          product_name: e.target.value,
+                        })
+                      }
                     />
                     <Input
                       bg="#fff"
-                      mr="12rem"
+                      mr="9rem"
                       placeholder="Qtd."
                       w="10%"
+                      onChange={(e) =>
+                        setInputProduct({
+                          ...inputProduct,
+                          quantity: Number(e.target.value),
+                        })
+                      }
                     />
                     <Input
                       bg="#fff"
                       placeholder="R$ --"
                       w="20%"
+                      onChange={(e) =>
+                        setInputProduct({
+                          ...inputProduct,
+                          unity_price: e.target.value,
+                        })
+                      }
                     />
                     <Icon
                       as={MdClose}
@@ -700,6 +792,7 @@ export default function ShowOrderPage() {
                     mb="2.5rem"
                     mt="1rem"
                     variant="ghost"
+                    onClick={handleAddProduct}
                   >
                     Adicionar Novo Produto
                   </Button>
@@ -753,7 +846,7 @@ export default function ShowOrderPage() {
         <Flex
           direction="column"
           // eslint-disable-next-line canonical/sort-keys
-          ml={{ 'sm': '0', 'md': '0', 'lg': '0', 'xl': '2rem', '2xl': '2rem' }}
+          ml={{ 'sm': '0', 'md': '0', 'lg': '0', 'xl': '1rem', '2xl': '1rem' }}
           // eslint-disable-next-line canonical/sort-keys
           mt={{ 'sm': '0', 'md': '2rem', 'lg': '2rem', 'xl': '0', '2xl': '0' }}
           // eslint-disable-next-line canonical/sort-keys, prettier/prettier
@@ -784,7 +877,7 @@ export default function ShowOrderPage() {
                   fontSize="14px"
                   fontWeight="400"
                 >
-                  {pageStatus === 'create' ? 'Venda' : data?.status}
+                  {pageStatus === 'create' ? '-' : data?.status}
                 </Text>
               </Flex>
             </CardHeader>
@@ -977,6 +1070,11 @@ export default function ShowOrderPage() {
           </Card>
         </Flex>
       </Flex>
+      <CancelOrderDialog
+        cancelRef={cancelDialogRef as React.RefObject<HTMLButtonElement>}
+        isOpen={isDialogOpen}
+        onClose={onDialogClose}
+      />
     </Box>
   );
 }
