@@ -16,17 +16,19 @@ import { dayNames, monthNames } from '../configs/datepicker';
 
 type DatePickerProps = {
   datePickerProps?: RangeDatepickerProps;
+  initialSelectedDates?: Date[];
   onChange: (dates: Date[]) => void;
 };
 
 export function DatePicker({
   onChange,
   datePickerProps,
+  initialSelectedDates,
   ...props
 }: DatePickerProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>([
-    new Date(),
-    new Date(),
+    initialSelectedDates?.[0] || new Date(),
+    initialSelectedDates?.[1] || new Date(),
   ]);
 
   const handleOnDateChange = (dates: Date[]) => {

@@ -49,7 +49,11 @@ import {
 } from 'react-icons/md';
 
 import { getOrderById } from '../../../../../services/api/ordersDetailId';
-import { formatCurrency, formatDate } from '../../../../../utils/formatters';
+import {
+  formatCNPJ,
+  formatCurrency,
+  formatDate,
+} from '../../../../../utils/formatters';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 type CommentsType = 'order' | 'billing';
@@ -145,9 +149,10 @@ export default function ShowOrderPage() {
                 Visualizar PDF
               </Button>
               <Button
+                maxW="11rem"
                 p="0 1rem"
                 variant="solid"
-                w="9rem"
+                w="fit-content"
               >
                 [{data?.status}]
               </Button>
@@ -352,7 +357,11 @@ export default function ShowOrderPage() {
                       w="50%"
                     />
                   ) : (
-                    <Text>{canShowContent ? data?.customer?.cnpj : '--'}</Text>
+                    <Text>
+                      {canShowContent
+                        ? formatCNPJ(data?.customer?.cnpj ?? '')
+                        : '--'}
+                    </Text>
                   )}
                 </Flex>
                 <Flex

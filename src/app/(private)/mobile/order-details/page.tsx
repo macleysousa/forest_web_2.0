@@ -67,12 +67,33 @@ const setStatusColor = (status: string) => {
   return statusFound?.color;
 };
 
+const getCurrentMonthRange = () => {
+  const currentDate = new Date();
+  const firstDay = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1,
+  );
+  const lastDay = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0,
+  );
+
+  return {
+    firstDay,
+    lastDay,
+  };
+};
+
+const { firstDay, lastDay } = getCurrentMonthRange();
+
 export default function OrderDetailsPage() {
   const toast = useToast();
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
   const [selectedDates, setSelectedDates] = useState<Date[]>([
-    new Date(),
-    new Date(),
+    firstDay,
+    lastDay,
   ]);
 
   const { data: customersData } = useQuery({
@@ -130,7 +151,10 @@ export default function OrderDetailsPage() {
           minW="70%"
           w="70%"
         >
-          <DatePicker onChange={setSelectedDates} />
+          <DatePicker
+            initialSelectedDates={[firstDay, lastDay]}
+            onChange={setSelectedDates}
+          />
           <ButtonFilter placeContent="flex-start" />
           <Button
             borderColor={!dashboardStatus ? '#89898970' : 'auto'}
@@ -200,107 +224,123 @@ export default function OrderDetailsPage() {
           ))}
         </SimpleGrid>
       )}
-      <TableContainer
-        bg="#fff"
-        borderRadius="12px"
-        mt={!dashboardStatus ? '2rem' : '0'}
-        p="1.5rem 1rem"
-      >
-        <Table
-          colorScheme="gray"
-          fontSize="12px"
-          size="xsm"
-          variant="striped"
+      {ordersData?.orders.length === 0 ? (
+        <Flex
+          align="center"
+          h="15rem"
+          justify="center"
+          w="100%"
         >
-          <Thead h="3rem">
-            <Tr>
-              <Th
-                pl="1rem"
-                w="18%"
-              >
-                Status
-              </Th>
-              <Th textAlign="center">Data</Th>
-              <Th textAlign="center">Pedido</Th>
-              <Th textAlign="center">Vendedor</Th>
-              <Th textAlign="center">Ator</Th>
-              <Th textAlign="center">Cliente</Th>
-              <Th textAlign="center">Pagamento</Th>
-              <Th textAlign="center">Valor Pedido</Th>
-            </Tr>
-          </Thead>
-          <Tbody h="3rem">
-            {ordersData?.orders.map((order, index) => (
-              <Tr
-                key={`tr-${index}`}
-                fontSize="14px"
-                h="3rem"
-              >
-                <Td pl="1rem">
-                  <Badge
-                    bg={setStatusColor(order.status) + '20' || '#1E93FF20'}
-                    borderRadius="8px"
-                    color={setStatusColor(order.status) || '#1E93FF'}
-                    fontSize="12px"
-                    p="5px"
-                  >
-                    {order.status}
-                  </Badge>
-                </Td>
-                <Td textAlign="center">
-                  {formatDate({ date: order.date_sync, showHours: true })}
-                </Td>
-                <Td
-                  color="#1E93FF"
-                  cursor="pointer"
-                  textAlign="center"
-                  textDecor="underline"
+          <Heading
+            fontSize="32px"
+            fontWeight="500"
+          >
+            Nada para exibir. Altere os filtros
+          </Heading>
+        </Flex>
+      ) : (
+        <TableContainer
+          bg="#fff"
+          borderRadius="12px"
+          mt={!dashboardStatus ? '2rem' : '0'}
+          p="1.5rem 1rem"
+        >
+          <Table
+            colorScheme="gray"
+            fontSize="12px"
+            size="xsm"
+            variant="striped"
+          >
+            <Thead h="3rem">
+              <Tr>
+                <Th
+                  pl="1rem"
+                  w="18%"
                 >
-                  <Link
-                    href={`/mobile/order-details/${encodeURIComponent(order.id)}`}
-                    legacyBehavior
-                    passHref
-                  >
-                    {order.id}
-                  </Link>
-                </Td>
-                <Td textAlign="center">{order.customer_id}</Td>
-                <Td textAlign="center">??</Td>
-                <Td
-                  textAlign="center"
-                  w="15%"
-                >
-                  <Box
-                    as="span"
-                    display="inline-block"
-                    maxW="10rem"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                  >
-                    {findCustomerName(order.customer_id)}
-                  </Box>
-                  <Icon
-                    as={MdDescription}
-                    h="16px"
-                    mx=".25rem"
-                    w="16px"
-                  />
-                  <Icon
-                    as={MdMail}
-                    h="16px"
-                    mx=".25rem"
-                    w="16px"
-                  />
-                </Td>
-                <Td textAlign="center">{order.payment_option_name}</Td>
-                <Td textAlign="center">
-                  {formatCurrency(Number(order.total_value))}
-                </Td>
+                  Status
+                </Th>
+                <Th textAlign="center">Data</Th>
+                <Th textAlign="center">Pedido</Th>
+                <Th textAlign="center">Vendedor</Th>
+                <Th textAlign="center">Ator</Th>
+                <Th textAlign="center">Cliente</Th>
+                <Th textAlign="center">Pagamento</Th>
+                <Th textAlign="center">Valor Pedido</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+            </Thead>
+            <Tbody h="3rem">
+              {ordersData?.orders.map((order, index) => (
+                <Tr
+                  key={`tr-${index}`}
+                  fontSize="14px"
+                  h="3rem"
+                >
+                  <Td pl="1rem">
+                    <Badge
+                      bg={setStatusColor(order.status) + '20' || '#1E93FF20'}
+                      borderRadius="8px"
+                      color={setStatusColor(order.status) || '#1E93FF'}
+                      fontSize="12px"
+                      p="5px"
+                    >
+                      {order.status}
+                    </Badge>
+                  </Td>
+                  <Td textAlign="center">
+                    {formatDate({ date: order.date_sync, showHours: true })}
+                  </Td>
+                  <Td
+                    color="#1E93FF"
+                    cursor="pointer"
+                    textAlign="center"
+                    textDecor="underline"
+                  >
+                    <Link
+                      href={`/mobile/order-details/${encodeURIComponent(order.id)}`}
+                      legacyBehavior
+                      passHref
+                    >
+                      {order.id}
+                    </Link>
+                  </Td>
+                  <Td textAlign="center">{order.customer_id}</Td>
+                  <Td textAlign="center">??</Td>
+                  <Td
+                    textAlign="center"
+                    w="15%"
+                  >
+                    <Box
+                      as="span"
+                      display="inline-block"
+                      maxW="10rem"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                    >
+                      {findCustomerName(order.customer_id)}
+                    </Box>
+                    <Icon
+                      as={MdDescription}
+                      h="16px"
+                      mx=".25rem"
+                      w="16px"
+                    />
+                    <Icon
+                      as={MdMail}
+                      h="16px"
+                      mx=".25rem"
+                      w="16px"
+                    />
+                  </Td>
+                  <Td textAlign="center">{order.payment_option_name}</Td>
+                  <Td textAlign="center">
+                    {formatCurrency(Number(order.total_value))}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
       <Flex
         color="#898989"
         fontSize="14px"
