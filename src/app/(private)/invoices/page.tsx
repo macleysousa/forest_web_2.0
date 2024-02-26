@@ -71,12 +71,6 @@ const getValorTotal = (data: InfiniteData<GetNFEsResult, number>) =>
     .reduce((acc, result) => acc + result.nfes.totals.value_total, 0)
     .toLocaleString('pt-BR', { currency: 'BRL', style: 'currency' });
 
-const toSelectedDates = (period: string) =>
-  period
-    .split(' a ')
-    .map((value) => value.split('-').reverse().join('-'))
-    .map((value) => new Date(`${value}T00:00:00.000-03:00`));
-
 const Period: React.FC<{ period: string }> = ({ period }) => (
   <>
     de {formatPeriod(period).split(' a ')[0]}
@@ -92,6 +86,11 @@ export default function InvoicesPage() {
     orderType: 'date' as keyof typeof OrderType,
     period: '01-01-2024 a 31-12-2024',
   });
+
+  const [dates, setDates] = useState<Date[]>([
+    new Date('2024-01-01'),
+    new Date('2024-12-31'),
+  ]);
 
   const infiniteQuery = useInfiniteQuery<
     GetNFEsResult,
@@ -149,13 +148,16 @@ export default function InvoicesPage() {
     setState({ ...state, order });
   };
 
-  const handlePeriodChange = (dates: Date[]) => {
+  const handlePeriodChange = (values: Date[]) => {
+    setDates(values);
+    if (values.length < 2) return;
+
     const parsedDates: string[] = [];
 
-    for (const date of dates) {
+    for (const date of values) {
       const year = date.getFullYear();
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate();
+      const day = date.getDate().toString().padStart(2, '0');
       parsedDates.push(`${year}-${month}-${day}`);
     }
 
@@ -189,7 +191,7 @@ export default function InvoicesPage() {
             </Button>
             <RangeDatepicker
               configs={{ dayNames, firstDayOfWeek: 0, monthNames }}
-              selectedDates={toSelectedDates(state.period)}
+              selectedDates={dates}
               propsConfigs={{
                 inputProps: {
                   cursor: 'pointer',
