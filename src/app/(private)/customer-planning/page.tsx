@@ -10,6 +10,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Skeleton,
   Table,
   TableContainer,
   Tbody,
@@ -21,7 +22,8 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-import { useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
 import { CgMenuGridR } from 'react-icons/cg';
 
 import {
@@ -33,51 +35,80 @@ import {
 import { useAuthContext } from '../../../contexts/AuthContext';
 import { getCustomersPlanning } from '../../../services/api/customers-planning';
 import { getUser } from '../../../services/api/user';
+import type { DefaultError, InfiniteData } from '@tanstack/query-core';
 
-type CustomerPlanning = Awaited<ReturnType<typeof getCustomersPlanning>>;
+type GetCustomersPlanning = typeof getCustomersPlanning;
+type GetCustomersPlanningResult = Awaited<ReturnType<GetCustomersPlanning>>;
+type Actor = Awaited<ReturnType<typeof getUser>>['actor_tree'][number];
 
-type ActorTree = Awaited<ReturnType<typeof getUser>>['actor_tree'][number];
+const range = (length) =>
+  Array.from({ length })
+    .fill(null)
+    .map((_, i) => i);
 
 export default function CustomerPlanningPage() {
   const toast = useToast();
-  const [customersPlanning, setCustomersPlanning] = useState<
-    CustomerPlanning[]
-  >([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState('1');
-  const [actor, setActor] = useState<ActorTree | null>(null);
   const auth = useAuthContext();
+  const [state, setState] = useState<{ actorId?: string; treeId?: string }>({});
+  const [actorName, setActorName] = useState('');
+  const loadMoreButtonRef = useRef<HTMLButtonElement>(null);
+
+  const infiniteQuery = useInfiniteQuery<
+    GetCustomersPlanningResult,
+    DefaultError,
+    InfiniteData<GetCustomersPlanningResult, number>,
+    ['customers-planning', typeof state],
+    number
+  >({
+    getNextPageParam: (lastPage) => {
+      const { current_page, last_page } = lastPage.customers_planning;
+      return current_page !== last_page ? current_page + 1 : undefined;
+    },
+
+    initialPageParam: 1,
+
+    queryFn: ({ pageParam, signal }) =>
+      getCustomersPlanning({
+        actor_id: state.actorId,
+        page: pageParam.toString(),
+        signal,
+        tree_id: state.treeId,
+      }),
+
+    queryKey: ['customers-planning', state],
+  });
 
   useEffect(() => {
-    setLoading(true);
-    const controller = new AbortController();
+    if (!infiniteQuery.error) return;
+    console.log(infiniteQuery.error);
+    toast({ description: 'Não foi possível buscar NFEs', status: 'error' });
+  }, [infiniteQuery.error, toast]);
 
-    const params = {
-      actor_id: actor?.actor_id.toString(),
-      page,
-      tree_id: actor?.tree_id.toString(),
-    };
+  useEffect(() => {
+    if (!loadMoreButtonRef.current) return;
+    const threshold = 1;
 
-    /* eslint-disable prettier/prettier */
-    getCustomersPlanning({ ...params, signal: controller.signal })
-      .then((result) => setCustomersPlanning((prev) => prev.concat(result)))
-      .catch((error) => error.name !== 'CanceledError' && toast({ status: 'error', title: error.message }))
-      .finally(() => setLoading(false));
-    /* eslint-enable prettier/prettier */
+    const observer = new IntersectionObserver(
+      (entries) =>
+        entries.some((entry) => entry.intersectionRatio === threshold) &&
+        !infiniteQuery.isFetching &&
+        infiniteQuery.fetchNextPage(),
+      { threshold },
+    );
 
-    return () => controller.abort();
-  }, [toast, page, actor]);
+    observer.observe(loadMoreButtonRef.current);
+    return () => observer.disconnect();
+  }, [infiniteQuery]);
 
-  const handleActorChange = (actorTree: ActorTree) => () => {
-    setCustomersPlanning([]);
-    setPage('1');
-
-    if (JSON.stringify(actor) === JSON.stringify(actorTree)) {
-      setActor(null);
+  const handleActorChange = (actor: Actor) => () => {
+    if (state.actorId === actor.actor_id.toString()) {
+      setState({});
+      setActorName('');
       return;
     }
 
-    setActor(actorTree);
+    setState({ actorId: `${actor.actor_id}`, treeId: `${actor.tree_id}` });
+    setActorName(actor.name);
   };
 
   return (
@@ -90,9 +121,12 @@ export default function CustomerPlanningPage() {
         >
           <Menu>
             <MenuButton
+              _active={{ bg: 'gray.300' }}
+              _hover={{ _disabled: { bg: 'gray.200' }, bg: 'gray.200' }}
               as={Button}
               bg="white"
               border="1px solid #DCDCDC"
+              color="gray.800"
               fontWeight="400"
               h="2.5rem"
               rightIcon={<MdArrowDropDown color="#898989" />}
@@ -106,29 +140,30 @@ export default function CustomerPlanningPage() {
               >
                 Ator:
               </Text>
-              {actor ? actor.name : 'Selecione um ator'}
+              {actorName || 'Selecione um ator'}
             </MenuButton>
             <MenuList>
               {auth.is === 'authenticated' &&
-                auth.user.actor_tree.map((actorTree) => (
+                auth.user.actor_tree.map((actor) => (
                   <MenuItem
-                    key={JSON.stringify(actorTree)}
+                    key={JSON.stringify(actor)}
                     fontSize="sm"
                     icon={
-                      JSON.stringify(actorTree) === JSON.stringify(actor) ? (
+                      state.actorId === actor.actor_id.toString() ? (
                         <MdCheckBox fontSize="1rem" />
                       ) : (
                         <MdCheckBoxOutlineBlank fontSize="1rem" />
                       )
                     }
-                    onClick={handleActorChange(actorTree)}
+                    onClick={handleActorChange(actor)}
                   >
-                    {actorTree.name}
+                    {actor.name}
                   </MenuItem>
                 ))}
             </MenuList>
           </Menu>
           <Button
+            _hover={{ userSelect: 'none' }}
             h="2.5rem"
             leftIcon={<CgMenuGridR fontSize="1.5rem" />}
             variant="solid"
@@ -148,46 +183,41 @@ export default function CustomerPlanningPage() {
         {[
           {
             label: 'Totais',
-            value: customersPlanning.reduce(
-              (total, customerPlanning) =>
-                total +
-                customerPlanning.customers_planning.totals.count_customers,
+            value: infiniteQuery.data?.pages.reduce(
+              (total, result) =>
+                total + result.customers_planning.totals.count_customers,
               0,
             ),
           },
           {
             label: 'Ativos',
-            value: customersPlanning.reduce(
-              (total, customerPlanning) =>
-                total + customerPlanning.customers_planning.totals.count_active,
+            value: infiniteQuery.data?.pages.reduce(
+              (total, result) =>
+                total + result.customers_planning.totals.count_active,
               0,
             ),
           },
           {
             label: 'Inativos',
-            value: customersPlanning.reduce(
-              (total, customerPlanning) =>
-                total +
-                customerPlanning.customers_planning.totals.count_inactive,
+            value: infiniteQuery.data?.pages.reduce(
+              (total, result) =>
+                total + result.customers_planning.totals.count_inactive,
               0,
             ),
           },
           {
             label: 'Prospects',
-            value: customersPlanning.reduce(
-              (total, customerPlanning) =>
-                total +
-                customerPlanning.customers_planning.totals.count_prospect,
+            value: infiniteQuery.data?.pages.reduce(
+              (total, result) =>
+                total + result.customers_planning.totals.count_prospect,
               0,
             ),
           },
           {
             label: 'Volume Mix',
-            value: customersPlanning.reduce(
-              (total, customerPlanning) =>
-                total +
-                customerPlanning.customers_planning.totals
-                  .sum_volume_mix_target,
+            value: infiniteQuery.data?.pages.reduce(
+              (total, result) =>
+                total + result.customers_planning.totals.sum_volume_mix_target,
               0,
             ),
           },
@@ -214,7 +244,7 @@ export default function CustomerPlanningPage() {
                 fontSize="2xl"
                 fontWeight="700"
               >
-                {value.toLocaleString('pt-BR')}
+                {value?.toLocaleString('pt-BR')}
               </Text>
             </Flex>
           </Flex>
@@ -240,7 +270,7 @@ export default function CustomerPlanningPage() {
             </Tr>
           </Thead>
           <Tbody>
-            {customersPlanning.map((customerPlanning) =>
+            {infiniteQuery.data?.pages.map((customerPlanning) =>
               customerPlanning.customers_planning.data.map((item, i) => (
                 <Tr
                   key={item.id}
@@ -342,8 +372,13 @@ export default function CustomerPlanningPage() {
                     textAlign="center"
                   >
                     <Badge
-                      background="#DBEEE7"
-                      color="#00A163"
+                      colorScheme={
+                        item.customer_status === 'Ativo'
+                          ? 'green'
+                          : item.customer_status === 'Prospect'
+                            ? 'blue'
+                            : 'gray'
+                      }
                     >
                       {item.customer_status}
                     </Badge>
@@ -362,28 +397,114 @@ export default function CustomerPlanningPage() {
                 </Tr>
               )),
             )}
+            {!infiniteQuery.data &&
+              range(4).map((key) => (
+                <Tr key={key}>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="8.75rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="9.5rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="2.25rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="4rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="1.75rem"
+                      width="12.75rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="3.75rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="1.25rem"
+                      width="4.5rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="0.375rem"
+                    />
+                  </Td>
+                </Tr>
+              ))}
           </Tbody>
         </Table>
       </TableContainer>
-      <Flex
-        justify="center"
-        mt="2rem"
-      >
-        <Button
-          bg="#FFFFFF"
-          border="1px solid #1E93FF"
-          color="#1E93FF"
-          h="2.5rem"
-          size="sm"
-          isDisabled={
-            loading ||
-            !customersPlanning.at(-1)?.customers_planning.next_page_url
-          }
-          onClick={() => setPage(String(Number(page) + 1))}
+      {infiniteQuery.hasNextPage && (
+        <Flex
+          justify="center"
+          mt="2rem"
         >
-          Carregar mais
-        </Button>
-      </Flex>
+          <Button
+            ref={loadMoreButtonRef}
+            bg="#FFFFFF"
+            border="1px solid #1E93FF"
+            color="#1E93FF"
+            h="2.5rem"
+            isDisabled={infiniteQuery.isFetching}
+            size="sm"
+            variant="outline"
+            onClick={() => infiniteQuery.fetchNextPage()}
+          >
+            Carregar mais
+          </Button>
+        </Flex>
+      )}
     </Box>
   );
 }
