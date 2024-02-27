@@ -3,6 +3,7 @@
 import { CacheProvider } from '@chakra-ui/next-js';
 import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { setDefaultOptions } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Suspense } from 'react';
@@ -21,6 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <ChakraProvider theme={theme}>
           <QueryClientProvider client={queryClient}>
             <AuthContextProvider>{children}</AuthContextProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </ChakraProvider>
       </CacheProvider>
