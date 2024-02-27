@@ -132,10 +132,9 @@ export default function ManagementPanelPage() {
                       Comparação
                     </Button>
                     <Button
-                      onClick={(event) => handleClick(event, 'periodInterval', 'pareto')}
-                      size="sm"
-                      // color="#fff"
                       colorScheme={filters.periodInterval === 'pareto' ? 'blue' : 'gray'}
+                      size="sm"
+                      onClick={(event) => handleClick(event, 'periodInterval', 'pareto')}
                     >
                       Pareto
                     </Button>
