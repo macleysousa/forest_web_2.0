@@ -319,6 +319,7 @@ export function Sidebar() {
                     as="span"
                     display={collapse ? 'none' : 'block'}
                     flex="1"
+                    fontWeight="600"
                     textAlign="left"
                     transition="all 0.8s ease-in-out"
                   >
