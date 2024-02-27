@@ -22,7 +22,11 @@ export const theme = extendTheme({
       variants: {
         solid: {
           _active: { bg: 'blue.700', color: 'white' },
-          _hover: { bg: 'blue.600', color: 'white' },
+          _hover: {
+            _disabled: { bg: 'blue.500' },
+            bg: 'blue.600',
+            color: 'white',
+          },
           bg: 'blue.500',
           color: 'white',
         },
