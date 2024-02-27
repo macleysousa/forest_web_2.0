@@ -18,7 +18,7 @@ export const theme = extendTheme({
 
   components: {
     Button: {
-      sizes: { md: { fontSize: 'sm', h: '3rem' } },
+      sizes: { md: { fontSize: 'sm', h: '3rem' }, sm: { h: '2.5rem' } },
       variants: {
         solid: {
           _active: { bg: 'blue.700', color: 'white' },

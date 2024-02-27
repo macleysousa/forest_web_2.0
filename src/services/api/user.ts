@@ -49,7 +49,8 @@ type GetUserResult = {
 };
 /* eslint-enable typescript-sort-keys/interface */
 
-export async function getUser() {
-  const response = await api.get<GetUserResult>('/v2/user');
+export async function getUser(accessToken: string) {
+  const headers = { Authorization: `Bearer ${accessToken}` };
+  const response = await api.get<GetUserResult>('/v2/user', { headers });
   return response.data;
 }
