@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google';
 import { ProgressBar } from '../components/ProgressBar';
 import { Providers } from './providers';
+import './globals.css';
 import type { Metadata } from 'next';
 
 const inter = Inter({
