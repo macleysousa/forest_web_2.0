@@ -12,9 +12,12 @@ import {
   Icon,
   Image,
   VStack,
+  useDisclosure,
 } from '@chakra-ui/react';
 
+import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { BiSolidFactory } from 'react-icons/bi';
 import { IoBagCheckSharp } from 'react-icons/io5';
 
@@ -24,6 +27,7 @@ import {
   MdDashboard,
   MdDirectionsCar,
   MdInsertChart,
+  MdMenu,
   MdPaid,
   MdPinDrop,
   MdSettings,
@@ -192,14 +196,21 @@ const options: Option[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { isOpen } = useDisclosure();
+  const [collapse, setCollapse] = useState(isOpen);
 
   return (
     <Box
+      animate={{ width: isOpen ? 500 : 90 }}
+      animation={collapse ? 'close 0.5s ease-in-out' : 'open 0.5s ease-in-out'}
+      as={motion.div}
       bg="#110834"
       color="#bcbcbc"
       height="100dvh"
-      minW="16rem"
+      initial={false}
+      minW={collapse ? '4rem' : '16rem'}
       overflowY="scroll"
+      transition="all 0.5s ease-in-out"
       css={{
         '&::-webkit-scrollbar': {
           width: '4px',
@@ -213,11 +224,23 @@ export function Sidebar() {
           width: '6px',
         },
       }}
+      onAnimationComplete={() => setCollapse(!isOpen)}
+      onAnimationStart={() => setCollapse(false)}
     >
       <Center m="1rem 0 2rem 0">
+        <Icon
+          as={MdMenu}
+          cursor="pointer"
+          h="24px"
+          mr={collapse ? '0' : '2rem'}
+          w="24px"
+          onClick={() => setCollapse(!collapse)}
+        />
         <Image
           alt="petroplus logo"
+          display={collapse ? 'none' : 'block'}
           src="/petroplus.png"
+          transition="all 0.8s ease-in-out"
           w="8rem"
         />
       </Center>
@@ -258,7 +281,13 @@ export function Sidebar() {
                 />
               }
             >
-              {option.name}
+              <Box
+                as="span"
+                display={collapse ? 'none' : 'block'}
+                transition="all 0.8s ease-in-out"
+              >
+                {option.name}
+              </Box>
             </Button>
           ) : (
             <Accordion
@@ -288,12 +317,17 @@ export function Sidebar() {
                   />
                   <Box
                     as="span"
+                    display={collapse ? 'none' : 'block'}
                     flex="1"
                     textAlign="left"
+                    transition="all 0.8s ease-in-out"
                   >
                     {option.name}
                   </Box>
-                  <AccordionIcon fontSize="2xl" />
+                  <AccordionIcon
+                    display={collapse ? 'none' : 'block'}
+                    fontSize="2xl"
+                  />
                 </AccordionButton>
                 <AccordionPanel p={0}>
                   <VStack
@@ -325,7 +359,13 @@ export function Sidebar() {
                           textDecoration: 'none',
                         }}
                       >
-                        {item.name}
+                        <Box
+                          as="span"
+                          display={collapse ? 'none' : 'block'}
+                          transition="all 0.8s ease-in-out"
+                        >
+                          {item.name}
+                        </Box>
                       </Button>
                     ))}
                   </VStack>
