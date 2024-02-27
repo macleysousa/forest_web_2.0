@@ -21,8 +21,7 @@ import { CardGraphicBarLine } from '../../../components/CardGraphicBarLine';
 import { InputLabel } from '../../../components/InputLabel';
 
 export default function ManagementPanelPage() {
-  const generateRandomArray = (quantity: number) =>
-    Array.from({ length: quantity }, () => Math.floor(Math.random() * 101));
+  const generateRandomArray = (quantity: number) => Array.from({ length: quantity }, () => Math.floor(Math.random() * 101));
 
   const [filters, setFilters] = useState({
     actor: '',
@@ -85,8 +84,7 @@ export default function ManagementPanelPage() {
                     onChange={(e) =>
                       setFilters((val) => ({
                         ...val,
-                        periodYear: (e.target as HTMLSelectElement)
-                          ?.value as string,
+                        periodYear: (e.target as HTMLSelectElement)?.value as string,
                       }))
                     }
                   >
@@ -113,51 +111,31 @@ export default function ManagementPanelPage() {
                     gap={1}
                   >
                     <Button
+                      colorScheme={filters.periodInterval === 'month' ? 'blue' : 'gray'}
                       size="sm"
-                      colorScheme={
-                        filters.periodInterval === 'month' ? 'blue' : 'gray'
-                      }
-                      onClick={(event) =>
-                        handleClick(event, 'periodInterval', 'month')
-                      }
+                      onClick={(event) => handleClick(event, 'periodInterval', 'month')}
                     >
                       Mensal
                     </Button>
                     <Button
+                      colorScheme={filters.periodInterval === 'acumulated' ? 'blue' : 'gray'}
                       size="sm"
-                      colorScheme={
-                        filters.periodInterval === 'acumulated'
-                          ? 'blue'
-                          : 'gray'
-                      }
-                      onClick={(event) =>
-                        handleClick(event, 'periodInterval', 'acumulated')
-                      }
+                      onClick={(event) => handleClick(event, 'periodInterval', 'acumulated')}
                     >
                       Acumulado
                     </Button>
                     <Button
+                      colorScheme={filters.periodInterval === 'comparison' ? 'blue' : 'gray'}
                       size="sm"
-                      colorScheme={
-                        filters.periodInterval === 'comparison'
-                          ? 'blue'
-                          : 'gray'
-                      }
-                      onClick={(event) =>
-                        handleClick(event, 'periodInterval', 'comparison')
-                      }
+                      onClick={(event) => handleClick(event, 'periodInterval', 'comparison')}
                     >
                       Comparação
                     </Button>
                     <Button
+                      onClick={(event) => handleClick(event, 'periodInterval', 'pareto')}
                       size="sm"
                       // color="#fff"
-                      colorScheme={
-                        filters.periodInterval === 'pareto' ? 'blue' : 'gray'
-                      }
-                      onClick={(event) =>
-                        handleClick(event, 'periodInterval', 'pareto')
-                      }
+                      colorScheme={filters.periodInterval === 'pareto' ? 'blue' : 'gray'}
                     >
                       Pareto
                     </Button>
@@ -181,35 +159,23 @@ export default function ManagementPanelPage() {
                     gap={1}
                   >
                     <Button
+                      colorScheme={filters.dashboard === 'sellOut' ? 'blue' : 'gray'}
                       size="sm"
-                      colorScheme={
-                        filters.dashboard === 'sellOut' ? 'blue' : 'gray'
-                      }
-                      onClick={(event) =>
-                        handleClick(event, 'dashboard', 'sellOut')
-                      }
+                      onClick={(event) => handleClick(event, 'dashboard', 'sellOut')}
                     >
                       Sell Out
                     </Button>
                     <Button
+                      colorScheme={filters.dashboard === 'positivity' ? 'blue' : 'gray'}
                       size="sm"
-                      colorScheme={
-                        filters.dashboard === 'positivity' ? 'blue' : 'gray'
-                      }
-                      onClick={(event) =>
-                        handleClick(event, 'dashboard', 'positivity')
-                      }
+                      onClick={(event) => handleClick(event, 'dashboard', 'positivity')}
                     >
                       Positivação
                     </Button>
                     <Button
+                      colorScheme={filters.dashboard === 'biling' ? 'blue' : 'gray'}
                       size="sm"
-                      colorScheme={
-                        filters.dashboard === 'biling' ? 'blue' : 'gray'
-                      }
-                      onClick={(event) =>
-                        handleClick(event, 'dashboard', 'biling')
-                      }
+                      onClick={(event) => handleClick(event, 'dashboard', 'biling')}
                     >
                       Faturamento
                     </Button>
