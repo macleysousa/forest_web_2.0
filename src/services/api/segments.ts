@@ -1,17 +1,19 @@
 import { api } from '.';
 
-interface Segment {
-    name: string;
-    id: number;
-}
+type Segment = {
+  id: number;
+  name: string;
+};
 
-interface SegmentResponse {
-    status: string;
-    date_update: string;
-    segments: Segment[];
-}
+type SegmentResponse = {
+  date_update: string;
+  segments: Segment[];
+  status: string;
+};
 
 export async function getSegments(lastUpdate?: string) {
-    const response = await api.get<SegmentResponse>('/v2/segments', { params: { date_update: lastUpdate } });
-    return response.data;
+  const response = await api.get<SegmentResponse>('/v2/segments', {
+    params: { date_update: lastUpdate },
+  });
+  return response.data;
 }

@@ -54,7 +54,7 @@ export default function OrderDetailsPage() {
   ]);
 
   const { data: customersData } = useQuery({
-    queryFn: getCustomers,
+    queryFn: () => getCustomers(),
     queryKey: ['customers'],
     retry: 5,
   });

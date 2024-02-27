@@ -1,27 +1,29 @@
 import { api } from '.';
 
-interface Segment {
-    id: number;
-    name: string;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
-}
+type Segment = {
+  created_at: string;
+  deleted_at: string | null;
+  id: number;
+  name: string;
+  updated_at: string;
+};
 
-interface Flag {
-    id: number;
-    name: string;
-    segment_id: number;
-    segment: Segment;
-}
+type Flag = {
+  id: number;
+  name: string;
+  segment: Segment;
+  segment_id: number;
+};
 
-interface FlagResponse {
-    status: string;
-    date_update: string;
-    flags: Flag[];
-}
+type FlagResponse = {
+  date_update: string;
+  flags: Flag[];
+  status: string;
+};
 
 export async function getFlags(lastUpdate?: string) {
-    const response = await api.get<FlagResponse>('/v2/flags', { params: { date_update: lastUpdate } });
-    return response.data;
+  const response = await api.get<FlagResponse>('/v2/flags', {
+    params: { date_update: lastUpdate },
+  });
+  return response.data;
 }

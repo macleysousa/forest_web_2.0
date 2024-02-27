@@ -1,24 +1,26 @@
 import { api } from '.';
 
-interface Segment {
-    id: number;
-    name: string;
-}
+type Segment = {
+  id: number;
+  name: string;
+};
 
-interface Partner {
-    id: number;
-    name: string;
-    segment_id: number;
-    segment: Segment;
-}
+type Partner = {
+  id: number;
+  name: string;
+  segment: Segment;
+  segment_id: number;
+};
 
-interface PartnerResponse {
-    status: string;
-    date_update: string;
-    partners: Partner[];
-}
+type PartnerResponse = {
+  date_update: string;
+  partners: Partner[];
+  status: string;
+};
 
 export async function getPartners(lastUpdate?: string) {
-    const response = await api.get<PartnerResponse>('/v2/partners', { params: { date_update: lastUpdate } });
-    return response.data;
+  const response = await api.get<PartnerResponse>('/v2/partners', {
+    params: { date_update: lastUpdate },
+  });
+  return response.data;
 }
