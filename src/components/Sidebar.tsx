@@ -15,9 +15,10 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 
+import { useWindowSize } from '@uidotdev/usehooks';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BiSolidFactory } from 'react-icons/bi';
 import { IoBagCheckSharp } from 'react-icons/io5';
 
@@ -33,7 +34,6 @@ import {
   MdSettings,
   MdStars,
 } from 'react-icons/md';
-
 import type { IconType } from 'react-icons';
 
 type Option = { icon: IconType; id: string; name: string } & (
@@ -197,11 +197,20 @@ const options: Option[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const { isOpen } = useDisclosure();
+  const { width } = useWindowSize();
   const [collapse, setCollapse] = useState(isOpen);
+
+  const tablet = width && width < 1080;
+
+  useEffect(() => {
+    if (tablet) {
+      setCollapse(true);
+    }
+  }, [tablet]);
 
   return (
     <Box
-      animate={{ width: isOpen ? 500 : 90 }}
+      animate={{ width: isOpen ? 500 : 85 }}
       animation={collapse ? 'close 0.5s ease-in-out' : 'open 0.5s ease-in-out'}
       as={motion.div}
       bg="#110834"
