@@ -102,12 +102,35 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
       ),
     );
     setCurrentFilter(emptyFilter);
-    setFilters((prevState) => [
-      ...prevState,
-      {
-        ...emptyFilter,
-      },
-    ]);
+    if (!(filters.length >= options.length))
+      setFilters((prevState) => [
+        ...prevState,
+        {
+          ...emptyFilter,
+        },
+      ]);
+  };
+
+  const handleEditFilterValue = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    filter: FilterType,
+    index: number,
+  ) => {
+    const newValue = e.target.value;
+    const updateFilterValue = (filterUpdate: FilterType) => ({
+      ...filterUpdate,
+      value: newValue,
+    });
+
+    if (filter.editable) {
+      setCurrentFilter(updateFilterValue);
+    } else {
+      setFilters((prevFilters) =>
+        prevFilters.map((fil, i) =>
+          i === index ? updateFilterValue(fil) : fil,
+        ),
+      );
+    }
   };
 
   const handleRemoveFilter = (index: number) => {
@@ -189,12 +212,7 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
                     textTransform="uppercase"
                     type="text"
                     w="34rem"
-                    onChange={(e) =>
-                      setCurrentFilter((prevState) => ({
-                        ...prevState,
-                        value: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => handleEditFilterValue(e, filter, index)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleConfirmFilter(index);
                     }}
@@ -221,6 +239,7 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
               ))}
             </VStack>
             <Button
+              isDisabled={filters.length >= options.length}
               mt="2rem"
               variant="outline"
               onClick={handleAddFilter}
