@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react';
 
 import { MdMenu } from 'react-icons/md';
 
-import { options } from '../configs/sidebarOptions';
+import { options } from '../configs/sidebar';
 
 export function Sidebar() {
   const pathname = usePathname();
