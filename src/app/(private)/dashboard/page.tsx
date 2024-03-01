@@ -130,76 +130,76 @@ export default function DashboardPage() {
         spacing={5}
       >
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Faturamento"
           type="down"
           value="R$22.880,50"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Cobertura"
           type="down"
           value="209"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Ticket Médio"
           type="up"
           value="R$685,90"
           variation="+21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
       </SimpleGrid>
       <SimpleGrid
