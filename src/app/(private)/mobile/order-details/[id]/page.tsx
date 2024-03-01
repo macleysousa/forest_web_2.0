@@ -18,17 +18,21 @@ import {
   MenuItem,
   MenuList,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Text,
   Textarea,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
 } from '@chakra-ui/react';
 
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { SingleDatepicker } from 'chakra-dayzed-datepicker';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import { BiSolidEditAlt } from 'react-icons/bi';
 import { IoMdEye, IoMdEyeOff, IoMdTrash } from 'react-icons/io';
 import { IoBagCheckSharp } from 'react-icons/io5';
@@ -38,6 +42,7 @@ import {
   MdCheckCircle,
   MdClose,
   MdDescription,
+  MdEventNote,
   MdFileDownload,
   MdLocalShipping,
   MdMoreHoriz,
@@ -45,87 +50,91 @@ import {
   MdViewWeek,
 } from 'react-icons/md';
 
-import { formatCurrency } from '../../../../../utils/formatters';
+import { getOrderById } from '../../../../../services/api/ordersDetailId';
+import {
+  formatCNPJ,
+  formatCurrency,
+  formatDate,
+} from '../../../../../utils/formatters';
+import { CancelOrderDialog } from './CancelOrderDialog';
 
 type PageStatusType = 'create' | 'edit' | 'show';
 type CommentsType = 'order' | 'billing';
+type OrderProductType = {
+  product: { name: string };
+  product_code: string;
+  quantity: number;
+  unity_price: string;
+};
+type InputProductType = {
+  product_name: string;
+  quantity: number;
+  unity_price: string;
+};
 
 export default function ShowOrderPage() {
-  const productsExample = [
-    {
-      amount: 12,
-      category_id: 1,
-      code: 'ST-1231BR',
-      id: 1,
-      image: 'products/ST-1231BR.png',
-      inventory: null,
-      name: 'ST-1231BR - 1030003 - DIESEL OIL TREATMENT 12X450ML',
-      product_price_actor_default: {
-        actor_id: 838,
-        created_at: '2020-07-29T16:15:51.000000Z',
-        deleted_at: null,
-        deleted_by_user_id: null,
-        id: 7109,
-        price: '586.38',
-        price_alt_1: '601.38',
-        price_alt_2: '616.38',
-        price_alt_3: '631.38',
-        price_alt_4: '646.38',
-        price_alt_5: '661.38',
-        price_alt_6: '676.38',
-        price_alt_7: null,
-        price_alt_8: null,
-        price_alt_9: null,
-        price_alt_10: null,
-        product_id: 1,
-        tree_id: 1,
-        updated_at: '2020-07-29T16:15:51.000000Z',
-        updated_by_user_id: 556,
-      },
-      status: 1,
-      unity: 'CX',
-    },
-    {
-      amount: 24,
-      category_id: 1,
-      code: 'ST-1503BR',
-      id: 2,
-      image: 'products/ST-1503BR.png',
-      inventory: null,
-      name: 'ST-1503BR - 1030001 - OIL TREATMENT 24X450ML',
-      product_price_actor_default: {
-        actor_id: 838,
-        created_at: '2020-07-29T16:15:51.000000Z',
-        deleted_at: null,
-        deleted_by_user_id: null,
-        id: 7111,
-        price: '786.98',
-        price_alt_1: '816.98',
-        price_alt_2: '846.98',
-        price_alt_3: '876.98',
-        price_alt_4: '906.98',
-        price_alt_5: '936.98',
-        price_alt_6: '966.98',
-        price_alt_7: null,
-        price_alt_8: null,
-        price_alt_9: null,
-        price_alt_10: null,
-        product_id: 2,
-        tree_id: 1,
-        updated_at: '2020-07-29T16:15:51.000000Z',
-        updated_by_user_id: 556,
-      },
-      status: 1,
-      unity: 'CX',
-    },
-  ];
-
   const params = useParams();
   const toast = useToast();
+  const router = useRouter();
+
+  const {
+    isOpen: isDialogOpen,
+    onOpen: onDialogOpen,
+    onClose: onDialogClose,
+  } = useDisclosure();
+  const cancelDialogRef = useRef<HTMLButtonElement>();
 
   const [isContentVisible, setIsContentVisible] = useState<boolean>(true);
   const [pageStatus, setPageStatus] = useState<PageStatusType>('create');
   const [currentComments, setCurrentComments] = useState<CommentsType>('order');
+  const [newProducts, setNewProducts] = useState<OrderProductType[]>([
+    {
+      product: { name: 'Produto 1' },
+      product_code: '123123',
+      quantity: 10,
+      unity_price: '10.00',
+    },
+    {
+      product: { name: 'Produto 1' },
+      product_code: '123123',
+      quantity: 10,
+      unity_price: '10.00',
+    },
+  ]);
+  const [inputProduct, setInputProduct] = useState<InputProductType>({
+    product_name: '',
+    quantity: 0,
+    unity_price: '',
+  });
+  const [date, setDate] = useState(new Date());
+
+  const { data } = useQuery({
+    queryFn: () => getOrderById(String(params?.id)),
+    queryKey: ['order', params.id],
+  });
+
+  const handleCancel = () => {
+    if (pageStatus === 'create') router.replace('/mobile/order-details');
+    else if (pageStatus === 'edit') setPageStatus('show');
+  };
+
+  const handleOrderCancel = () => {
+    if (pageStatus === 'create')
+      toast({
+        description: 'Não é possivel cancelar o pedido no momento',
+        status: 'error',
+      });
+    else onDialogOpen();
+  };
+
+  const handleRemoveProduct = (index: number) => {
+    const array = [...newProducts].filter((_, i) => i !== index);
+    setNewProducts([...array]);
+  };
+
+  const handleAddProduct = () => {
+    console.log('add product', inputProduct);
+  };
 
   const canShowContent = isContentVisible && pageStatus !== 'create';
   const isValidParam = params?.id !== ' ' && !!Number(params?.id);
@@ -168,7 +177,12 @@ export default function ShowOrderPage() {
               >
                 Salvar
               </Button>
-              <Button variant="outline">Cancelar</Button>
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+              >
+                Cancelar
+              </Button>
             </>
           ) : (
             <>
@@ -186,26 +200,40 @@ export default function ShowOrderPage() {
                 Visualizar PDF
               </Button>
               <Button
+                maxW="11rem"
                 p="0 1rem"
                 variant="solid"
-                w="9rem"
+                w="fit-content"
               >
-                [Status Pedido]
+                [{data?.status}]
               </Button>
             </>
           )}
         </Flex>
       </Flex>
       <Flex
-        // eslint-disable-next-line canonical/sort-keys, prettier/prettier
-        direction={{ 'sm': 'column', 'md': 'column', 'lg': 'column', 'xl': 'row', '2xl': 'row' }}
         my="2rem"
         w="100%"
+        direction={{
+          'lg': 'column',
+          'md': 'column',
+          'sm': 'column',
+          'xl': 'row',
+          // eslint-disable-next-line canonical/sort-keys
+          '2xl': 'row',
+        }}
       >
         <Flex
           direction="column"
-          // eslint-disable-next-line canonical/sort-keys, prettier/prettier
-          w={{ 'sm': '100%', 'md': '100%', 'lg': '100%', 'xl': '70%', '2xl': '70%', '3xl': '70%' }}
+          w={{
+            'lg': '100%',
+            'md': '100%',
+            'sm': '100%',
+            'xl': '70%',
+            // eslint-disable-next-line canonical/sort-keys
+            '2xl': '70%',
+            '3xl': '70%',
+          }}
         >
           <Flex
             gap={5}
@@ -232,7 +260,7 @@ export default function ShowOrderPage() {
                   fontWeight="700"
                   my=".5rem"
                 >
-                  {canShowContent ? '29.8' : '--'}
+                  {canShowContent ? data?.total_quantity_mix : '--'}
                 </Text>
               </CardHeader>
             </Card>
@@ -255,7 +283,7 @@ export default function ShowOrderPage() {
                   fontWeight="700"
                   my=".5rem"
                 >
-                  {canShowContent ? '31' : '--'} csx
+                  {canShowContent ? data?.total_quantity : '--'} csx
                 </Text>
               </CardHeader>
             </Card>
@@ -265,7 +293,7 @@ export default function ShowOrderPage() {
             >
               <CardHeader>
                 <Flex justify="space-between">
-                  <Text>Volume do Pedido</Text>
+                  <Text>Valor do Pedido</Text>
                   <Flex>
                     <Icon
                       as={canShowContent ? IoMdEyeOff : IoMdEye}
@@ -288,7 +316,7 @@ export default function ShowOrderPage() {
                   fontWeight="700"
                   my=".5rem"
                 >
-                  {canShowContent ? 'R$5.986,92' : 'R$ --'}
+                  {canShowContent ? data?.total_value : 'R$ --'}
                 </Text>
               </CardHeader>
             </Card>
@@ -302,7 +330,9 @@ export default function ShowOrderPage() {
               display="flex"
               justifyContent="space-between"
             >
-              <Text>--</Text>
+              <Text>
+                {canShowContent ? data?.customer?.fantasy_name : '--'}
+              </Text>
               <Menu placement="bottom-end">
                 <MenuButton>
                   <Icon
@@ -333,25 +363,19 @@ export default function ShowOrderPage() {
                     />
                     Editar Pedido
                   </MenuItem>
-                  <MenuItem
-                    fontWeight="500"
-                    onClick={() =>
-                      pageStatus === 'create'
-                        ? toast({
-                            description:
-                              'Não é possivel cancelar o pedido no momento',
-                            status: 'error',
-                          })
-                        : console.log('cancelar')
-                    }
-                  >
+                  <MenuItem fontWeight="500">
                     <Icon
                       as={IoMdTrash}
                       h="20px"
                       mr="1rem"
                       w="20px"
                     />
-                    Cancelar
+                    <Button
+                      variant="ghost"
+                      onClick={handleOrderCancel}
+                    >
+                      Cancelar
+                    </Button>
                   </MenuItem>
                 </MenuList>
               </Menu>
@@ -359,7 +383,7 @@ export default function ShowOrderPage() {
             <Divider />
             <Box
               display="flex"
-              h="13rem"
+              h="15rem"
             >
               <Box
                 p="1rem"
@@ -378,7 +402,11 @@ export default function ShowOrderPage() {
                       w="50%"
                     />
                   ) : (
-                    <Text>{canShowContent ? '20.360.416/0001-28' : '--'}</Text>
+                    <Text>
+                      {canShowContent
+                        ? formatCNPJ(data?.customer?.cnpj ?? '')
+                        : '--'}
+                    </Text>
                   )}
                 </Flex>
                 <Flex
@@ -392,14 +420,31 @@ export default function ShowOrderPage() {
                     gap=".75rem"
                     minW="6rem"
                   >
-                    <Text>{canShowContent ? 'Rua, Número' : '--'}</Text>
-                    <Text>{canShowContent ? 'Cidade - Estado' : '--'}</Text>
-                    <Text>{canShowContent ? 'CEP' : '--'}</Text>
+                    <Text
+                      maxH="3rem"
+                      maxW="80%"
+                      overflow="hidden"
+                      textAlign="end"
+                      textOverflow="ellipsis"
+                      w="80%"
+                    >
+                      {canShowContent
+                        ? `${data?.customer.address.address}, ${data?.customer.address.number}`
+                        : '--'}
+                    </Text>
+                    <Text>
+                      {canShowContent
+                        ? `${data?.customer.address.city} - ${data?.customer.address.state}`
+                        : '--'}
+                    </Text>
+                    <Text>
+                      {canShowContent ? data?.customer.address.zip : '--'}
+                    </Text>
                   </Flex>
                 </Flex>
                 <Flex justify="space-between">
                   <Text color="#898989">Grupo</Text>
-                  <Text>{canShowContent ? 'Postos JetOil' : ''}</Text>
+                  <Text>{canShowContent ? data?.customer.cnpj : ''}</Text>
                 </Flex>
               </Box>
               <Divider orientation="vertical" />
@@ -411,19 +456,66 @@ export default function ShowOrderPage() {
               >
                 <Flex justify="space-between">
                   <Text color="#898989">Data do Pedido</Text>
-                  <Text>10 Fev 2023 às 13h43</Text>
+                  {pageStatus === 'create' ? (
+                    <Flex
+                      align="center"
+                      border="1px solid #DCDCDC"
+                      borderRadius={5}
+                      pr="1rem"
+                      w="50%"
+                    >
+                      <SingleDatepicker
+                        date={date}
+                        name="date-input"
+                        propsConfigs={{
+                          inputProps: {
+                            bg: '#fff',
+                            border: 'none',
+                            h: '2rem',
+                            placeholder: 'Data do Pedido',
+                            w: '90%',
+                          },
+                        }}
+                        onDateChange={setDate}
+                      />
+                      <Icon as={MdEventNote} />
+                    </Flex>
+                  ) : (
+                    <Text>
+                      {(canShowContent &&
+                        formatDate({
+                          date: data?.date ?? '',
+                          showHours: true,
+                        })) ||
+                        '-'}
+                    </Text>
+                  )}
                 </Flex>
                 <Flex justify="space-between">
                   <Text color="#898989">Data do Envio</Text>
-                  <Text>-</Text>
+                  <Text>
+                    {(canShowContent &&
+                      formatDate({
+                        date: data?.date_send ?? '',
+                        showHours: true,
+                      })) ||
+                      '-'}
+                  </Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text color="#898989">Data do Faturamento</Text>
-                  <Text>-</Text>
+                  <Text>
+                    {(canShowContent &&
+                      formatDate({
+                        date: data?.date_billing ?? '',
+                        showHours: true,
+                      })) ||
+                      '-'}
+                  </Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text color="#898989">Nota Fiscal</Text>
-                  <Text>-</Text>
+                  <Text>{(canShowContent && data?.order_nfes_str) || '-'}</Text>
                 </Flex>
               </Flex>
             </Box>
@@ -434,80 +526,109 @@ export default function ShowOrderPage() {
             >
               {['create', 'edit'].includes(pageStatus) && (
                 <>
-                  <Flex
-                    my="1rem"
-                    w="100%"
-                  >
-                    <Text
-                      pl="1rem"
-                      w="30%"
-                    >
-                      Produto
-                    </Text>
-                    <Text w="17.5%">Qtd. (Cx)</Text>
-                    <Text w="17.5%">Código</Text>
-                    <Text w="17.5%">Valor Cx. (R$)</Text>
-                    <Text w="17.5%">Total (R$)</Text>
-                  </Flex>
-
-                  {Array.apply(0, Array(3)).map((_, index) => (
-                    <Flex
-                      key={`create-edit-${index}`}
-                      align="center"
-                      color="#898989"
-                      h="4rem"
-                      position="relative"
-                      w="100%"
-                    >
-                      <Text
-                        bg="#fff"
-                        pl="1rem"
-                        w="30%"
-                      >
-                        Nome ou Código
-                      </Text>
-                      <Text
-                        bg="#fff"
-                        pl="1rem"
-                        w="17.5%"
-                      >
-                        Qtd.
-                      </Text>
-                      <Text
-                        bg="#fff"
-                        w="17.5%"
-                      >
-                        918237
-                      </Text>
-                      <Text
-                        bg="#fff"
-                        w="17.5%"
-                      >
-                        R$ --
-                      </Text>
-                      <Text
-                        bg="#fff"
-                        w="17.5%"
-                      >
-                        R$ --
-                      </Text>
-                      <Button
-                        bg="#fff"
-                        h="2rem"
-                        position="absolute"
-                        right="0"
-                        top="25%"
-                        variant="outline"
-                        w="2rem"
-                      >
-                        <Icon
-                          as={IoMdTrash}
-                          h="16px"
-                          w="16px"
-                        />
-                      </Button>
-                    </Flex>
-                  ))}
+                  <TableContainer>
+                    <Table variant="striped">
+                      <Thead>
+                        <Tr>
+                          <Td
+                            pl="1rem"
+                            w="25%"
+                          >
+                            Produto
+                          </Td>
+                          <Td w="20%">Qtd. (Cx)</Td>
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
+                            Código
+                          </Td>
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
+                            Valor Cx. (R$)
+                          </Td>
+                          <Td
+                            px="0"
+                            w="20%"
+                          >
+                            Total (R$)
+                          </Td>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {newProducts.map((product, index) => (
+                          <Tr key={`create-edit-${index}`}>
+                            <Td
+                              pl="1rem"
+                              w="20%"
+                            >
+                              <Flex align="center">
+                                <Image
+                                  alt="product photo"
+                                  h="32px"
+                                  src="/product-oil.jpg"
+                                  w="32px"
+                                />
+                                <Text
+                                  as="span"
+                                  maxW="10rem"
+                                  ml="1rem"
+                                  overflow="hidden"
+                                  textOverflow="ellipsis"
+                                  whiteSpace="nowrap"
+                                >
+                                  {product.product.name}
+                                </Text>
+                              </Flex>
+                            </Td>
+                            <Td
+                              pl="3rem"
+                              w="20%"
+                            >
+                              {product.quantity}
+                            </Td>
+                            <Td
+                              px="0"
+                              w="20%"
+                            >
+                              {product.product_code}
+                            </Td>
+                            <Td
+                              px="0"
+                              w="20%"
+                            >
+                              {formatCurrency(Number(product.unity_price))}
+                            </Td>
+                            <Td
+                              px="0"
+                              w="20%"
+                            >
+                              {formatCurrency(
+                                Number(product.unity_price) * product.quantity,
+                              )}
+                            </Td>
+                            <Td>
+                              <Button
+                                bg="#fff"
+                                h="2rem"
+                                variant="outline"
+                                w="2rem"
+                              >
+                                <Icon
+                                  as={IoMdTrash}
+                                  h="16px"
+                                  w="16px"
+                                  onClick={() => handleRemoveProduct(index)}
+                                />
+                              </Button>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
                   <Flex
                     align="center"
                     bg="#F9F9F9"
@@ -520,21 +641,39 @@ export default function ShowOrderPage() {
                     <Input
                       bg="#fff"
                       ml=".5rem"
-                      mr="4.5rem"
+                      mr="3.5rem"
                       pl="1rem"
                       placeholder="Nome ou Código"
                       w="20%"
+                      onChange={(e) =>
+                        setInputProduct({
+                          ...inputProduct,
+                          product_name: e.target.value,
+                        })
+                      }
                     />
                     <Input
                       bg="#fff"
-                      mr="12rem"
+                      mr="9rem"
                       placeholder="Qtd."
                       w="10%"
+                      onChange={(e) =>
+                        setInputProduct({
+                          ...inputProduct,
+                          quantity: Number(e.target.value),
+                        })
+                      }
                     />
                     <Input
                       bg="#fff"
                       placeholder="R$ --"
                       w="20%"
+                      onChange={(e) =>
+                        setInputProduct({
+                          ...inputProduct,
+                          unity_price: e.target.value,
+                        })
+                      }
                     />
                     <Icon
                       as={MdClose}
@@ -583,7 +722,7 @@ export default function ShowOrderPage() {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {productsExample.map((product, index) => (
+                    {data?.order_products.map((product, index) => (
                       <Tr key={`product-${index}`}>
                         <Td
                           pl="1rem"
@@ -604,7 +743,7 @@ export default function ShowOrderPage() {
                               textOverflow="ellipsis"
                               whiteSpace="nowrap"
                             >
-                              {canShowContent ? product.name : '--'}
+                              {canShowContent ? product.product.name : '--'}
                             </Text>
                           </Flex>
                         </Td>
@@ -612,24 +751,20 @@ export default function ShowOrderPage() {
                           pl="3rem"
                           w="20%"
                         >
-                          {canShowContent ? product.amount : '--'}
+                          {canShowContent ? product.product.amount : '--'}
                         </Td>
                         <Td
                           px="0"
                           w="20%"
                         >
-                          {canShowContent ? product.code : '--'}
+                          {canShowContent ? product.product.code : '--'}
                         </Td>
                         <Td
                           px="0"
                           w="20%"
                         >
                           {canShowContent
-                            ? formatCurrency(
-                                Number(
-                                  product.product_price_actor_default.price,
-                                ),
-                              )
+                            ? formatCurrency(Number(product.unity_price))
                             : '--'}
                         </Td>
                         <Td
@@ -638,9 +773,8 @@ export default function ShowOrderPage() {
                         >
                           {canShowContent
                             ? formatCurrency(
-                                Number(
-                                  product.product_price_actor_default.price,
-                                ) * product.amount,
+                                Number(product.unity_price) *
+                                  product.product.amount,
                               )
                             : '--'}
                         </Td>
@@ -658,6 +792,7 @@ export default function ShowOrderPage() {
                     mb="2.5rem"
                     mt="1rem"
                     variant="ghost"
+                    onClick={handleAddProduct}
                   >
                     Adicionar Novo Produto
                   </Button>
@@ -671,8 +806,9 @@ export default function ShowOrderPage() {
                     <Text color="#898989">Total de CXs</Text>
                     <Text>
                       {canShowContent
-                        ? productsExample.reduce(
-                            (acc, product) => acc + Number(product.amount),
+                        ? data?.order_products.reduce(
+                            (acc, product) =>
+                              acc + Number(product.product.amount),
                             0,
                           )
                         : '-'}
@@ -684,18 +820,18 @@ export default function ShowOrderPage() {
                     fontWeight="600"
                     justify="space-between"
                   >
-                    <Text>TOTAL</Text>
+                    <Text>Total</Text>
                     <Text>
                       {canShowContent
                         ? formatCurrency(
-                            productsExample.reduce(
-                              (acc, product) =>
-                                acc +
-                                Number(
-                                  product.product_price_actor_default.price,
-                                ) *
-                                  Number(product.amount),
-                              0,
+                            Number(
+                              data?.order_products.reduce(
+                                (acc, product) =>
+                                  acc +
+                                  (Number(product.unity_price) ?? 0) *
+                                    product.product.amount,
+                                0,
+                              ),
                             ),
                           )
                         : '--'}
@@ -710,11 +846,18 @@ export default function ShowOrderPage() {
         <Flex
           direction="column"
           // eslint-disable-next-line canonical/sort-keys
-          ml={{ 'sm': '0', 'md': '0', 'lg': '0', 'xl': '2rem', '2xl': '2rem' }}
+          ml={{ 'sm': '0', 'md': '0', 'lg': '0', 'xl': '1rem', '2xl': '1rem' }}
           // eslint-disable-next-line canonical/sort-keys
           mt={{ 'sm': '0', 'md': '2rem', 'lg': '2rem', 'xl': '0', '2xl': '0' }}
           // eslint-disable-next-line canonical/sort-keys, prettier/prettier
-          w={{ 'sm': '100%', 'md': '100%', 'lg': '100%', 'xl': '30%', '2xl': '30%', '3xl': '30%' }}
+          w={{
+            '2xl': '30%',
+            '3xl': '30%',
+            'lg': '100%',
+            'md': '100%',
+            'sm': '100%',
+            'xl': '30%',
+          }}
         >
           <Card
             mb="1rem"
@@ -726,13 +869,15 @@ export default function ShowOrderPage() {
                   fontSize="18px"
                   fontWeight="600"
                 >
-                  Tipo de Pedido
+                  {pageStatus === 'create'
+                    ? 'Tipo de pedido'
+                    : `Pedido ${data?.id}`}
                 </Text>
                 <Text
                   fontSize="14px"
                   fontWeight="400"
                 >
-                  Venda
+                  {pageStatus === 'create' ? '-' : data?.status}
                 </Text>
               </Flex>
             </CardHeader>
@@ -925,6 +1070,11 @@ export default function ShowOrderPage() {
           </Card>
         </Flex>
       </Flex>
+      <CancelOrderDialog
+        cancelRef={cancelDialogRef as React.RefObject<HTMLButtonElement>}
+        isOpen={isDialogOpen}
+        onClose={onDialogClose}
+      />
     </Box>
   );
 }

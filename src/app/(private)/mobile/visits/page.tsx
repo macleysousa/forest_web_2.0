@@ -16,6 +16,7 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
@@ -24,8 +25,19 @@ import { useEffect, useState } from 'react';
 import { MdApps } from 'react-icons/md';
 import { ButtonFilter } from '../../../../components/ButtonFilter';
 import { DatePicker } from '../../../../components/DatePicker';
+import { getNotSaleReason } from '../../../../services/api/notSaleReason';
 import { getVisits } from '../../../../services/api/visits';
 import { formatDate, formatDateForQuery } from '../../../../utils/formatters';
+
+type NotSaleReasonType = {
+  id: number;
+  reason: string;
+  title: string;
+};
+
+const findNotSaleReason = (id: number, notSaleReasons: NotSaleReasonType[]) => {
+  return notSaleReasons?.find((reason: any) => reason?.id === id);
+};
 
 export default function VisitsPage() {
   const [dashboardStatus, setDashboardStatus] = useState<boolean>(true);
@@ -41,6 +53,11 @@ export default function VisitsPage() {
         dateInit: formatDateForQuery(selectedDates[0] as Date),
       }),
     queryKey: ['visits'],
+  });
+
+  const { data: notSaleReasonsData } = useQuery({
+    queryFn: () => getNotSaleReason(),
+    queryKey: ['notSaleReasons'],
   });
 
   useEffect(() => {
@@ -138,33 +155,27 @@ export default function VisitsPage() {
       </Flex>
       {dashboardStatus && (
         <SimpleGrid
-          // eslint-disable-next-line canonical/sort-keys
-          columns={{ sm: 2, md: 3, lg: 3, xl: 6 }}
+          columns={{ lg: 3, md: 3, sm: 2, xl: 6 }}
           p="2rem 0"
-          // eslint-disable-next-line canonical/sort-keys
-          spacing={{ sm: 5, md: 5, lg: 7 }}
+          spacing={{ lg: 7, md: 5, sm: 5 }}
         >
           {cardsContent.map((card, index) => (
             <Card
               key={index}
               align="center"
-              // eslint-disable-next-line canonical/sort-keys
-              h={{ 'base': '6rem', 'xl': '6rem', '2xl': '9rem' }}
+              h={{ '2xl': '9rem', 'base': '6rem', 'xl': '6rem' }}
               justify="center"
               variant="outline"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ 'base': '9rem', 'xl': '9rem', '2xl': '11rem' }}
+              w={{ '2xl': '11rem', 'base': '9rem', 'xl': '9rem' }}
             >
               <Text
-                // eslint-disable-next-line canonical/sort-keys
-                fontSize={{ 'base': '14px', 'xl': '14px', '2xl': '20px' }}
+                fontSize={{ '2xl': '20px', 'base': '14px', 'xl': '14px' }}
                 fontWeight="500"
               >
                 {card.name}
               </Text>
               <Text
-                // eslint-disable-next-line canonical/sort-keys
-                fontSize={{ 'base': '36px', 'xl': '36px', '2xl': '42px' }}
+                fontSize={{ '2xl': '42px', 'base': '36px', 'xl': '36px' }}
                 fontWeight="700"
               >
                 {card.value}
@@ -249,12 +260,27 @@ export default function VisitsPage() {
                     legacyBehavior
                     passHref
                   >
-                    {visit.id + ' ??'}
+                    {visit.id}
                   </Link>
                 </Td>
-                <Td textAlign="center">{visit.visit_comments || 'NC'}</Td>
                 <Td textAlign="center">
-                  {visit.not_sale_reason_id || 'NC'} ??
+                  <Tooltip label={visit.visit_comments || 'NC'}>
+                    <Box
+                      as="span"
+                      display="inline-block"
+                      maxW="8rem"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                    >
+                      {visit.visit_comments || 'NC'}
+                    </Box>
+                  </Tooltip>
+                </Td>
+                <Td textAlign="center">
+                  {findNotSaleReason(
+                    visit.not_sale_reason_id || 0,
+                    notSaleReasonsData as NotSaleReasonType[],
+                  )?.reason || 'NC'}
                 </Td>
               </Tr>
             ))}
