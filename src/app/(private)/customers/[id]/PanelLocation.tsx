@@ -11,11 +11,14 @@ import {
   TabPanel,
   Text,
 } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { MdArrowDropDown, MdPinDrop } from 'react-icons/md';
 import InputMask from 'react-input-mask';
 import { states } from '../../../../commons/locationUtils';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
+import { getCep } from '../../../../services/viacep/cep';
 
 type PanelLocationProps = {
   formState: any;
@@ -24,6 +27,7 @@ type PanelLocationProps = {
   onError: any;
   onSubmit: any;
   register: any;
+  setValue: any;
 };
 
 export function PanelLocation({
@@ -33,7 +37,34 @@ export function PanelLocation({
   onSubmit,
   onError,
   onCancel,
+  setValue,
 }: PanelLocationProps) {
+  const [cep, setCep] = useState<string | null>('');
+  const canFetch = !!Number(cep);
+
+  const { data, refetch } = useQuery({
+    enabled: canFetch,
+    queryFn: () => getCep(cep || ''),
+    queryKey: ['getCep'],
+    retry: 1,
+  });
+
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    const formatedValue = value.replace(/-/g, '');
+    if (Number(formatedValue)) {
+      setCep(formatedValue);
+    }
+  };
+
+  useEffect(() => {
+    refetch();
+    setValue('address', data?.logradouro);
+    setValue('neighborhood', data?.bairro);
+    setValue('city', data?.localidade);
+    setValue('state', data?.uf);
+  }, [cep, data, refetch, setValue]);
+
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -66,7 +97,10 @@ export function PanelLocation({
                 ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="CEP"
                 w="12rem"
-                {...register('zip')}
+                {...(register('zip'),
+                {
+                  onChange: handleOnChange,
+                })}
               />
             </InputLabel>
           </Flex>

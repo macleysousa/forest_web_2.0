@@ -408,6 +408,7 @@ export default function NewCustomerPage() {
             formState={formState}
             handleSubmit={handleSubmit}
             register={register}
+            setValue={setValue}
             onCancel={onCancel}
             onError={onError}
             onSubmit={onSubmit}
