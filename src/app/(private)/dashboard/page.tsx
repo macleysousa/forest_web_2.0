@@ -16,10 +16,10 @@ import {
 
 import { useEffect, useState } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
-import { ButtonFilter } from '../../../components/ButtonFilter';
 import { CardGraphicList } from '../../../components/CardGraphicList';
 import { CardInfo } from '../../../components/CardInfo';
 import { DatePicker } from '../../../components/DatePicker';
+import { FilterModal } from '../../../components/FilterModal';
 import { AuthUser, useAuthContext } from '../../../contexts/AuthContext';
 
 const content = [
@@ -28,6 +28,33 @@ const content = [
   { name: 'Concessionárias Credenciadas', value: '123.456' },
   { name: 'Oficinas', value: '98.765' },
   { name: 'Revendedores', value: '210.987' },
+];
+
+const options = [
+  {
+    label: 'Cidade',
+    value: 'cidade',
+  },
+  {
+    label: 'Estado',
+    value: 'estado',
+  },
+  {
+    label: 'Região',
+    value: 'região',
+  },
+  {
+    label: 'Segmento',
+    value: 'segmento',
+  },
+  {
+    label: 'Parceiro',
+    value: 'parceiro',
+  },
+  {
+    label: 'Venda/Bonificação',
+    value: 'venda/bonificação',
+  },
 ];
 
 export default function DashboardPage() {
@@ -118,7 +145,14 @@ export default function DashboardPage() {
                 <Checkbox my=".5rem">Eutotech</Checkbox>
               </PopoverContent>
             </Popover>
-            <ButtonFilter w="8rem" />
+
+            <FilterModal
+              options={options}
+              applyCallback={(params) => {
+                console.log(params);
+              }}
+            />
+
             <Button>Atualizar</Button>
           </Flex>
         </Flex>
@@ -130,76 +164,76 @@ export default function DashboardPage() {
         spacing={5}
       >
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Faturamento"
           type="down"
           value="R$22.880,50"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Cobertura"
           type="down"
           value="209"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Ticket Médio"
           type="up"
           value="R$685,90"
           variation="+21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
         <CardInfo
-          h={{ '3xl': '11rem' }}
+          h={{ '3xl': '10rem' }}
           month="Jan"
           title="Volume Mix"
           type="up"
           value="715"
           variation="21%"
-          w={{ '3xl': '25rem' }}
+          w={{ '3xl': '24rem' }}
         />
       </SimpleGrid>
       <SimpleGrid

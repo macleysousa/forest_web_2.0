@@ -151,7 +151,6 @@ export default function ManagementPanelPage() {
                     </Button>
                     <Button
                       size="sm"
-                      // color="#fff"
                       colorScheme={
                         filters.periodInterval === 'pareto' ? 'blue' : 'gray'
                       }
