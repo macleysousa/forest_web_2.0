@@ -221,7 +221,6 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
                   {filter.editable ? (
                     <Icon
                       as={MdCheckCircle}
-                      color="green"
                       cursor="pointer"
                       h="24px"
                       w="24px"
@@ -230,7 +229,6 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
                   ) : (
                     <Icon
                       as={IoMdTrash}
-                      color="red"
                       cursor="pointer"
                       h="24px"
                       w="24px"
@@ -241,7 +239,6 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
               ))}
             </VStack>
             <Button
-              colorScheme="blue"
               isDisabled={filters.length >= options.length}
               mt="2rem"
               variant="outline"
@@ -252,13 +249,6 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              mr="1rem"
-              variant="outline"
-              onClick={onClose}
-            >
-              Cancelar
-            </Button>
             <Link
               href={`${pathname}?${setQueryParams(filters)}`}
               legacyBehavior
