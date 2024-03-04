@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react';
 
 import { BsThreeDots } from 'react-icons/bs';
-import { ButtonFilter } from '../../../components/ButtonFilter';
+import { ButtonFilter } from '../../../../components/ButtonFilter';
 
 const range = (stop: number) =>
   Array.from({ length: stop })
