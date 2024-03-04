@@ -67,7 +67,7 @@ export function GlobalSearch() {
         sx={{ transitionDuration: '150ms' }}
         type="button"
         // eslint-disable-next-line canonical/sort-keys
-        w={{ base: '100%', sm: '12.5rem', lg: '25rem' }}
+        w={{ base: '100%', sm: '12.5rem', lg: '25rem', xl: '30rem' }}
         onClick={toggle}
       >
         <Icon
@@ -91,6 +91,7 @@ export function GlobalSearch() {
       </Flex>
       <Modal
         isOpen={open}
+        size="lg"
         onClose={toggle}
       >
         <ModalOverlay />
