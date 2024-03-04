@@ -32,9 +32,9 @@ import {
   MdCheckBoxOutlineBlank,
 } from 'react-icons/md';
 
-import { useAuthContext } from '../../../contexts/AuthContext';
-import { getCustomersPlanning } from '../../../services/api/customers-planning';
-import { getUser } from '../../../services/api/user';
+import { useAuthContext } from '../../../../contexts/AuthContext';
+import { getCustomersPlanning } from '../../../../services/api/customers-planning';
+import { getUser } from '../../../../services/api/user';
 import type { DefaultError, InfiniteData } from '@tanstack/query-core';
 
 type GetCustomersPlanning = typeof getCustomersPlanning;
