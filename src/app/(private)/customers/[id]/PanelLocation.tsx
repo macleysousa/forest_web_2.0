@@ -12,7 +12,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MdArrowDropDown, MdPinDrop } from 'react-icons/md';
 import InputMask from 'react-input-mask';
 import { states } from '../../../../commons/locationUtils';
@@ -39,8 +39,8 @@ export function PanelLocation({
   onCancel,
   setValue,
 }: PanelLocationProps) {
-  const [cep, setCep] = useState<string | null>('');
-  const canFetch = !!Number(cep);
+  const [cep, setCep] = useState<string | null>(null);
+  const canFetch = useMemo(() => !!Number(cep), [cep]);
 
   const { data, refetch } = useQuery({
     enabled: canFetch,
@@ -49,21 +49,26 @@ export function PanelLocation({
     retry: 1,
   });
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    const formatedValue = value.replace(/-/g, '');
-    if (Number(formatedValue)) {
-      setCep(formatedValue);
-    }
-  };
+  const handleOnChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      const formatedValue = value.replace(/-/g, '');
+      if (Number(formatedValue) && event.type !== 'focus') {
+        setCep(formatedValue);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
-    refetch();
-    setValue('address', data?.logradouro);
-    setValue('neighborhood', data?.bairro);
-    setValue('city', data?.localidade);
-    setValue('state', data?.uf);
-  }, [cep, data, refetch, setValue]);
+    if (canFetch && cep) {
+      refetch();
+      setValue('address', data?.logradouro);
+      setValue('neighborhood', data?.bairro);
+      setValue('city', data?.localidade);
+      setValue('state', data?.uf);
+    }
+  }, [cep, data, refetch, setValue, canFetch]);
 
   return (
     <TabPanel p="2rem 0">
@@ -97,8 +102,7 @@ export function PanelLocation({
                 ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="CEP"
                 w="12rem"
-                {...(register('zip'),
-                {
+                {...register('zip', {
                   onChange: handleOnChange,
                 })}
               />

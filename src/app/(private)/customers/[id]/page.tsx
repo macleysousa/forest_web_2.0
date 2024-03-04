@@ -146,6 +146,7 @@ export default function NewCustomerPage() {
       setValue('im', customerData.im ?? '');
       setValue('situation', customerData.situation);
       setValue('incentive', customerData.incentive ?? false);
+      setValue('neighborhood', customerData.address.neighborhood ?? '');
       // setValue('customerReview', customerData.validated ?? 0);
       setValue('comments', customerData.comments ?? '');
       setValue('segment', customerData.segment_id);
