@@ -1,151 +1,145 @@
 import { api } from '../api';
 
-type CustomerData = {
-  action: string | null;
-  action_status: string | null;
-  actor_id: number;
-  actor_name: string | null;
-  customer_id: number;
-  days_until_inactivation: number | null;
-  nfe_last_date: string | null;
-  revenue_average_3m: number | null;
-  revenue_current_month: number | null;
-  updated_at: string;
-  visit_last_date: string | null;
-  volume_mix_average_3m: number | null;
-  volume_mix_current_month: number | null;
-  volume_mix_potential: number | null;
-  volume_mix_target: number | null;
-  volume_mix_target_difference: number | null;
-  volume_mix_target_percent: number | null;
-};
-
-type Address = {
-  address: string;
-  city: string;
-  complement: string;
+type Actor = {
+  actor_name: string;
+  current: any;
   id: number;
-  latitude: string;
-  longitude: string;
-  neighborhood: string | null;
-  number: string;
-  state: string;
-  updated_at: string;
-  zip: string;
+  role: string; // You may want to replace 'any' with a specific type if possible
+  tree_id: number;
+  tree_name: string;
 };
 
-type Segment = {
-  id: number;
-  name: string;
-};
-
-type Partner = {
-  id: number;
-  name: string;
-};
-
-type Brand = {
-  id: number;
-  name: string;
-};
-
-type Flag = {
-  id: number;
-  name: string;
-};
-
-type CustomerInfo = {
-  avaliacao_geral: number;
-  ca_qtd_atendentes: number;
-  ca_qtd_elevadores: number;
-  ca_qtd_mecanicos: number;
-  comments: string;
-  customer_id: number;
-  mont_conc_ca_chefe_oficina: string;
-  mont_conc_ca_consultores: number;
-  mont_conc_ca_gerente_pecas: string;
-  mont_conc_ca_gerente_vendas: string;
-  mont_conc_ca_melhor_consultor: string;
-  mont_conc_ca_passagem: number;
-  multiplicador_nome: string;
-  postos_chefe_pista: string;
-  postos_frentistas: number;
-  postos_galonagem: number;
-  postos_gerente: string;
-  postos_lubrificador: string;
-  postos_melhor_frentista: string;
-  postos_tem_adesivos: boolean;
-  postos_tem_banners: boolean;
-  postos_tem_conveniencia: boolean;
-  postos_tem_expositor_acrilico: boolean;
-  postos_tem_expositor_bomba: boolean;
-  postos_tem_expositor_chao: boolean;
-  postos_tem_lavagem: boolean;
-  postos_tem_troca_oleo: boolean;
-  responsavel_acompanhamento_meta_diaria: string;
-  tem_comissao_venda_agentes: boolean;
-  tem_meta_diaria_agentes_vendas: boolean;
-  todos_decisor_aniversario: string;
-  todos_decisor_email: string;
-  todos_decisor_nome: string;
-  todos_decisor_telefone: string;
-  todos_melhor_horario: string;
-  visit_frequency: string;
-};
-
-/* eslint-disable typescript-sort-keys/interface */
 type Customer = {
-  id: number;
+  // You may want to replace 'any' with a specific type if possible
+  actors: Actor[];
+  city: string;
   cnpj: string;
-  status: string;
+  // You may want to replace 'any' with a specific type if possible
+  days_until_inactivation: any;
+  has_routes: any;
+  id: number;
+  partner: string | null;
+  rating: string | null;
+  segment: string;
   situation: string;
-  incentive: boolean | null;
   social_name: string;
-  fantasy_name: string;
-  contact_name: string;
-  email: string;
-  email_billing: string;
-  phone: string;
+  state: string;
+  status: string;
   validated: number;
-  comments: string;
-  address_id: number;
-  segment_id: number;
-  partner_id: number;
-  brand_id: number;
-  flag_id: number;
-  ie: string;
-  im: string;
-  routes: any[]; // You may want to replace this with an appropriate type
-  segment: Segment;
-  partner: Partner;
-  brand: Brand;
-  flag: Flag;
-  address: Address;
-  price_table: any[]; // You may want to replace this with an appropriate type
-  price_actor_customer: any[]; // You may want to replace this with an appropriate type
-  customer_info: CustomerInfo;
-  customer_data: CustomerData[];
 };
 
-/* eslint-disable typescript-sort-keys/interface */
-type CustomerResponse = {
-  status: string;
-  customers: Customer[];
+type Link = {
+  active: boolean;
+  label: string;
+  url: string | null;
 };
-/* eslint-enable typescript-sort-keys/interface */
+
+type Totals = {
+  active: number;
+  count: number;
+  inactive: number;
+  inadimplente: number;
+  prospect: number;
+  routes: number;
+};
+
+export type CustomersResponse = {
+  customers: {
+    current_page: number;
+    data: Customer[];
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    links: Link[];
+    next_page_url: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    status: string;
+    to: number;
+    total: number;
+    totals: Totals;
+  };
+  status: string;
+};
+
+type CustomerParamsType = {
+  actor?: string;
+  brand?: string;
+  cadastro?: string;
+  city?: string;
+  cnpj?: string;
+  dn_code?: string;
+  flag?: string;
+  has_filters: 1 | 0;
+  neighborhood?: string;
+  order: string;
+  order_type: string;
+  page: string;
+  partner?: string;
+  segment?: string;
+  situation?: string;
+  social_name?: string;
+  state?: string;
+  status?: string;
+  tree?: string;
+};
 
 export async function getCustomers({
-  date,
-  customerId,
-}: { customerId?: number; date?: string } = {}) {
-  let queryParams = '';
-  date ? (queryParams += `date=${date}`) : '';
-  customerId
-    ? (queryParams += `${date ? '&' : ''}customer_id=${customerId}`)
-    : '';
+  cnpj,
+  actor,
+  social_name,
+  partner,
+  brand,
+  flag,
+  segment,
+  situation,
+  status,
+  state,
+  city,
+  neighborhood,
+  tree,
+  dn_code,
+  cadastro,
+  has_filters,
+  order,
+  order_type,
+  page,
+}: CustomerParamsType) {
+  const queryParams = new URLSearchParams({
+    actor: actor || '',
+    brand: brand || '',
+    cadastro: cadastro || '',
+    city: city || '',
+    cnpj: cnpj || '',
+    dn_code: dn_code || '',
+    flag: flag || '',
+    has_filters: has_filters.toString(),
+    neighborhood: neighborhood || '',
+    order: order || '',
+    order_type: order_type || '',
+    page: page.toString(),
+    partner: partner || '',
+    segment: segment || '',
+    situation: situation || '',
+    social_name: social_name || '',
+    state: state || '',
+    status: status || '',
+    tree: tree || '',
+  });
 
-  const response = await api.get<CustomerResponse>(
-    `/v2/customers?${queryParams}`,
+  queryParams.forEach((value, key) => {
+    if (['', undefined].includes(value)) queryParams.delete(key);
+  });
+
+  const response = await api.get<CustomersResponse>(
+    `/web/customers?${queryParams.toString()}`,
+    {
+      headers: {
+        filters: 'AwA=',
+      },
+    },
   );
-  return response.data.customers;
+  return response.data;
 }

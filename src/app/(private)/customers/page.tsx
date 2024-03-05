@@ -7,7 +7,9 @@ import {
   Card,
   Flex,
   Heading,
+  Icon,
   SimpleGrid,
+  Skeleton,
   Table,
   TableContainer,
   Tbody,
@@ -16,53 +18,129 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
+import {
+  DefaultError,
+  InfiniteData,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
 import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+import { IoMdArrowRoundDown, IoMdArrowRoundUp } from 'react-icons/io';
 import { ButtonFilter } from '../../../components/ButtonFilter';
-import { getCustomers } from '../../../services/api/customer';
+import {
+  CustomersResponse,
+  getCustomers,
+} from '../../../services/api/customer';
+
+type Order = {
+  order: 'asc' | 'desc';
+  order_type: 'social_name' | 'cnpj' | 'situation' | 'rating' | 'status';
+};
+
+const range = (length) =>
+  Array.from({ length })
+    .fill(null)
+    .map((_, i) => i);
 
 export default function ClientsPage() {
-  const { data } = useQuery({
-    queryFn: () => getCustomers(),
-    queryKey: ['customers'],
+  const toast = useToast();
+
+  const [state, setState] = useState<Order>({
+    order: 'asc',
+    order_type: 'social_name',
+  });
+
+  const infiniteQuery = useInfiniteQuery<
+    CustomersResponse,
+    DefaultError,
+    InfiniteData<CustomersResponse, number>,
+    ['customers', typeof state],
+    number
+  >({
+    getNextPageParam: (lastPage) =>
+      lastPage.customers.current_page !== lastPage.customers.last_page
+        ? lastPage.customers.current_page + 1
+        : undefined,
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) =>
+      getCustomers({
+        has_filters: 0,
+        order: state.order,
+        order_type: state.order_type,
+        page: pageParam as unknown as string,
+      }),
+    queryKey: ['customers', state],
     retry: 5,
   });
+
+  useEffect(() => {
+    if (!infiniteQuery.error) return;
+    console.log(infiniteQuery.error);
+    toast({ description: 'Não foi possível buscar NFEs', status: 'error' });
+  }, [infiniteQuery.error, toast]);
+
+  const loadMoreButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!loadMoreButtonRef.current) return;
+    const threshold = 1;
+
+    const observer = new IntersectionObserver(
+      (entries) =>
+        entries.some((entry) => entry.intersectionRatio === threshold) &&
+        !infiniteQuery.isFetching &&
+        infiniteQuery.fetchNextPage(),
+      { threshold },
+    );
+
+    observer.observe(loadMoreButtonRef.current);
+    return () => observer.disconnect();
+  }, [infiniteQuery]);
+
+  const handleSort = (type: Order['order_type']) => {
+    setState((prevState) => {
+      return {
+        order: prevState.order === 'asc' ? 'desc' : 'asc',
+        order_type: type,
+      };
+    });
+  };
+
+  const getArrow = (order: Order['order']) => {
+    return order === 'asc' ? (
+      <Icon as={IoMdArrowRoundDown} />
+    ) : (
+      <Icon as={IoMdArrowRoundUp} />
+    );
+  };
 
   const cardsContent = [
     {
       name: 'Clientes',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      value: data?.reduce((acc: number, _: any) => acc + 1, 0),
+      value: infiniteQuery.data?.pages[0]?.customers.totals.count,
     },
-    { name: 'Inadimplentes', value: '?' },
+    {
+      name: 'Inadimplentes',
+      value: infiniteQuery.data?.pages[0]?.customers.totals.inadimplente,
+    },
     {
       name: 'Prospectos',
-      value: data?.reduce(
-        (acc, curr) => (curr.status === 'Prospect' ? acc + 1 : acc),
-        0,
-      ),
+      value: infiniteQuery.data?.pages[0]?.customers.totals.prospect,
     },
     {
       name: 'Inativos',
-      value: data?.reduce(
-        (acc, curr) => (curr.status === 'Inactive' ? acc + 1 : acc),
-        0,
-      ),
+      value: infiniteQuery.data?.pages[0]?.customers.totals.inactive,
     },
     {
       name: 'Ativos',
-      value: data?.reduce(
-        (acc, curr) => (curr.status === 'Active' ? acc + 1 : acc),
-        0,
-      ),
+      value: infiniteQuery.data?.pages[0]?.customers.totals.active,
     },
     {
       name: 'Roteirizados',
-      value: data?.reduce(
-        (acc, curr) => (curr.status === 'Routed' ? acc + 1 : acc),
-        0,
-      ),
+      value: infiniteQuery.data?.pages[0]?.customers.totals.routes,
     },
   ];
 
@@ -151,10 +229,38 @@ export default function ClientsPage() {
           <Thead h="3rem">
             <Tr>
               <Th pl="1rem">CNPJ</Th>
-              <Th w="20%">Razão Social</Th>
-              <Th textAlign="center">Situação</Th>
-              <Th textAlign="center">Avaliação</Th>
-              <Th textAlign="center">Status</Th>
+              <Th
+                cursor="pointer"
+                w="20%"
+                onClick={() => handleSort('social_name')}
+              >
+                <Text as="span">Razão Social</Text>
+                {state.order_type === 'social_name' && getArrow(state.order)}
+              </Th>
+              <Th
+                cursor="pointer"
+                textAlign="center"
+                onClick={() => handleSort('situation')}
+              >
+                <Text as="span">Situação</Text>
+                {state.order_type === 'situation' && getArrow(state.order)}
+              </Th>
+              <Th
+                cursor="pointer"
+                textAlign="center"
+                onClick={() => handleSort('rating')}
+              >
+                <Text as="span">Avaliação</Text>
+                {state.order_type === 'rating' && getArrow(state.order)}
+              </Th>
+              <Th
+                cursor="pointer"
+                textAlign="center"
+                onClick={() => handleSort('status')}
+              >
+                <Text as="span">Status</Text>
+                {state.order_type === 'status' && getArrow(state.order)}
+              </Th>
               <Th>Segmento</Th>
               <Th>Parceiro</Th>
               <Th>Cidade/UF</Th>
@@ -162,47 +268,157 @@ export default function ClientsPage() {
             </Tr>
           </Thead>
           <Tbody h="3rem">
-            {data?.map((customer, index) => (
-              <Tr
-                key={`tr-${index}`}
-                h="3rem"
-              >
-                <Td pl="1rem">{customer?.cnpj}</Td>
-                <Td
-                  cursor="pointer"
-                  textDecor="underline"
-                >
-                  <Link
-                    href={`/customers/${encodeURIComponent(customer?.id)}`}
-                    legacyBehavior
-                    passHref
+            {!infiniteQuery.data &&
+              range(4).map((key) => (
+                <Tr key={key}>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
                   >
-                    {customer?.social_name}
-                  </Link>
-                </Td>
-                <Td textAlign="center">{customer?.situation}</Td>
-                <Td textAlign="center">{customer?.validated}</Td>
-                <Td textAlign="center">{customer?.status.charAt(0)}</Td>
-                <Td>{customer?.segment?.name}</Td>
-                <Td>{customer?.partner?.name || 'Não definido'}</Td>
-                <Td>
-                  {customer?.address?.city} / {customer?.address?.state}
-                </Td>
-                <Td>
-                  <Badge
-                    borderRadius="8px"
-                    color="#00A163"
-                    colorScheme="green"
-                    fontSize="12px"
-                    p="5px"
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="8.75rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
                   >
-                    Completo
-                  </Badge>
-                </Td>
-              </Tr>
-            ))}
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="9.5rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="2.25rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="4rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="1.75rem"
+                      width="12.75rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="3.75rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="1.25rem"
+                      width="4.5rem"
+                    />
+                  </Td>
+                  <Td
+                    padding="1.25rem 0.75rem"
+                    textAlign="center"
+                  >
+                    <Skeleton
+                      display="inline-block"
+                      height="0.875rem"
+                      width="0.375rem"
+                    />
+                  </Td>
+                </Tr>
+              ))}
+            {String(
+              infiniteQuery.data?.pages.flatMap((page) => page.status),
+            ) !== 'error' &&
+              infiniteQuery.data?.pages
+                .flatMap((page) => page.customers.data)
+                .map((customer, index) => (
+                  <Tr
+                    key={`tr-${index}`}
+                    h="3rem"
+                  >
+                    <Td pl="1rem">{customer?.cnpj}</Td>
+                    <Td
+                      cursor="pointer"
+                      textDecor="underline"
+                    >
+                      <Link
+                        href={`/customers/${encodeURIComponent(customer?.id)}`}
+                        legacyBehavior
+                        passHref
+                      >
+                        {customer?.social_name}
+                      </Link>
+                    </Td>
+                    <Td textAlign="center">{customer?.situation}</Td>
+                    <Td textAlign="center">{customer?.rating || '-'}</Td>
+                    <Td textAlign="center">{customer?.status.charAt(0)}</Td>
+                    <Td>{customer?.segment}</Td>
+                    <Td>{customer?.partner || 'Não definido'}</Td>
+                    <Td>
+                      {customer?.city || '-'} / {customer?.state || '-'}
+                    </Td>
+                    <Td>
+                      <Badge
+                        borderRadius="8px"
+                        color="#00A163"
+                        colorScheme="green"
+                        fontSize="12px"
+                        p="5px"
+                      >
+                        Completo
+                      </Badge>
+                    </Td>
+                  </Tr>
+                ))}
           </Tbody>
         </Table>
+        {infiniteQuery.hasNextPage && (
+          <Flex
+            justify="center"
+            mt="2rem"
+          >
+            <Button
+              ref={loadMoreButtonRef}
+              bg="#FFFFFF"
+              border="1px solid #1E93FF"
+              color="#1E93FF"
+              h="2.5rem"
+              isDisabled={infiniteQuery.isFetching}
+              size="sm"
+              variant="outline"
+              onClick={() => infiniteQuery.fetchNextPage()}
+            >
+              Carregar mais
+            </Button>
+          </Flex>
+        )}
       </TableContainer>
     </Box>
   );
