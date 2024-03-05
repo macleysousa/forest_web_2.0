@@ -28,7 +28,7 @@ import {
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { IoMdArrowRoundDown, IoMdArrowRoundUp } from 'react-icons/io';
-import { ButtonFilter } from '../../../components/ButtonFilter';
+import { FilterModal } from '../../../components/FilterModal';
 import {
   CustomersResponse,
   getCustomers,
@@ -44,6 +44,65 @@ const range = (length) =>
     .fill(null)
     .map((_, i) => i);
 
+const options = [
+  {
+    label: 'Cidade',
+    value: 'city',
+  },
+  {
+    label: 'Estado',
+    value: 'state',
+  },
+  {
+    label: 'Rede',
+    value: 'brand',
+  },
+  {
+    label: 'Bandeira',
+    value: 'flag',
+  },
+  {
+    label: 'CNPJ',
+    value: 'cnpj',
+  },
+  {
+    label: 'Situação',
+    value: 'situation',
+  },
+  {
+    label: 'Ator Cliente',
+    value: 'actor',
+  },
+  {
+    label: 'Segmento',
+    value: 'segment',
+  },
+  {
+    label: 'Parceiro',
+    value: 'partner',
+  },
+  {
+    label: 'Cadastro',
+    value: 'cadastro',
+  },
+  {
+    label: 'Razão Social',
+    value: 'social_name',
+  },
+  {
+    label: 'Bairro',
+    value: 'neighborhood',
+  },
+  {
+    label: 'Árvore',
+    value: 'tree',
+  },
+  {
+    label: 'Código Parceiro',
+    value: 'dn_code',
+  },
+];
+
 export default function ClientsPage() {
   const toast = useToast();
 
@@ -51,12 +110,15 @@ export default function ClientsPage() {
     order: 'asc',
     order_type: 'social_name',
   });
+  const [filters, setFilters] = useState<
+    Array<Record<string, string | number>>
+  >([]);
 
   const infiniteQuery = useInfiniteQuery<
     CustomersResponse,
     DefaultError,
     InfiniteData<CustomersResponse, number>,
-    ['customers', typeof state],
+    ['customers', typeof state, typeof filters],
     number
   >({
     getNextPageParam: (lastPage) =>
@@ -66,19 +128,23 @@ export default function ClientsPage() {
     initialPageParam: 1,
     queryFn: ({ pageParam }) =>
       getCustomers({
-        has_filters: 0,
+        has_filters: filters ? 1 : 0,
         order: state.order,
         order_type: state.order_type,
         page: pageParam as unknown as string,
+        ...filters,
       }),
-    queryKey: ['customers', state],
+    queryKey: ['customers', state, filters],
     retry: 5,
   });
 
   useEffect(() => {
     if (!infiniteQuery.error) return;
     console.log(infiniteQuery.error);
-    toast({ description: 'Não foi possível buscar NFEs', status: 'error' });
+    toast({
+      description: 'Não foi possível buscar os clientes',
+      status: 'error',
+    });
   }, [infiniteQuery.error, toast]);
 
   const loadMoreButtonRef = useRef<HTMLButtonElement>(null);
@@ -108,6 +174,22 @@ export default function ClientsPage() {
     });
   };
 
+  const handleFilterCallback = (
+    params: Array<{ name: string; value: string }>,
+  ) => {
+    if (!params.some((param) => param.name)) {
+      setFilters([]);
+      return;
+    }
+    params.forEach((param) => {
+      if (param.value)
+        setFilters((prevState) => ({
+          ...prevState,
+          [param.name]: param.value,
+        }));
+    });
+  };
+
   const getArrow = (order: Order['order']) => {
     return order === 'asc' ? (
       <Icon as={IoMdArrowRoundDown} />
@@ -119,7 +201,6 @@ export default function ClientsPage() {
   const cardsContent = [
     {
       name: 'Clientes',
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       value: infiniteQuery.data?.pages[0]?.customers.totals.count,
     },
     {
@@ -160,9 +241,9 @@ export default function ClientsPage() {
           minW="70%"
           w="70%"
         >
-          <ButtonFilter
-            placeContent="flex-start"
-            w="22.5rem"
+          <FilterModal
+            applyCallback={(params) => handleFilterCallback(params)}
+            options={options}
           />
           <Button
             borderColor="#1E93FF"
