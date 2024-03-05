@@ -47,13 +47,13 @@ const schema = z.object({
   customerReview: z.string(),
   email: z.string().email('E-mail inválido').min(0, 'O e-mail é obrigatório'),
   fantasyName: z.string().min(0, 'O Nome Fantasia é obrigatório'),
-  financialEmail: z.string().email('E-mail inválido'),
+  financialEmail: z.string().max(0).or(z.string().email()),
   flag: configSelectSchema,
   ie: z.string(),
   im: z.string(),
   incentive: z
-    .boolean()
-    .transform((val) => Boolean(val))
+    .union([z.boolean(), z.number()])
+    .transform((val) => (val ? 1 : 0))
     .optional(),
   neighborhood: z.string(),
   number: z.string(),
@@ -145,7 +145,7 @@ export default function NewCustomerPage() {
       setValue('ie', customerData.ie ?? '');
       setValue('im', customerData.im ?? '');
       setValue('situation', customerData.situation);
-      setValue('incentive', customerData.incentive ?? false);
+      setValue('incentive', customerData.incentive as 0 | 1 | undefined);
       setValue('neighborhood', customerData.address.neighborhood ?? '');
       // setValue('customerReview', customerData.validated ?? 0);
       setValue('comments', customerData.comments ?? '');
@@ -219,7 +219,7 @@ export default function NewCustomerPage() {
         flag_id: data.flag,
         ie: data.ie,
         im: data.im,
-        incentive: data.incentive ?? false,
+        incentive: data.incentive ?? 0,
         partner_id: data.partner,
         phone: data.phoneNumber,
         segment_id: data.segment,
@@ -333,7 +333,7 @@ export default function NewCustomerPage() {
         flag_id: data.flag,
         ie: data.ie,
         im: data.im,
-        incentive: data.incentive ?? false,
+        incentive: data.incentive ?? 0,
         partner_id: data.partner,
         phone: data.phoneNumber,
         segment_id: data.segment,

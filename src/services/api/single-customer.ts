@@ -99,7 +99,7 @@ type Customer = {
   cnpj: string;
   status: string;
   situation: string;
-  incentive: boolean | null;
+  incentive: number;
   social_name: string;
   fantasy_name: string;
   contact_name: string;

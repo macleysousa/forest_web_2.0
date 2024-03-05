@@ -65,7 +65,7 @@ type CustomerStore = {
   flag_id: number;
   ie: string;
   im: string;
-  incentive: boolean;
+  incentive: number;
   partner_id: number;
   phone: string;
   segment_id: number;
