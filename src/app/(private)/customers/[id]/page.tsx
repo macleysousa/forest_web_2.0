@@ -55,6 +55,8 @@ const schema = z.object({
     .union([z.boolean(), z.number()])
     .transform((val) => (val ? 1 : 0))
     .optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   neighborhood: z.string(),
   number: z.string(),
   partner: configSelectSchema,
@@ -78,12 +80,12 @@ export default function NewCustomerPage() {
   useEffect(() => {
     if (isValidParam) setPageStatus('edit');
     else setPageStatus('create');
-  }, [isValidParam, params.id]);
+  }, [isValidParam, params?.id]);
 
   const { data: customer } = useQuery({
     enabled: isValidParam && pageStatus === 'edit',
     queryFn: () => getCustomers({ customerId: Number(params?.id) }),
-    queryKey: ['customer', params.id],
+    queryKey: ['customer', params?.id],
   });
 
   const customerData = customer && customer[0];
@@ -121,18 +123,31 @@ export default function NewCustomerPage() {
     },
   });
 
-  const { register, handleSubmit, reset, formState, setValue } = useForm<
-    z.infer<typeof schema>
-  >({
-    resolver: zodResolver(schema),
-  });
+  const { register, handleSubmit, reset, formState, setValue, getValues } =
+    useForm<z.infer<typeof schema>>({
+      resolver: zodResolver(schema),
+    });
 
   useEffect(() => {
     if (customerData) {
       setValue('contactName', customerData?.contact_name ?? '');
-      setValue('phoneNumber', customerData.phone ?? '');
-      setValue('email', customerData.email ?? '');
-      setValue('financialEmail', customerData.email_billing ?? '');
+      setValue('fantasyName', customerData?.fantasy_name ?? '');
+      setValue('socialName', customerData?.social_name ?? '');
+      setValue('brand', customerData?.brand_id ?? 0);
+      setValue('flag', customerData?.flag_id ?? 0);
+      setValue('partner', customerData?.partner_id ?? 0);
+      setValue('segment', customerData?.segment_id ?? 0);
+      setValue('situation', customerData?.situation ?? '');
+      setValue('comments', customerData?.comments ?? '');
+      setValue('ie', customerData?.ie ?? '');
+      setValue('im', customerData?.im ?? '');
+      setValue(
+        'incentive',
+        (customerData?.incentive as 0 | 1 | undefined) ?? 0,
+      );
+      setValue('phoneNumber', customerData?.phone ?? '');
+      setValue('email', customerData?.email ?? '');
+      setValue('financialEmail', customerData?.email_billing ?? '');
       setValue('zip', customerData.address.zip);
       setValue('address', customerData.address.address);
       setValue('number', customerData.address.number);
@@ -140,19 +155,8 @@ export default function NewCustomerPage() {
       setValue('city', customerData.address.city);
       setValue('state', customerData.address.state);
       setValue('cnpj', customerData.cnpj);
-      setValue('socialName', customerData.social_name);
-      setValue('fantasyName', customerData.fantasy_name ?? '');
-      setValue('ie', customerData.ie ?? '');
-      setValue('im', customerData.im ?? '');
-      setValue('situation', customerData.situation);
-      setValue('incentive', customerData.incentive as 0 | 1 | undefined);
-      setValue('neighborhood', customerData.address.neighborhood ?? '');
-      // setValue('customerReview', customerData.validated ?? 0);
-      setValue('comments', customerData.comments ?? '');
-      setValue('segment', customerData.segment_id);
-      setValue('partner', customerData.partner_id ?? 0);
-      setValue('flag', customerData.flag_id ?? 0);
-      setValue('brand', customerData.brand_id ?? 0);
+      setValue('latitude', Number(customerData.address.latitude) ?? 0);
+      setValue('longitude', Number(customerData.address.longitude) ?? 0);
     }
   }, [customerData, setValue]);
 
@@ -163,8 +167,8 @@ export default function NewCustomerPage() {
           address: data.address,
           city: data.city,
           complement: data.complement,
-          latitude: 0,
-          longitude: 0,
+          latitude: data.latitude ?? 0,
+          longitude: data.longitude ?? 0,
           neighborhood: data.neighborhood,
           number: data.number,
           state: data.state,
@@ -181,7 +185,7 @@ export default function NewCustomerPage() {
           ca_qtd_elevadores: 0,
           ca_qtd_mecanicos: 0,
           comments: '',
-          customer_id: 0,
+          customer_id: 1,
           mont_conc_ca_chefe_oficina: '',
           mont_conc_ca_consultores: 0,
           mont_conc_ca_gerente_pecas: '',
@@ -235,8 +239,8 @@ export default function NewCustomerPage() {
           city: data.city,
           complement: data.complement,
           geo_update_mode: 'API',
-          latitude: 0,
-          longitude: 0,
+          latitude: data.latitude ?? 0,
+          longitude: data.longitude ?? 0,
           neighborhood: data.neighborhood,
           number: data.number,
           state: data.state,
@@ -248,7 +252,7 @@ export default function NewCustomerPage() {
         cnpj: data.cnpj,
         comments: data.comments,
         contact_name: data.contactName,
-        customer_id: Number(params.id),
+        customer_id: Number(params?.id),
         customer_info: {
           actor_id: customerData?.customer_data[0]?.actor_id ?? 0,
           avaliacao_geral: customerData?.customer_info?.avaliacao_geral ?? 0,
@@ -407,6 +411,7 @@ export default function NewCustomerPage() {
 
           <PanelLocation
             formState={formState}
+            getValues={getValues}
             handleSubmit={handleSubmit}
             register={register}
             setValue={setValue}

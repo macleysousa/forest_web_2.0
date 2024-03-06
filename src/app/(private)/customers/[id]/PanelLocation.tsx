@@ -5,23 +5,26 @@ import {
   Divider,
   Flex,
   Icon,
-  Image,
+  // Image,
   Input,
   Select,
   TabPanel,
   Text,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import GoogleMapReact from 'google-map-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MdArrowDropDown, MdPinDrop } from 'react-icons/md';
 import InputMask from 'react-input-mask';
 import { states } from '../../../../commons/locationUtils';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
+import { postGeolocation } from '../../../../services/geolocation/geolocation';
 import { getCep } from '../../../../services/viacep/cep';
 
 type PanelLocationProps = {
   formState: any;
+  getValues: any;
   handleSubmit: any;
   onCancel: any;
   onError: any;
@@ -37,10 +40,16 @@ export function PanelLocation({
   onSubmit,
   onError,
   onCancel,
+  getValues,
   setValue,
 }: PanelLocationProps) {
   const [cep, setCep] = useState<string | null>(null);
+  const [coordinates, setCoordinates] = useState({
+    lat: getValues('latitude') || -23.5489,
+    lng: getValues('longitude') || -46.6388,
+  });
   const canFetch = useMemo(() => !!Number(cep), [cep]);
+  let mapsIndex = 0;
 
   const { data, refetch } = useQuery({
     enabled: canFetch,
@@ -69,6 +78,24 @@ export function PanelLocation({
       setValue('state', data?.uf);
     }
   }, [cep, data, refetch, setValue, canFetch]);
+
+  const handleGeolocation = async () => {
+    const { address: street, neighborhood, number, state, city } = getValues();
+    const address = `${street}, ${number}, ${neighborhood}, ${city}, ${state}`;
+    try {
+      const geocodedData = await postGeolocation({ address });
+
+      setCoordinates({
+        lat: geocodedData[0]?.latitude || 0,
+        lng: geocodedData[0]?.longitude || 0,
+      });
+      setValue('latitude', geocodedData[0]?.latitude);
+      setValue('longitude', geocodedData[0]?.longitude);
+      mapsIndex++;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <TabPanel p="2rem 0">
@@ -206,6 +233,7 @@ export function PanelLocation({
             <Button
               variant="solid"
               w="11rem"
+              onClick={handleGeolocation}
             >
               <Icon
                 as={MdPinDrop}
@@ -216,12 +244,21 @@ export function PanelLocation({
               Geolocalizar
             </Button>
 
-            <Image
-              alt="geolocation pic"
+            <Box
+              h="20rem"
               my="1rem"
-              src="/geolocation.jpg"
               w="44.25rem"
-            />
+            >
+              <GoogleMapReact
+                center={{ lat: coordinates.lat, lng: coordinates.lng }}
+                defaultZoom={11}
+                index={mapsIndex}
+                // yesIWantToUseGoogleMapApiInternals={true}
+                bootstrapURLKeys={{
+                  key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+                }}
+              ></GoogleMapReact>
+            </Box>
 
             <Checkbox alignItems="flex-start">
               <Text fontWeight="400">
