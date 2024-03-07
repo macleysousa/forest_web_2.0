@@ -32,7 +32,7 @@ import { FilterModal } from '../../../components/FilterModal';
 import {
   CustomersResponse,
   getCustomers,
-} from '../../../services/api/customer';
+} from '../../../services/api/customers/customers';
 
 type Order = {
   order: 'asc' | 'desc';

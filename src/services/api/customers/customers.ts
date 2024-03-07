@@ -1,4 +1,4 @@
-import { api } from '../api';
+import { api } from '..';
 
 type Actor = {
   actor_name: string;

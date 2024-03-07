@@ -1,27 +1,24 @@
-import { api } from '.';
+import { api } from '..';
 
 type Address = {
   address: string;
-  address_id: number;
   city: string;
   complement: string;
-  geo_update_mode: string;
   latitude: number;
   longitude: number;
   neighborhood: string;
   number: string;
   state: string;
-  update_mode: string;
   zip: string;
 };
 
 type CustomerInfo = {
-  actor_id: number;
   avaliacao_geral: number;
   ca_qtd_atendentes: number;
   ca_qtd_elevadores: number;
   ca_qtd_mecanicos: number;
   comments: string;
+  customer_id: number;
   mont_conc_ca_chefe_oficina: string;
   mont_conc_ca_consultores: number;
   mont_conc_ca_gerente_pecas: string;
@@ -54,16 +51,14 @@ type CustomerInfo = {
   visit_frequency: string;
 };
 
-type CustomerUpdate = {
+type CustomerStore = {
   address: Address;
   address_id: number;
   brand_id: number;
   cnpj: string;
   comments: string;
   contact_name: string;
-  customer_id: number;
   customer_info: CustomerInfo;
-  customer_matrix_id: number;
   email: string;
   email_billing: string;
   fantasy_name: string;
@@ -74,13 +69,10 @@ type CustomerUpdate = {
   partner_id: number;
   phone: string;
   segment_id: number;
-  situation: string;
   social_name: string;
-  update_mode: string;
-  validated: number;
 };
 
-export async function putCustomerUpdate(data: CustomerUpdate) {
-  const response = await api.put('/v2/customers/update', data);
-  return response.data.customers;
+export async function postCustomerStore(data: CustomerStore) {
+  const response = await api.post('/v2/customers/store', data);
+  return response.data;
 }
