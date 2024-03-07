@@ -25,6 +25,11 @@ export function useGlobalSearch() {
         e.preventDefault();
         setOpen(true);
       }
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpen(false);
+      }
     };
 
     window.addEventListener('keydown', fn);

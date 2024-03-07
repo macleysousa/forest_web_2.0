@@ -20,13 +20,23 @@ export const theme = extendTheme({
     Button: {
       sizes: { md: { fontSize: 'sm', h: '3rem' }, sm: { h: '2.5rem' } },
       variants: {
+        ghost: {
+          _active: { bg: 'blue.50' },
+          _hover: { _disabled: { bg: 'blue.50' }, bg: 'blue.50' },
+          bg: 'transparent',
+          color: 'blue.500',
+        },
+        outline: {
+          _active: { bg: 'blue.50' },
+          _hover: { _disabled: { bg: 'blue.50' }, bg: 'blue.50' },
+          bg: 'white',
+          border: '1px solid',
+          borderColor: 'blue.200',
+          color: 'blue.500',
+        },
         solid: {
-          _active: { bg: 'blue.700', color: 'white' },
-          _hover: {
-            _disabled: { bg: 'blue.500' },
-            bg: 'blue.600',
-            color: 'white',
-          },
+          _active: { bg: 'blue.700' },
+          _hover: { _disabled: { bg: 'blue.500' }, bg: 'blue.600' },
           bg: 'blue.500',
           color: 'white',
         },
@@ -41,6 +51,9 @@ export const theme = extendTheme({
         sm: {
           element: { h: '3rem' },
           field: { borderRadius: 'lg', h: '3rem' },
+        },
+        xs: {
+          element: { h: '2rem' },
         },
       },
     },
@@ -59,6 +72,24 @@ export const theme = extendTheme({
     '3xl': '1920px',
     '4xl': '2560px',
     '5xl': '3840px',
+  },
+  /* eslint-enable canonical/sort-keys */
+
+  /* eslint-disable canonical/sort-keys */
+  zIndices: {
+    hide: -1,
+    auto: 'auto',
+    base: 0,
+    docked: 10,
+    dropdown: 1000,
+    sticky: 1100,
+    banner: 1200,
+    overlay: 1300,
+    modal: 1400,
+    popover: 1500,
+    skipLink: 1600,
+    toast: 1700,
+    tooltip: 1800,
   },
   /* eslint-enable canonical/sort-keys */
 });
