@@ -39,9 +39,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
     getUser(accessToken)
       .then((user) => setState({ is: 'authenticated', user }))
-      .catch((err) =>
-        toast({ description: err?.message ?? String(err), status: 'error' }),
-      );
+      .catch((error) => {
+        toast({ description: error.message, status: 'error' });
+        document.cookie = `forest_access_token=;maxAge=0;path=/;`;
+      });
   }, [toast]);
 
   const login: AuthContextValue['login'] = async (accessToken) => {

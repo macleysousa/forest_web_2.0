@@ -11,6 +11,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 
+import { useWindowSize } from '@uidotdev/usehooks';
 import { MdSearch } from 'react-icons/md';
 import Select, { StylesConfig } from 'react-select';
 import { Loading } from '../Loading';
@@ -39,6 +40,7 @@ const styles: StylesConfig<OptionType, false> = {
 
 export function GlobalSearch() {
   const { handleChange, open, options, toggle, pending } = useGlobalSearch();
+  const { width } = useWindowSize();
 
   if (pending) {
     return (
@@ -61,13 +63,14 @@ export function GlobalSearch() {
         as="button"
         bg="white"
         borderRadius={4}
+        gap="0.5rem"
         h="2rem"
-        justify="space-between"
+        justify={{ base: 'flex-start', md: 'space-between' }}
         px={2}
         sx={{ transitionDuration: '150ms' }}
         type="button"
         // eslint-disable-next-line canonical/sort-keys
-        w={{ base: '100%', sm: '12.5rem', lg: '25rem', xl: '30rem' }}
+        w={{ base: '8rem', md: '45vw', lg: '37.5vw' }}
         onClick={toggle}
       >
         <Icon
@@ -79,15 +82,17 @@ export function GlobalSearch() {
           color="#898989"
           fontSize="sm"
         >
-          Busque por uma página
+          {width && width >= 768 ? 'Busque por uma página' : 'Busca'}
         </Box>
-        <Flex
-          as="span"
-          gap={1}
-        >
-          <Kbd color="#898989">Ctrl</Kbd>
-          <Kbd color="#898989">K</Kbd>
-        </Flex>
+        {width && width >= 768 && (
+          <Flex
+            as="span"
+            gap={1}
+          >
+            <Kbd color="#898989">Ctrl</Kbd>
+            <Kbd color="#898989">K</Kbd>
+          </Flex>
+        )}
       </Flex>
       <Modal
         isOpen={open}

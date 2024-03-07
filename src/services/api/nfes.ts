@@ -1,10 +1,32 @@
 import { api } from '../api';
 
 /* eslint-disable typescript-sort-keys/interface */
-type GetNFEsParams = {
+export type GetNFEsFilters = {
+  period: string;
+  number_nfe?: string | undefined;
+  customer?: string | undefined;
+  actor_emitter?: string | undefined;
+  tree_name?: string | undefined;
+  type?: string | undefined;
+  city?: string | undefined;
+  uf?: string | undefined;
+  customer_emitter?: string | undefined;
+  segment?: string | undefined;
+  partner?: string | undefined;
+  flag?: string | undefined;
+  brand?: string | undefined;
+  product?: string | undefined;
+  order_number_customer?: string | undefined;
+  order_number_billing?: string | undefined;
+  dsh_dso?: string | undefined;
+  // when add a new filter, also add in InvoicesPage and InvoicesFilters
+};
+/* eslint-enable typescript-sort-keys/interface */
+
+/* eslint-disable typescript-sort-keys/interface */
+export type GetNFEsParams = GetNFEsFilters & {
   order: string;
   order_type: string;
-  period: string;
   page: string;
   has_filters: string;
   signal: AbortController['signal'];

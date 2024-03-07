@@ -28,12 +28,9 @@
   "rules": {
     // eslint rules
     "no-shadow": "warn",
-    "sort-imports": [
-      "warn",
-      {
-        "ignoreDeclarationSort": true
-      }
-    ],
+    "sort-imports": ["warn", { "ignoreDeclarationSort": true }],
+    "no-useless-return": "warn",
+
     // unicorn rules
     "unicorn/no-new-array": "warn",
     "unicorn/explicit-length-check": "warn",
