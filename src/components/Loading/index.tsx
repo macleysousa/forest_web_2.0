@@ -1,26 +1,19 @@
 'use client';
-import { Box, Flex } from '@chakra-ui/react';
-import './styles.css';
+import { Center, Spinner } from '@chakra-ui/react';
 
 export function Loading() {
   return (
-    <Flex
-      align="center"
+    <Center
       bg="gray.50"
       display="flex"
       h="100vh"
-      justify="center"
     >
-      <Box
-        animation="loading 1s linear infinite"
-        borderColor="#ECECEC"
-        borderRadius="50%"
-        borderStyle="solid"
-        borderTopColor="#110834"
-        borderWidth="0.625rem"
-        h="6rem"
-        w="6rem"
+      <Spinner
+        color="blue.500"
+        emptyColor="gray.200"
+        size="xl"
+        thickness="4px"
       />
-    </Flex>
+    </Center>
   );
 }
