@@ -15,6 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 type InvoicesFilterProps = {
   defaultValue?: string;
   disabled: boolean;
+  inputLeftAddonProps?: Partial<React.ComponentProps<typeof InputLeftAddon>>;
   inputRef?: React.RefObject<HTMLInputElement>;
   label: string;
   onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
@@ -32,6 +33,7 @@ export function InvoicesFilter({
   onTextChange,
   readOnly,
   value,
+  inputLeftAddonProps = {},
 }: InvoicesFilterProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onTextChange) {
@@ -49,9 +51,17 @@ export function InvoicesFilter({
     <InputGroup>
       <InputLeftAddon
         borderLeftRadius="md"
+        css={{ hyphens: 'auto' }}
+        fontSize="xs"
         h="2.5rem"
         justifyContent="flex-end"
-        minW="4.5rem"
+        lineHeight="1rem"
+        px={2}
+        textAlign="end"
+        w="5rem"
+        whiteSpace="wrap"
+        wordBreak="normal"
+        {...inputLeftAddonProps}
       >
         {label}
       </InputLeftAddon>

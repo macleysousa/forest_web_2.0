@@ -173,13 +173,17 @@ export function InvoicesFilters({
         />
         <InvoicesFilter
           disabled={disabled}
-          label="Número Pedido Parceiro"
+          // eslint-disable-next-line prettier/prettier
+          inputLeftAddonProps={{ fontSize: 'xs', lineHeight: '0.75rem', px: '0.25rem' }}
+          label="Nº Pedido Parceiro"
           value={data.order_number_customer ?? ''}
           onTextChange={handleChange('order_number_customer')}
         />
         <InvoicesFilter
           disabled={disabled}
-          label="Número Pedido Faturamento"
+          // eslint-disable-next-line prettier/prettier
+          inputLeftAddonProps={{ fontSize: 'xs', lineHeight: '0.75rem', px: '0.25rem' }}
+          label="Nº Pedido Faturamento"
           value={data.order_number_billing ?? ''}
           onTextChange={handleChange('order_number_billing')}
         />

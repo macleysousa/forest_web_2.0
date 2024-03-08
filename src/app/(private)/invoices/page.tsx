@@ -98,7 +98,7 @@ export default function InvoicesPage() {
     <Box p={8}>
       <Flex flexWrap="wrap" gap={4} justify="space-between">
         <Heading flexShrink={0}>Notas Fiscais</Heading>
-        <Popover closeOnBlur={false} isOpen={popoverOpen} isLazy onClose={() => setPopoverOpen(false)}>
+        <Popover closeOnBlur={false} isOpen={popoverOpen} placement="bottom-start" isLazy onClose={() => setPopoverOpen(false)}>
           <PopoverTrigger>
             <Button isLoading={infiniteQuery.isFetching} leftIcon={<Icon as={MdFilterList} />} size="sm" variant="outline" onClick={() => setPopoverOpen(true)}>
               Filtros
@@ -134,8 +134,8 @@ export default function InvoicesPage() {
           createTag('Rede', 'brand'),
           createTag('Produto', 'product'),
           createTag('DSH/DSO', 'dsh_dso'),
-          createTag('Número Pedido Parceiro', 'order_number_customer'),
-          createTag('Número Pedido Faturamento', 'order_number_billing'),
+          createTag('Nº Pedido Parceiro', 'order_number_customer'),
+          createTag('Nº Pedido Faturamento', 'order_number_billing'),
         ]}
       />
 
