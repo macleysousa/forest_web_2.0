@@ -1,6 +1,6 @@
-import { extendTheme } from '@chakra-ui/react';
+import { ThemeOverride, extendTheme } from '@chakra-ui/react';
 
-export const theme = extendTheme({
+export const theme = {
   colors: {
     blue: {
       50: '#e3f2ff',
@@ -18,7 +18,6 @@ export const theme = extendTheme({
 
   components: {
     Button: {
-      sizes: { md: { fontSize: 'sm', h: '3rem' }, sm: { h: '2.5rem' } },
       variants: {
         ghost: {
           _active: { bg: 'blue.50' },
@@ -39,21 +38,6 @@ export const theme = extendTheme({
           _hover: { _disabled: { bg: 'blue.500' }, bg: 'blue.600' },
           bg: 'blue.500',
           color: 'white',
-        },
-      },
-    },
-
-    FormLabel: { baseStyle: { fontSize: 'sm', mb: 3 } },
-
-    Input: {
-      defaultProps: { size: 'sm' },
-      sizes: {
-        sm: {
-          element: { h: '3rem' },
-          field: { borderRadius: 'lg', h: '3rem' },
-        },
-        xs: {
-          element: { h: '2rem' },
         },
       },
     },
@@ -92,4 +76,6 @@ export const theme = extendTheme({
     tooltip: 1800,
   },
   /* eslint-enable canonical/sort-keys */
-});
+} satisfies ThemeOverride;
+
+export const extendedTheme = extendTheme(theme);
