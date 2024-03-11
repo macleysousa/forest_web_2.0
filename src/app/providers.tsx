@@ -7,8 +7,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { setDefaultOptions } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Suspense } from 'react';
-
-import { theme } from '../configs/chakra';
+import { extendedTheme } from '../configs/chakra';
 import { AuthContextProvider } from '../contexts/AuthContext';
 
 setDefaultOptions({ locale: ptBR });
@@ -19,7 +18,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Suspense>
       <CacheProvider>
-        <ChakraProvider theme={theme}>
+        <ChakraProvider theme={extendedTheme}>
           <QueryClientProvider client={queryClient}>
             <AuthContextProvider>{children}</AuthContextProvider>
             <ReactQueryDevtools initialIsOpen={false} />
