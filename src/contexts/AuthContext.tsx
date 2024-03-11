@@ -56,6 +56,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   };
 
   const logout: AuthContextValue['logout'] = () => {
+    document.cookie = `forest_access_token=;maxAge=0;path=/;`;
     setState({ is: 'unauthenticated' });
   };
 
