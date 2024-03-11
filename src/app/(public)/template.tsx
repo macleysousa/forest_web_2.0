@@ -29,6 +29,7 @@ export default function PublicTemplate({ children }: LayoutProps) {
       direction="column"
       justify="center"
       minH="100vh"
+      px="1.5rem"
     >
       <Box
         bg="url('/background-login.png')"
@@ -40,8 +41,10 @@ export default function PublicTemplate({ children }: LayoutProps) {
       <Image
         alt="petroplus logo"
         h="6rem"
+        height="auto"
         src="/petroplus.png"
         w="25rem"
+        width={{ base: '15rem', md: '25rem' }}
         zIndex={1}
       />
       <Card
