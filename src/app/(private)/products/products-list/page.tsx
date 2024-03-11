@@ -33,7 +33,7 @@ import { useEffect, useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
 import { MdArrowDropDown, MdMoreHoriz, MdSearch } from 'react-icons/md';
 import ReactPaginate from 'react-paginate';
-import { getProducts } from '../../../services/api/products';
+import { getProducts } from '../../../../services/api/products';
 
 export default function ProductsPage() {
   const toast = useToast();

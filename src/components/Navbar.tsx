@@ -12,22 +12,14 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { useAuthContext } from '../contexts/AuthContext';
 import { logout } from '../services/api/logout';
-import { InputSearch } from './InputSearch';
+import { GlobalSearch } from './GlobalSearch';
 import { PopoverNotification } from './PopoverNotification';
 
 export function Navbar() {
   const toast = useToast();
-  const path = usePathname();
   const auth = useAuthContext();
-  const [searchFeature, setSearchFeature] = useState(false);
-
-  useEffect(() => {
-    setSearchFeature(!['/factory', '/users', '/partner-orders'].includes(path));
-  }, [path]);
 
   const handleLogout = async () => {
     try {
@@ -49,13 +41,9 @@ export function Navbar() {
       w="100%"
     >
       <Center w="100%">
-        {searchFeature && (
-          <InputSearch
-            color="#898989"
-            ml="auto"
-            placeholder="Buscar..."
-          />
-        )}
+        <Box ml="auto">
+          <GlobalSearch />
+        </Box>
 
         <Flex ml="auto">
           <PopoverNotification haveNotifications={true} />

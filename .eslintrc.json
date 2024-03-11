@@ -1,7 +1,11 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["canonical", "typescript-sort-keys", "unicorn"],
+  "plugins": [
+    "canonical",
+    "typescript-sort-keys",
+    "unicorn"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -17,45 +21,70 @@
     "project": "tsconfig.json"
   },
   "settings": {
-    "import/resolver": { "typescript": true }
+    "import/resolver": {
+      "typescript": true
+    }
   },
   "rules": {
     // eslint rules
     "no-shadow": "warn",
     "sort-imports": ["warn", { "ignoreDeclarationSort": true }],
+    "no-useless-return": "warn",
 
     // unicorn rules
     "unicorn/no-new-array": "warn",
     "unicorn/explicit-length-check": "warn",
     "unicorn/prefer-node-protocol": "warn",
     // "unicorn/no-anonymous-default-export": "warn", /* unavaliable at present moment (2024-02-21) */
-
     // import rules
     "import/no-default-export": "warn",
     "import/order": [
       "warn",
       {
-        "groups": ["builtin", "external", "parent", "sibling", "index", "type"],
-        "alphabetize": { "order": "asc", "orderImportKind": "asc" }
+        "groups": [
+          "builtin",
+          "external",
+          "parent",
+          "sibling",
+          "index",
+          "type"
+        ],
+        "alphabetize": {
+          "order": "asc",
+          "orderImportKind": "asc"
+        }
       }
     ],
-
     // canonical rules
-    "canonical/sort-keys": ["warn", "asc", { "natural": true }],
-
+    "canonical/sort-keys": [
+      "warn",
+      "asc",
+      {
+        "natural": true
+      }
+    ],
     // typescript-eslint rules
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-confusing-non-null-assertion": "error",
-    "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
-    "@typescript-eslint/array-type": ["warn", { "default": "array-simple" }],
-
+    "@typescript-eslint/consistent-type-definitions": [
+      "warn",
+      "type"
+    ],
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array-simple"
+      }
+    ],
     // typescript-sort-keys rule
     "typescript-sort-keys/interface": [
       "warn",
       "asc",
-      { "natural": true, "requiredFirst": false }
+      {
+        "natural": true,
+        "requiredFirst": false
+      }
     ],
-
     // react rules
     "react/jsx-no-useless-fragment": "warn",
     "react/jsx-sort-props": [
@@ -67,15 +96,21 @@
         "reservedFirst": true
       }
     ],
-
     // prettier rules
-    "prettier/prettier": "warn"
+    "prettier/prettier": [
+      "warn",
+      {
+        "quoteProps": "consistent",
+        "singleQuote": true,
+        "singleAttributePerLine": true
+      }
+    ]
   },
   "overrides": [
     {
       // allow default export in next.js files
       // https://nextjs.org/docs/app/api-reference/file-conventions
-      "files":[
+      "files": [
         "src/app/loading.tsx",
         "src/app/**/template.tsx",
         "src/app/**/layout.tsx",
