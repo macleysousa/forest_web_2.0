@@ -344,7 +344,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
         {/* END: Sidebar */}
 
         {/* START: Main */}
-        <Box bg="gray.50" h={`max(100dvh - 4.5rem, ${sidebarRef.current?.clientHeight ?? 0}px)`} overflow="auto">
+        <Box bg="gray.50" flexGrow={1} h={`max(100dvh - 4.5rem, ${sidebarRef.current?.clientHeight ?? 0}px)`} overflow="auto">
           {children}
         </Box>
         {/* END: Main */}
