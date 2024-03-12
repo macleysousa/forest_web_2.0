@@ -39,7 +39,7 @@ export const options: Option[] = [
     icon: MdContacts,
     id: Math.random().toString(36).substring(2),
     name: 'Clientes',
-    path: '/clients',
+    path: '/customers',
   },
   {
     icon: MdPaid,

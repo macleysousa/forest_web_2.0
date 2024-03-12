@@ -157,6 +157,7 @@ export default function NewCustomerPage() {
       setValue('cnpj', customerData.cnpj);
       setValue('latitude', Number(customerData.address.latitude) ?? 0);
       setValue('longitude', Number(customerData.address.longitude) ?? 0);
+      setValue('neighborhood', customerData.address.neighborhood ?? '');
     }
   }, [customerData, setValue]);
 
