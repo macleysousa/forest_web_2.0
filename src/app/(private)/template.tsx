@@ -83,7 +83,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
   const [accordionOpen, setAccordionOpen] = useState(
     options.map((option) => {
       if ('items' in option) {
-        return option.items.some((item) => pathname.startsWith(item.path));
+        return option.items.some((item) => pathname?.startsWith(item.path));
       }
 
       return false;
@@ -117,7 +117,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
 
   const isMenuButtonActive = (option: (typeof options)[number]) => {
     if ('path' in option) {
-      return pathname.startsWith(option.path);
+      return pathname?.startsWith(option.path);
     }
 
     return false;
@@ -319,7 +319,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
                       _hover={{ bg: '#1D1242', color: '#1E93FF' }}
                       color="rgba(255, 255, 255, 0.6)"
                       fontWeight={400}
-                      isActive={pathname.startsWith(item.path)}
+                      isActive={pathname?.startsWith(item.path)}
                       justifyContent="flex-start"
                       variant="ghost"
                       onClick={() => {
