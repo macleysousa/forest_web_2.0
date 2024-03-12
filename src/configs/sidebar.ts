@@ -15,13 +15,13 @@ import {
 
 import type { IconType } from 'react-icons';
 
-type Option = { icon: IconType; id: string; name: string } & (
+/* eslint-disable prettier/prettier */
+export type Option = { icon: IconType; id: string; name: string } & (
   | { path: string }
-  | {
-      items: Array<{ id: string; name: string; path: string }>;
-      rootPath: string;
-    }
+  | { items: Array<{ id: string; name: string; path: string }>; rootPath: string }
 );
+/* eslint-enable prettier/prettier */
+
 export const options: Option[] = [
   {
     icon: MdDashboard,
