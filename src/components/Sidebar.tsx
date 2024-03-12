@@ -83,7 +83,11 @@ export function Sidebar() {
           w="8rem"
         />
       </Center>
-      <VStack align="left" gap="1rem" padding="0 1rem">
+      <VStack
+        align="left"
+        gap="1rem"
+        padding="0 1rem"
+      >
         {options.map((option) =>
           'path' in option ? (
             <Button
@@ -95,7 +99,7 @@ export function Sidebar() {
               gap={3}
               h="3.25rem"
               href={option.path}
-              isActive={pathname.startsWith(option.path)}
+              isActive={pathname?.startsWith(option.path)}
               justifyContent="flex-start"
               lineHeight="shorter"
               px={3}
@@ -109,7 +113,12 @@ export function Sidebar() {
                 color: 'blue.500',
                 textDecoration: 'none',
               }}
-              leftIcon={<Icon as={option.icon} fontSize="2xl" />}
+              leftIcon={
+                <Icon
+                  as={option.icon}
+                  fontSize="2xl"
+                />
+              }
             >
               <Box
                 as="span"
@@ -122,7 +131,7 @@ export function Sidebar() {
           ) : (
             <Accordion
               key={option.id}
-              defaultIndex={[pathname.includes(option.rootPath) ? 0 : -1]}
+              defaultIndex={[pathname?.includes(option.rootPath) ? 0 : -1]}
               allowMultiple
             >
               <AccordionItem
@@ -142,7 +151,10 @@ export function Sidebar() {
                     textDecoration: 'none',
                   }}
                 >
-                  <Icon as={option.icon} fontSize="2xl" />
+                  <Icon
+                    as={option.icon}
+                    fontSize="2xl"
+                  />
                   <Box
                     as="span"
                     display={collapse ? 'none' : 'block'}
@@ -159,7 +171,11 @@ export function Sidebar() {
                   />
                 </AccordionButton>
                 <AccordionPanel p={0}>
-                  <VStack align="left" gap={0} px={0}>
+                  <VStack
+                    align="left"
+                    gap={0}
+                    px={0}
+                  >
                     {option.items.map((item) => (
                       <Button
                         key={item.id}
@@ -170,7 +186,7 @@ export function Sidebar() {
                         gap={3}
                         h="2.5rem"
                         href={item.path}
-                        isActive={pathname.endsWith(item.path)}
+                        isActive={pathname?.endsWith(item.path)}
                         justifyContent="flex-start"
                         px={9}
                         _active={{
@@ -184,7 +200,10 @@ export function Sidebar() {
                           textDecoration: 'none',
                         }}
                       >
-                        <Box as="span" display={collapse ? 'none' : 'block'}>
+                        <Box
+                          as="span"
+                          display={collapse ? 'none' : 'block'}
+                        >
                           {item.name}
                         </Box>
                       </Button>
