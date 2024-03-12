@@ -255,6 +255,7 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
 
           <ModalFooter>
             <Button
+              mr="1rem"
               variant="outline"
               onClick={onClose}
             >
