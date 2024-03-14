@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -34,6 +35,10 @@ export default function ForgotPasswordPage() {
     defaultValues: { email: '' },
     resolver: zodResolver(schema),
   });
+
+  useEffect(() => {
+    window.document.title = 'Forest | Esqueci a Senha';
+  }, []);
 
   const handleValid = async () => {
     toast({

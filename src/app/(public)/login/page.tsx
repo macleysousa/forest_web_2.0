@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaArrowRight, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { z } from 'zod';
@@ -44,6 +44,10 @@ export default function LoginPage() {
     defaultValues: { email: '', password: '' },
     resolver: zodResolver(schema),
   });
+
+  useEffect(() => {
+    window.document.title = 'Forest | Login';
+  }, []);
 
   const handleValid = async (data: z.infer<typeof schema>) => {
     try {
