@@ -3,6 +3,7 @@
 import {
   Box,
   Button,
+  Container,
   Flex,
   Heading,
   Icon,
@@ -24,6 +25,8 @@ import {
 } from '../../../services/api/nfes';
 
 import { InvoicesFilters } from './components/InvoicesFilters';
+import { InvoicesFilter } from './components/InvoicesFilters/InvoiceFilter';
+import { InvoicePeriodFilterModal } from './components/InvoicesFilters/InvoicePeriodFilterModal';
 import { InvoicesLoadMore } from './components/InvoicesLoadMore';
 import { InvoicesStats } from './components/InvoicesStats';
 import { InvoicesTable } from './components/InvoicesTable';
@@ -48,6 +51,7 @@ export default function InvoicesPage() {
   });
 
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [periodModalOpen, setPeriodModalOpen] = useState(false);
 
   const infiniteQuery = useInfiniteQuery<
     GetNFEsResult,
@@ -82,6 +86,10 @@ export default function InvoicesPage() {
     toast({ description: 'Não foi possível buscar NFEs', status: 'error' });
   }, [infiniteQuery.error, toast]);
 
+  useEffect(() => {
+    window.document.title = 'Forest | Notas Fiscais';
+  }, []);
+
   const createTag = (
     label: string,
     key: keyof GetNFEsFilters,
@@ -96,69 +104,89 @@ export default function InvoicesPage() {
   /* eslint-disable prettier/prettier */
   return (
     <Box p={8}>
-      <Flex flexWrap="wrap" gap={4} justify="space-between">
-        <Heading flexShrink={0}>Notas Fiscais</Heading>
-        <Popover closeOnBlur={false} isOpen={popoverOpen} placement="bottom-start" isLazy onClose={() => setPopoverOpen(false)}>
-          <PopoverTrigger>
-            <Button isLoading={infiniteQuery.isFetching} leftIcon={<Icon as={MdFilterList} />} size="sm" variant="outline" onClick={() => setPopoverOpen(true)}>
-              Filtros
-            </Button>
-          </PopoverTrigger>
-          <Portal>
-          <PopoverContent width="20rem">
-            <InvoicesFilters
-              defaultPeriod={defaultPeriod}
-              disabled={infiniteQuery.isFetching}
-              filters={filters}
-              onApply={setFilters}
-              onClose={() => setPopoverOpen(false)}
-            />
-          </PopoverContent>
-          </Portal>
-        </Popover>
-      </Flex>
+      <Container maxW="container.xl">
+        <Flex direction={{ base: 'column', md: 'row' }} flexWrap="wrap" gap={4} justify={{ md: 'space-between' }}>
+          <Heading flexShrink={0}>Notas Fiscais</Heading>
+          <Flex flexWrap="wrap" gap={4}>
+              <Box maxW={{ md: '20rem' }}>
+                <InvoicesFilter
+                  defaultValue={defaultPeriod}
+                  disabled={infiniteQuery.isFetching}
+                  inputLeftAddonProps={{ fontSize: 'base', lineHeight: 'base', w: 'auto' }}
+                  label="Data"
+                  value={filters.period}
+                  readOnly
+                  onClick={() => setPeriodModalOpen(true)}
+                  onTextChange={(period) => setFilters({ ...filters, period })}
+                />
+              <InvoicePeriodFilterModal
+                open={periodModalOpen}
+                onClose={() => setPeriodModalOpen(false)}
+                onSubmit={(period) => setFilters({ ...filters, period })}
+              />
+            </Box>
+            <Popover closeOnBlur={false} isOpen={popoverOpen} placement="bottom-start" isLazy onClose={() => setPopoverOpen(false)}>
+              <PopoverTrigger>
+                <Button isLoading={infiniteQuery.isFetching} leftIcon={<Icon as={MdFilterList} />} variant="outline" onClick={() => setPopoverOpen(true)}>
+                  Filtros
+                </Button>
+              </PopoverTrigger>
+              <Portal>
+              <PopoverContent width="20rem">
+                <InvoicesFilters
+                  disabled={infiniteQuery.isFetching}
+                  filters={filters}
+                  onApply={setFilters}
+                  onClose={() => setPopoverOpen(false)}
+                />
+              </PopoverContent>
+              </Portal>
+            </Popover>
+          </Flex>
+        </Flex>
 
-      <InvoicesTags
-        tags={[
-          createTag('Nº NF', 'number_nfe'),
-          createTag('Data', 'period', defaultPeriod),
-          createTag('Cliente', 'customer'),
-          createTag('Árvore', 'tree_name'),
-          createTag('Tipo', 'type'),
-          createTag('Cidade', 'city'),
-          createTag('UF', 'uf'),
-          createTag('Cliente Emissor', 'customer_emitter'),
-          createTag('Segmento', 'segment'),
-          createTag('Parceiro', 'partner'),
-          createTag('Bandeira', 'flag'),
-          createTag('Rede', 'brand'),
-          createTag('Produto', 'product'),
-          createTag('DSH/DSO', 'dsh_dso'),
-          createTag('Nº Pedido Parceiro', 'order_number_customer'),
-          createTag('Nº Pedido Faturamento', 'order_number_billing'),
-        ]}
-      />
-
-      <Box mt={4}>
-        <InvoicesStats
-          pages={infiniteQuery.data?.pages}
-          period={reverseCreatePeriod(filters.period)}
+        <InvoicesTags
+          tags={[
+            createTag('Nº NF', 'number_nfe'),
+            createTag('Data', 'period', defaultPeriod),
+            createTag('Cliente', 'customer'),
+            createTag('Árvore', 'tree_name'),
+            createTag('Tipo', 'type'),
+            createTag('Cidade', 'city'),
+            createTag('UF', 'uf'),
+            createTag('Cliente Emissor', 'customer_emitter'),
+            createTag('Segmento', 'segment'),
+            createTag('Parceiro', 'partner'),
+            createTag('Bandeira', 'flag'),
+            createTag('Rede', 'brand'),
+            createTag('Produto', 'product'),
+            createTag('DSH/DSO', 'dsh_dso'),
+            createTag('Nº Pedido Parceiro', 'order_number_customer'),
+            createTag('Nº Pedido Faturamento', 'order_number_billing'),
+          ]}
         />
-      </Box>
 
-      <Box mt={6}>
-        <InvoicesTable
-          pages={infiniteQuery.data?.pages}
-        />
-      </Box>
+        <Box mt={4}>
+          <InvoicesStats
+            pages={infiniteQuery.data?.pages}
+            period={reverseCreatePeriod(filters.period)}
+          />
+        </Box>
 
-      {infiniteQuery.hasNextPage && (
-        <InvoicesLoadMore
-          disabled={infiniteQuery.isFetching}
-          onClick={() => infiniteQuery.fetchNextPage()}
-          onIntersect={() => !infiniteQuery.isFetching && infiniteQuery.fetchNextPage()}
-        />
-      )}
+        <Box mt={6}>
+          <InvoicesTable
+            pages={infiniteQuery.data?.pages}
+          />
+        </Box>
+
+        {infiniteQuery.hasNextPage && (
+          <InvoicesLoadMore
+            disabled={infiniteQuery.isFetching}
+            onClick={() => infiniteQuery.fetchNextPage()}
+            onIntersect={() => !infiniteQuery.isFetching && infiniteQuery.fetchNextPage()}
+          />
+        )}
+      </Container>
     </Box>
   );
   /* eslint-enable prettier/prettier */

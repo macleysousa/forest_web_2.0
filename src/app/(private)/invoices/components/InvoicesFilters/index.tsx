@@ -15,10 +15,8 @@ import { useEffect, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { GetNFEsFilters } from '../../../../../services/api/nfes';
 import { InvoicesFilter } from './InvoiceFilter';
-import { InvoicePeriodFilterModal } from './InvoicePeriodFilterModal';
 
 type InvoicesFiltersProps = {
-  defaultPeriod: string;
   disabled: boolean;
   filters: GetNFEsFilters;
   onApply: (filters: GetNFEsFilters) => void;
@@ -32,7 +30,6 @@ export function InvoicesFilters({
   onClose,
 }: InvoicesFiltersProps) {
   const [data, setData] = useState({ ...filters });
-  const [periodModalOpen, setPeriodModalOpen] = useState(false);
   const nfeNumberInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -84,20 +81,6 @@ export function InvoicesFilters({
           value={data.number_nfe ?? ''}
           onTextChange={handleChange('number_nfe')}
         />
-        <>
-          <InvoicesFilter
-            disabled={disabled}
-            label="Data"
-            value={data.period}
-            readOnly
-            onClick={() => setPeriodModalOpen(true)}
-          />
-          <InvoicePeriodFilterModal
-            open={periodModalOpen}
-            onClose={() => setPeriodModalOpen(false)}
-            onSubmit={handleChange('period')}
-          />
-        </>
         <InvoicesFilter
           disabled={disabled}
           label="Cliente"
