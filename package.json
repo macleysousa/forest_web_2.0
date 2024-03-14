@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3030",
-    "start:dev": "npm run dev",
-    "build": "next build",
     "start": "next start",
+    "build": "next build",
+    "dev": "npm run theme && concurrently \"next dev -p 3030 --turbo\" \"npm:theme:watch\"",
     "lint": "eslint src",
-    "prepare": "husky"
+    "prepare": "husky",
+    "theme": "chakra-cli tokens src/configs/chakra.ts",
+    "theme:watch": "chakra-cli tokens src/configs/chakra.ts --watch"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.2.0",
@@ -38,6 +39,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@chakra-ui/cli": "^2.4.1",
     "@commitlint/cli": "^18.6.1",
     "@commitlint/config-conventional": "^18.6.2",
     "@types/node": "^18.19.17",
@@ -45,6 +47,7 @@
     "@types/react-datepicker": "^6.0.3",
     "@types/react-input-mask": "^3.0.5",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "concurrently": "^8.2.2",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
     "eslint-config-prettier": "^9.1.0",
