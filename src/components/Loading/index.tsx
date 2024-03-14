@@ -1,8 +1,8 @@
 'use client';
-import { Center, Spinner } from '@chakra-ui/react';
+import { BoxProps, Center, Spinner } from '@chakra-ui/react';
 import { forwardRef } from 'react';
 
-const Loading = forwardRef<HTMLDivElement, object>((props, ref) => (
+const Loading = forwardRef<HTMLDivElement, BoxProps>((props, ref) => (
   <Center
     ref={ref}
     bg="gray.50"
