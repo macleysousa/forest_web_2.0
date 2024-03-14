@@ -25,7 +25,6 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-import { usePathname, useRouter } from 'next/navigation';
 import { Fragment, useEffect, useRef, useState } from 'react';
 
 import {
@@ -35,10 +34,13 @@ import {
   MdNotifications,
 } from 'react-icons/md';
 
+import { GlobalSearch } from '../../components/GlobalSearch';
 import { Loading } from '../../components/Loading';
 import { theme } from '../../configs/chakra';
-import { options } from '../../configs/sidebar';
+import { Option, options } from '../../configs/sidebar';
 import { useAuthContext } from '../../contexts/AuthContext';
+import { useRouterContext } from '../../contexts/RouterContext';
+import { useSessionStorage } from '../../hooks/useSessionStorage';
 import { logout } from '../../services/api/logout';
 
 const notifications = [
@@ -74,21 +76,32 @@ type PrivateTemplateProps = {
 
 export default function PrivateTemplate({ children }: PrivateTemplateProps) {
   const toast = useToast();
-  const router = useRouter();
   const auth = useAuthContext();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { pathname, ...router } = useRouterContext();
   const [loading, setLoading] = useState(false);
-  const pathname = usePathname();
 
-  const [accordionOpen, setAccordionOpen] = useState(
-    options.map((option) => {
-      if ('items' in option) {
-        return option.items.some((item) => pathname.startsWith(item.path));
-      }
+  const [menuOpen, setMenuOpen] = useSessionStorage({
+    initialValue: false,
+    key: 'PrivateTemplate.menuOpen',
+  });
 
-      return false;
+  const [accordionOpen, setAccordionOpen] = useSessionStorage({
+    initialValue: options.map((o) => {
+      if (!('items' in o)) return false;
+      return o.items.some((i) => pathname.startsWith(i.path));
     }),
-  );
+
+    key: 'PrivateTemplate.accordionOpen',
+
+    transformValue: (value) => {
+      if (value.length === options.length) return value;
+
+      return options.map((o) => {
+        if (!('items' in o)) return false;
+        return o.items.some((i) => pathname.startsWith(i.path));
+      });
+    },
+  });
 
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -115,12 +128,40 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
     };
   };
 
-  const isMenuButtonActive = (option: (typeof options)[number]) => {
+  const isMenuButtonActive = (option: (typeof options)[number]) =>
+    'path' in option ? pathname.startsWith(option.path) : false;
+
+  const handleMenuToggle = () => {
+    if (menuOpen) setAccordionOpen(options.map(() => false));
+    setMenuOpen(!menuOpen);
+  };
+
+  const handleLogout = () => {
+    setLoading(true);
+
+    logout()
+      .catch((e) => toast({ status: 'error', title: e.message }))
+      .finally(() => auth.logout());
+  };
+
+  const handleMenuOptionClick = (option: Option, i: number) => () => {
     if ('path' in option) {
-      return pathname.startsWith(option.path);
+      router.push(option.path);
+      return;
     }
 
-    return false;
+    if ('items' in option && !menuOpen) {
+      setMenuOpen(true);
+      setAccordionOpen(options.map(() => false).toSpliced(i, 1, true));
+      return;
+    }
+
+    if ('items' in option && menuOpen) {
+      setAccordionOpen(accordionOpen.toSpliced(i, 1, !accordionOpen[i]));
+      return;
+    }
+
+    throw new Error('unexpected condition');
   };
 
   if (auth.is !== 'authenticated') {
@@ -143,22 +184,20 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
           icon={<Icon as={MdMenu} fontSize="2xl" />}
           size="lg"
           variant="ghost"
-          onClick={() => {
-            setMenuOpen(!menuOpen);
-            if (menuOpen) setAccordionOpen(options.map(() => false));
-          }}
+          onClick={handleMenuToggle}
         />
-        <Image alt="petroplus logo" ml="1rem" src="/petroplus.png" w="8rem" />
+        <Image alt="petroplus logo" ml="1rem" mr="auto" src="/petroplus.png" w="8rem" />
+        <GlobalSearch />
         <Box
-          ml="auto"
+          ml={{ md: 'auto' }}
           // eslint-disable-next-line canonical/sort-keys
-          px={{ base: 4, md: 6 }}
+          px={{ base: 2, md: 6 }}
         >
           <Popover placement="bottom-start">
             <PopoverTrigger>
               <IconButton
                 _hover={{ bg: '#1D1242', color: '#1E93FF' }}
-                aria-label={`${menuOpen ? 'Fechar' : 'Abrir'} menu`}
+                aria-label={`${menuOpen ? 'Fechar' : 'Abrir'} notificações`}
                 color="white"
                 size="lg"
                 variant="ghost"
@@ -219,7 +258,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
             _hover={{ '& .chakra-avatar': { bg: '#1E93FF' }, bg: '#1D1242' }}
             borderRadius="md"
             color="white"
-            sx={{ '& .chakra-avatar': { transitionDuration: 'var(--chakra-transition-duration-normal)' } }}
+            sx={{ '& .chakra-avatar': { transitionDuration: theme.transition.duration.normal } }}
           >
             <Flex align="center" h="3rem" px={2}>
               <Avatar size="sm" src={auth.user.user.avatar} />
@@ -244,13 +283,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
               <MenuItem
                 color="red.500"
                 icon={<Icon as={MdLogout} />}
-                onClick={() => {
-                  setLoading(true);
-
-                  logout()
-                    .catch((e) => toast({ status: 'error', title: e.message }))
-                    .finally(() => auth.logout());
-                }}
+                onClick={handleLogout}
               >
                 Sair
               </MenuItem>
@@ -278,32 +311,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
                   px={3}
                   rightIcon={menuOpen ? <Icon as={MdArrowForwardIos} color={'items' in option ? 'white' : 'transparent'} transform={`rotate(${accordionOpen[i] ? '-90deg' : '0deg'})`} /> : undefined}
                   variant="ghost"
-                  onClick={(() => {
-                    if ('path' in option && pathname !== option.path) {
-                      setLoading(true);
-                      router.push(option.path);
-                      return;
-                    }
-
-                    if ('path' in option && pathname === option.path && menuOpen) {
-                      setMenuOpen(false);
-                      setAccordionOpen(options.map(() => false));
-                      return;
-                    }
-
-                    if ('items' in option && !menuOpen) {
-                      setMenuOpen(true);
-                      setAccordionOpen(options.map(() => false).toSpliced(i, 1, true));
-                      return;
-                    }
-
-                    if ('items' in option && menuOpen) {
-                      setAccordionOpen(accordionOpen.toSpliced(i, 1, !accordionOpen[i]));
-                      return;
-                    }
-
-                    throw new Error('unexpected condition');
-                  })}
+                  onClick={handleMenuOptionClick(option, i)}
                 >
                   {menuOpen && (
                     <Text as="span" display="inline-block" mr="auto">{option.name}</Text>
@@ -322,16 +330,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
                       isActive={pathname.startsWith(item.path)}
                       justifyContent="flex-start"
                       variant="ghost"
-                      onClick={() => {
-                        if (pathname === item.path && accordionOpen[i]) {
-                          setMenuOpen(false);
-                          setAccordionOpen(options.map(() => false).toSpliced(i, 1, true));
-                          return;
-                        }
-
-                        setLoading(true);
-                        router.push(item.path);
-                      }}
+                      onClick={() => router.push(item.path)}
                     >
                       {item.name}
                     </Button>
@@ -344,8 +343,10 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
         {/* END: Sidebar */}
 
         {/* START: Main */}
-        <Box bg="gray.50" flexGrow={1} h={`max(100dvh - 4.5rem, ${sidebarRef.current?.clientHeight ?? 0}px)`} overflow="auto">
-          {children}
+        <Box bg="gray.50" flexGrow={1} h={`max(calc(100dvh - 4.5rem), ${sidebarRef.current?.clientHeight ?? 0}px)`} overflow="auto">
+          <Box minW={"375px" /* iPhone SE (smallest width in list of dimensions options in dev mode in chromium based browsers) */}>
+            {children}
+          </Box>
         </Box>
         {/* END: Main */}
       </Flex>

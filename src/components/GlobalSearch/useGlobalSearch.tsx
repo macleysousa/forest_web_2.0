@@ -1,7 +1,7 @@
 'use client';
-import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { options } from '../../configs/sidebar';
+import { useRouterContext } from '../../contexts/RouterContext';
 import type { OptionType } from './index';
 import type { SingleValue } from 'react-select';
 
@@ -12,8 +12,7 @@ const selectOptions = options.flatMap((o) =>
 );
 
 export function useGlobalSearch() {
-  const router = useRouter();
-  const pathname = usePathname();
+  const { pathname, ...router } = useRouterContext();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
 
