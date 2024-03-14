@@ -1,6 +1,11 @@
-import { ThemeOverride, extendTheme } from '@chakra-ui/react';
+import {
+  Theme as BaseTheme,
+  BaseThemeWithExtensions,
+  ThemeOverride,
+  extendTheme,
+} from '@chakra-ui/react';
 
-export const theme = {
+const themeOverride = {
   colors: {
     blue: {
       50: '#e3f2ff',
@@ -41,41 +46,20 @@ export const theme = {
         },
       },
     },
+    Input: {
+      variants: {
+        outline: {
+          field: { bg: 'white' },
+        },
+      },
+    },
   },
 
   fonts: { body: 'var(--font-inter)', heading: 'var(--font-inter)' },
-
-  /* eslint-disable canonical/sort-keys */
-  breakpoints: {
-    'base': '0px',
-    'sm': '320px',
-    'md': '768px',
-    'lg': '960px',
-    'xl': '1200px',
-    '2xl': '1536px',
-    '3xl': '1920px',
-    '4xl': '2560px',
-    '5xl': '3840px',
-  },
-  /* eslint-enable canonical/sort-keys */
-
-  /* eslint-disable canonical/sort-keys */
-  zIndices: {
-    hide: -1,
-    auto: 'auto',
-    base: 0,
-    docked: 10,
-    dropdown: 1000,
-    sticky: 1100,
-    banner: 1200,
-    overlay: 1300,
-    modal: 1400,
-    popover: 1500,
-    skipLink: 1600,
-    toast: 1700,
-    tooltip: 1800,
-  },
-  /* eslint-enable canonical/sort-keys */
 } satisfies ThemeOverride;
 
-export const extendedTheme = extendTheme(theme);
+const themeExtended = extendTheme(themeOverride);
+
+type Theme = BaseThemeWithExtensions<BaseTheme, [typeof themeOverride]>;
+
+export const theme = themeExtended as Theme;

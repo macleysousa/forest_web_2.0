@@ -7,8 +7,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { setDefaultOptions } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Suspense } from 'react';
-import { extendedTheme } from '../configs/chakra';
+import { Loading } from '../components/Loading';
+import { theme } from '../configs/chakra';
 import { AuthContextProvider } from '../contexts/AuthContext';
+import { RouterContextProvider } from '../contexts/RouterContext';
 
 setDefaultOptions({ locale: ptBR });
 
@@ -16,11 +18,13 @@ const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense>
+    <Suspense fallback={<Loading />}>
       <CacheProvider>
-        <ChakraProvider theme={extendedTheme}>
+        <ChakraProvider theme={theme}>
           <QueryClientProvider client={queryClient}>
-            <AuthContextProvider>{children}</AuthContextProvider>
+            <RouterContextProvider>
+              <AuthContextProvider>{children}</AuthContextProvider>
+            </RouterContextProvider>
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </ChakraProvider>
