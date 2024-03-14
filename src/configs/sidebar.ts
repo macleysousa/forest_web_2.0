@@ -15,14 +15,13 @@ import {
 
 import type { IconType } from 'react-icons';
 
-/* eslint-disable prettier/prettier */
-export type Option = { icon: IconType; id: string; name: string } & (
-  | { path: string }
-  | { items: Array<{ id: string; name: string; path: string }>; rootPath: string }
-);
-/* eslint-enable prettier/prettier */
+type OptionBase = { icon: IconType; id: string; name: string };
+type OptionItem = { id: string; name: string; path: string };
+type OptionWithPath = OptionBase & { path: string };
+type OptionWithItems = OptionBase & { items: OptionItem[] };
+type Option = OptionWithPath | OptionWithItems;
 
-export const options: Option[] = [
+const options: Option[] = [
   {
     icon: MdDashboard,
     id: Math.random().toString(36).substring(2),
@@ -78,7 +77,6 @@ export const options: Option[] = [
       },
     ],
     name: 'Mobile',
-    rootPath: '/mobile',
   },
   {
     icon: IoBagCheckSharp,
@@ -96,7 +94,6 @@ export const options: Option[] = [
       },
     ],
     name: 'Planejamentos',
-    rootPath: '/planning',
   },
   {
     icon: MdStars,
@@ -134,7 +131,6 @@ export const options: Option[] = [
       },
     ],
     name: 'Produtos',
-    rootPath: '/products',
   },
   {
     icon: BiSolidFactory,
@@ -157,7 +153,6 @@ export const options: Option[] = [
       },
     ],
     name: 'Fábrica',
-    rootPath: '/factory',
   },
   {
     icon: MdDirectionsCar,
@@ -178,3 +173,5 @@ export const options: Option[] = [
     path: '/tools',
   },
 ];
+
+export { options, type Option, type OptionItem };
