@@ -327,7 +327,7 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
                       _hover={{ bg: '#1D1242', color: '#1E93FF' }}
                       color="rgba(255, 255, 255, 0.6)"
                       fontWeight={400}
-                      isActive={pathname.startsWith(item.path)}
+                      isActive={pathname?.startsWith(item.path)}
                       justifyContent="flex-start"
                       variant="ghost"
                       onClick={() => router.push(item.path)}

@@ -7,33 +7,27 @@ import {
   TabPanel,
   Text,
 } from '@chakra-ui/react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import InputMask from 'react-input-mask';
-import { z } from 'zod';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
 
-export function PanelContactData() {
-  const schema = z.object({
-    contactName: z.string().min(0, 'O nome do contato é obrigatório'),
-    email: z.string().email('E-mail inválido').min(0, 'O e-mail é obrigatório'),
-    financialEmail: z
-      .string()
-      .email('E-mail inválido')
-      .min(0, 'O e-mail é obrigatório'),
-    phoneNumber: z.string().min(0, 'O telefone é obrigatório'),
-  });
+type PanelContactDataProps = {
+  formState: any;
+  handleSubmit: any;
+  onCancel: any;
+  onError: any;
+  onSubmit: any;
+  register: any;
+};
 
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>(
-    { resolver: zodResolver(schema) },
-  );
-
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log(data);
-  };
-
+export function PanelContactData({
+  formState,
+  register,
+  handleSubmit,
+  onSubmit,
+  onError,
+  onCancel,
+}: PanelContactDataProps) {
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -42,17 +36,23 @@ export function PanelContactData() {
         maxW="53rem"
         p="1rem 2rem 1rem 2rem"
         shadow="sm"
-        // eslint-disable-next-line canonical/sort-keys
-        w={{ md: '100%', lg: '100%', xl: '53rem' }}
+        w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
-            <Text minW="9rem">Nome do Contato</Text>
+            <Text minW="9rem">
+              Nome do Contato
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
+                *
+              </Box>
+            </Text>
             <InputLabel
               alignItems="baseline"
               display="flex"
@@ -62,18 +62,15 @@ export function PanelContactData() {
               w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <InputText
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="Nome do Contato"
                 {...register('contactName')}
               />
             </InputLabel>
           </Flex>
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="9rem">Telefone</Text>
             <InputLabel
@@ -87,12 +84,11 @@ export function PanelContactData() {
               <Input
                 alwaysShowMask={false}
                 as={InputMask}
-                //   mask={[/^(\d{2})\D*(\d{5}|\d{4})\D*(\d{4})$/]}
                 mask="(99) 9 9999-9999"
                 maskChar={null}
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="Telefone"
+                //   mask={[/^(\d{2})\D*(\d{5}|\d{4})\D*(\d{4})$/]}
                 {...register('phoneNumber')}
               />
             </InputLabel>
@@ -102,7 +98,16 @@ export function PanelContactData() {
             alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
             flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
-            <Text minW="9rem">E-Mail</Text>
+            <Text minW="9rem">
+              E-Mail
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
+                *
+              </Box>
+            </Text>
             <InputLabel
               alignItems="baseline"
               display="flex"
@@ -155,6 +160,7 @@ export function PanelContactData() {
               h="2.5rem"
               variant="outline"
               w="5.5rem"
+              onClick={onCancel}
             >
               Cancelar
             </Button>

@@ -28,7 +28,7 @@ import { useEffect, useState } from 'react';
 import { MdApps, MdDescription, MdMail } from 'react-icons/md';
 import { ButtonFilter } from '../../../../components/ButtonFilter';
 import { DatePicker } from '../../../../components/DatePicker';
-import { getCustomers } from '../../../../services/api/customer';
+import { getCustomers } from '../../../../services/api/customers/customer';
 import { getOrders } from '../../../../services/api/orders';
 
 import {
@@ -54,7 +54,7 @@ export default function OrderDetailsPage() {
   ]);
 
   const { data: customersData } = useQuery({
-    queryFn: getCustomers,
+    queryFn: () => getCustomers(),
     queryKey: ['customers'],
     retry: 5,
   });
