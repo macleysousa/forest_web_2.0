@@ -61,8 +61,10 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
   const pathname = usePathname();
 
   const allParamsInUrl: FilterType[] = [];
-  for (const [key, value] of searchParams) {
-    allParamsInUrl.push({ editable: false, name: key, value });
+  if (searchParams) {
+    for (const [key, value] of searchParams) {
+      allParamsInUrl.push({ editable: false, name: key, value });
+    }
   }
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -253,6 +255,7 @@ export function FilterModal({ options, applyCallback }: FilterModalProps) {
 
           <ModalFooter>
             <Button
+              mr="1rem"
               variant="outline"
               onClick={onClose}
             >

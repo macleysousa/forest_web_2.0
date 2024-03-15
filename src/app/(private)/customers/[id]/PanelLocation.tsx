@@ -5,67 +5,95 @@ import {
   Divider,
   Flex,
   Icon,
-  Image,
   Input,
   Select,
   TabPanel,
   Text,
 } from '@chakra-ui/react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
+import GoogleMapReact from 'google-map-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MdArrowDropDown, MdPinDrop } from 'react-icons/md';
 import InputMask from 'react-input-mask';
-import { z } from 'zod';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
+import { postGeolocation } from '../../../../services/geolocation/geolocation';
+import { getCep } from '../../../../services/viacep/cep';
+import { states } from '../../../../utils/location';
 
-export function PanelLocation() {
-  const schema = z.object({
-    addressComplement: z.string(),
-    cep: z.string().min(8, 'CEP inválido'),
-    city: z.string().min(2, 'Cidade inválida'),
-    number: z.string().min(1, 'Número inválido'),
-    state: z.string().min(2, 'Estado inválido'),
-    street: z.string().min(3, 'Endereço inválido'),
+type PanelLocationProps = {
+  formState: any;
+  getValues: any;
+  handleSubmit: any;
+  onCancel: any;
+  onError: any;
+  onSubmit: any;
+  register: any;
+  setValue: any;
+};
+
+export function PanelLocation({
+  formState,
+  register,
+  handleSubmit,
+  onSubmit,
+  onError,
+  onCancel,
+  getValues,
+  setValue,
+}: PanelLocationProps) {
+  const [cep, setCep] = useState<string | null>(null);
+  const [coordinates, setCoordinates] = useState({
+    lat: getValues('latitude') || -23.5489,
+    lng: getValues('longitude') || -46.6388,
+  });
+  const canFetch = useMemo(() => !!Number(cep), [cep]);
+  let mapsIndex = 0;
+
+  const { data, refetch } = useQuery({
+    enabled: canFetch,
+    queryFn: () => getCep(cep || ''),
+    queryKey: ['getCep'],
+    retry: 1,
   });
 
-  const states: string[] = [
-    'AC',
-    'AL',
-    'AP',
-    'AM',
-    'BA',
-    'CE',
-    'DF',
-    'ES',
-    'GO',
-    'MA',
-    'MS',
-    'MT',
-    'MG',
-    'PA',
-    'PB',
-    'PR',
-    'PE',
-    'PI',
-    'RJ',
-    'RN',
-    'RS',
-    'RO',
-    'RR',
-    'SC',
-    'SP',
-    'SE',
-    'TO',
-  ];
-
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>(
-    { resolver: zodResolver(schema) },
+  const handleOnChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      const formatedValue = value.replace(/-/g, '');
+      if (Number(formatedValue) && event.type !== 'focus') {
+        setCep(formatedValue);
+      }
+    },
+    [],
   );
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log(data);
+  useEffect(() => {
+    if (canFetch && cep) {
+      refetch();
+      setValue('address', data?.logradouro);
+      setValue('neighborhood', data?.bairro);
+      setValue('city', data?.localidade);
+      setValue('state', data?.uf);
+    }
+  }, [cep, data, refetch, setValue, canFetch]);
+
+  const handleGeolocation = async () => {
+    const { address: street, neighborhood, number, state, city } = getValues();
+    const address = `${street}, ${number}, ${neighborhood}, ${city}, ${state}`;
+    try {
+      const geocodedData = await postGeolocation({ address });
+
+      setCoordinates({
+        lat: geocodedData[0]?.latitude || 0,
+        lng: geocodedData[0]?.longitude || 0,
+      });
+      setValue('latitude', geocodedData[0]?.latitude);
+      setValue('longitude', geocodedData[0]?.longitude);
+      mapsIndex++;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -76,45 +104,40 @@ export function PanelLocation() {
         maxW="53rem"
         p="1rem 2rem 1rem 2rem"
         shadow="sm"
-        // eslint-disable-next-line canonical/sort-keys
-        w={{ md: '100%', lg: '100%', xl: '53rem' }}
+        w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">CEP</Text>
             <InputLabel
               alignItems="baseline"
               display="flex"
-              error={formState.errors.cep?.message}
+              error={formState.errors.zip?.message}
               flexDirection="column"
               my="1rem"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Input
                 alwaysShowMask={false}
                 as={InputMask}
                 mask="99999-999"
                 maskChar={null}
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="CEP"
                 w="12rem"
-                {...register('cep')}
+                {...register('zip', {
+                  onChange: handleOnChange,
+                })}
               />
             </InputLabel>
           </Flex>
 
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems="baseline"
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Endereço</Text>
             <InputLabel
@@ -122,20 +145,19 @@ export function PanelLocation() {
               display="flex"
               flexDirection="column"
               my="1rem"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
               error={
-                formState.errors.street?.message ||
+                formState.errors.address?.message ||
                 formState.errors.number?.message ||
-                formState.errors.addressComplement?.message ||
+                formState.errors.complement?.message ||
                 formState.errors.city?.message ||
-                formState.errors.state?.message
+                formState.errors.state?.message ||
+                formState.errors.neighborhood?.message
               }
             >
               <Flex
                 direction="column"
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 w="100%"
               >
                 <Flex
@@ -144,7 +166,16 @@ export function PanelLocation() {
                 >
                   <InputText
                     placeholder="Logradouro"
-                    {...register('street')}
+                    {...register('address')}
+                  />
+                </Flex>
+                <Flex
+                  mb="1rem"
+                  w="100%"
+                >
+                  <InputText
+                    placeholder="Bairro"
+                    {...register('neighborhood')}
                   />
                 </Flex>
                 <Flex
@@ -160,7 +191,7 @@ export function PanelLocation() {
                     ml="1rem"
                     placeholder="Complemento"
                     w="70%"
-                    {...register('addressComplement')}
+                    {...register('complement')}
                   />
                 </Flex>
                 <Flex
@@ -178,6 +209,7 @@ export function PanelLocation() {
                     placeholder="UF"
                     w="15%"
                     {...register('state')}
+                    fontFamily="sans-serif"
                     icon={<MdArrowDropDown />}
                   >
                     {states.map((state, index) => (
@@ -197,7 +229,11 @@ export function PanelLocation() {
           <Divider my="2rem" />
 
           <Flex direction="column">
-            <Button w="11rem">
+            <Button
+              variant="solid"
+              w="11rem"
+              onClick={handleGeolocation}
+            >
               <Icon
                 as={MdPinDrop}
                 h="24px"
@@ -207,12 +243,21 @@ export function PanelLocation() {
               Geolocalizar
             </Button>
 
-            <Image
-              alt="geolocation pic"
+            <Box
+              h="20rem"
               my="1rem"
-              src="/geolocation.jpg"
               w="44.25rem"
-            />
+            >
+              <GoogleMapReact
+                center={{ lat: coordinates.lat, lng: coordinates.lng }}
+                defaultZoom={11}
+                index={mapsIndex}
+                // yesIWantToUseGoogleMapApiInternals={true}
+                bootstrapURLKeys={{
+                  key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+                }}
+              ></GoogleMapReact>
+            </Box>
 
             <Checkbox alignItems="flex-start">
               <Text fontWeight="400">
@@ -234,6 +279,7 @@ export function PanelLocation() {
               h="2.5rem"
               variant="outline"
               w="5.5rem"
+              onClick={onCancel}
             >
               Cancelar
             </Button>

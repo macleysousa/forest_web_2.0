@@ -4,41 +4,59 @@ import {
   Checkbox,
   Divider,
   Flex,
+  Image,
   Input,
   Select,
   TabPanel,
   Text,
   Textarea,
 } from '@chakra-ui/react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useRef, useState } from 'react';
+import { MdArrowDropDown } from 'react-icons/md';
 import InputMask from 'react-input-mask';
-import { z } from 'zod';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
 
-export function PanelRegistrationData() {
-  const schema = z.object({
-    cnpj: z
-      .string()
-      .regex(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$)/, 'Formato inválido')
-      .min(0, 'O CNPJ é obrigatório'),
-    comments: z.string(),
-    corporateReason: z.string().min(0, 'A Razão Social é obrigatória'),
-    customerReview: z.string(),
-    fantasyName: z.string(),
-    ie: z.string(),
-    im: z.string(),
-    situation: z.string(),
-  });
+type PanelRegistrationDataProps = {
+  formState: any;
+  handleSubmit: any;
+  onCancel: any;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onError: any;
+  onSubmit: any;
+  register: any;
+};
 
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof schema>>(
-    { resolver: zodResolver(schema) },
-  );
+export function PanelRegistrationData({
+  formState,
+  register,
+  handleSubmit,
+  onSubmit,
+  onError,
+  onCancel,
+}: PanelRegistrationDataProps) {
+  const [photo, setPhoto] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log(data);
+  const handlePhotoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (!event.target.files) return;
+    const file = event.target.files.item(0);
+
+    if (file === null) {
+      setPhoto(null);
+      return;
+    }
+
+    const promise = new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+    });
+
+    promise.then(setPhoto);
   };
 
   return (
@@ -49,44 +67,58 @@ export function PanelRegistrationData() {
         maxW="53rem"
         p="3rem 2rem 1rem 2rem"
         shadow="sm"
-        // eslint-disable-next-line canonical/sort-keys
-        w={{ md: '100%', lg: '100%', xl: '53rem' }}
+        w={{ lg: '100%', md: '100%', xl: '53rem' }}
       >
-        <form onSubmit={handleSubmit(onSubmit, console.error)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            align={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            direction={{ md: 'column', lg: 'column', xl: 'row' }}
+            align={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            direction={{ lg: 'column', md: 'column', xl: 'row' }}
             mb="1rem"
           >
             <Text
-              // eslint-disable-next-line canonical/sort-keys
-              mb={{ base: '0', md: '1rem', lg: '1rem' }}
-              // eslint-disable-next-line canonical/sort-keys
-              minW={{ md: 'auto', lg: 'auto', xl: '7rem' }}
+              mb={{ base: '0', lg: '1rem', md: '1rem' }}
+              minW={{ lg: 'auto', md: 'auto', xl: '7rem' }}
             >
               Avatar
             </Text>
             <Flex
               align="center"
-              // eslint-disable-next-line canonical/sort-keys
               ml={{ base: '0', lg: '0', xl: '4rem' }}
             >
-              <Box
-                bg="#84818A"
-                borderRadius="50%"
-                h="72px"
-                w="72px"
-              />
+              {photo ? (
+                <Image
+                  alt=""
+                  borderRadius="50%"
+                  h="72px"
+                  objectFit="cover"
+                  src={photo}
+                  w="72px"
+                />
+              ) : (
+                <Box
+                  bg="#84818A"
+                  borderRadius="50%"
+                  h="72px"
+                  w="72px"
+                />
+              )}
               <Button
                 h="2rem"
                 ml="2rem"
                 variant="solid"
                 w="9rem"
+                onClick={() => fileInput.current?.click()}
               >
                 Alterar Foto
               </Button>
+              <Input
+                ref={fileInput}
+                id="import-file"
+                name="import-file"
+                type="file"
+                hidden
+                onChange={handlePhotoChange}
+              />
               <Button
                 borderColor="#1E93FF"
                 color="#1E93FF"
@@ -101,28 +133,33 @@ export function PanelRegistrationData() {
           </Flex>
 
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
-            <Text minW="7rem">CNPJ</Text>
+            <Text minW="7rem">
+              CNPJ
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
+                *
+              </Box>
+            </Text>
             <InputLabel
               alignItems="baseline"
               display="flex"
               error={formState.errors.cnpj?.message}
               flexDirection="column"
               my="1rem"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Input
                 alwaysShowMask={false}
                 as={InputMask}
                 mask="99.999.999/9999-99"
                 maskChar={null}
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="CNPJ"
                 {...register('cnpj')}
               />
@@ -133,44 +170,56 @@ export function PanelRegistrationData() {
             alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
             flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
-            <Text minW="7rem">Razão Social</Text>
+            <Text minW="7rem">
+              Razão Social
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
+                *
+              </Box>
+            </Text>
             <InputLabel
               alignItems="baseline"
               display="flex"
-              error={formState.errors.corporateReason?.message}
+              error={formState.errors.socialName?.message}
               flexDirection="column"
               my="1rem"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <InputText
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="Nome da Empresa"
-                {...register('corporateReason')}
+                {...register('socialName')}
               />
             </InputLabel>
           </Flex>
 
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
-            <Text minW="7rem">Nome Fantasia</Text>
+            <Text minW="7rem">
+              Nome Fantasia
+              <Box
+                as="span"
+                color="red.500"
+                ml="0.25rem"
+              >
+                *
+              </Box>
+            </Text>
             <InputLabel
               alignItems="baseline"
               display="flex"
               error={formState.errors.fantasyName?.message}
               flexDirection="column"
               my="1rem"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <InputText
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="Nome Fantasia (Se houver)"
                 {...register('fantasyName')}
               />
@@ -178,10 +227,8 @@ export function PanelRegistrationData() {
           </Flex>
 
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">IE / IM</Text>
             <InputLabel
@@ -194,8 +241,7 @@ export function PanelRegistrationData() {
             >
               <Flex w="100%">
                 <InputText
-                  // eslint-disable-next-line canonical/sort-keys
-                  ml={{ md: '0', lg: '0', xl: '4rem' }}
+                  ml={{ lg: '0', md: '0', xl: '4rem' }}
                   placeholder="Inscrição Estadual"
                   w="100%"
                   {...register('ie')}
@@ -211,10 +257,8 @@ export function PanelRegistrationData() {
           </Flex>
 
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Situação</Text>
             <InputLabel
@@ -231,25 +275,29 @@ export function PanelRegistrationData() {
                 width="100%"
               >
                 <Select
-                  // eslint-disable-next-line canonical/sort-keys
-                  ml={{ md: '0', lg: '0', xl: '4rem' }}
+                  ml={{ lg: '0', md: '0', xl: '4rem' }}
                   placeholder="Situação"
                   w="25rem"
                   {...register('situation')}
+                  fontFamily="sans-serif"
+                  icon={<MdArrowDropDown />}
                 >
                   <option value="Regular">Regular</option>
                   <option value="Irregular">Irregular</option>
                 </Select>
-                <Checkbox ml="2rem">Termo de incentivo</Checkbox>
+                <Checkbox
+                  ml="2rem"
+                  {...register('incentive')}
+                >
+                  Termo de incentivo
+                </Checkbox>
               </Box>
             </InputLabel>
           </Flex>
 
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="8rem">Avaliação Cliente</Text>
             <InputLabel
@@ -258,12 +306,10 @@ export function PanelRegistrationData() {
               error={formState.errors.customerReview?.message}
               flexDirection="column"
               my="1rem"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ md: '100%', lg: '100%', xl: '92.5%' }}
+              w={{ lg: '100%', md: '100%', xl: '92.5%' }}
             >
               <InputText
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '3rem' }}
+                ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="Avaliação Cliente"
                 {...register('customerReview')}
               />
@@ -271,10 +317,8 @@ export function PanelRegistrationData() {
           </Flex>
 
           <Flex
-            // eslint-disable-next-line canonical/sort-keys
-            alignItems={{ md: 'baseline', lg: 'baseline', xl: 'center' }}
-            // eslint-disable-next-line canonical/sort-keys
-            flexDirection={{ md: 'column', lg: 'column', xl: 'row' }}
+            alignItems={{ lg: 'baseline', md: 'baseline', xl: 'center' }}
+            flexDirection={{ lg: 'column', md: 'column', xl: 'row' }}
           >
             <Text minW="7rem">Observações</Text>
             <InputLabel
@@ -283,14 +327,12 @@ export function PanelRegistrationData() {
               error={formState.errors.comments?.message}
               flexDirection="column"
               my="1rem"
-              // eslint-disable-next-line canonical/sort-keys
-              w={{ md: '100%', lg: '100%', xl: '90%' }}
+              w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Textarea
                 h="9rem"
                 maxW="26.625rem"
-                // eslint-disable-next-line canonical/sort-keys
-                ml={{ md: '0', lg: '0', xl: '4rem' }}
+                ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="Descrição da empresa"
                 resize="none"
                 w="26.625rem"
@@ -309,6 +351,7 @@ export function PanelRegistrationData() {
               h="2.5rem"
               variant="outline"
               w="5.5rem"
+              onClick={onCancel}
             >
               Cancelar
             </Button>

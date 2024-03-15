@@ -133,7 +133,7 @@ export default function ShowOrderPage() {
   useEffect(() => {
     if (isValidParam) setPageStatus('show');
     else setPageStatus('create');
-  }, [isValidParam, params.id]);
+  }, [isValidParam, params?.id]);
 
   return (
     <Box p="2rem">
