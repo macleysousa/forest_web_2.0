@@ -85,7 +85,7 @@ const options: Option[] = [
       {
         id: Math.random().toString(36).substring(2),
         name: 'Planejamento Clientes',
-        path: '/planning/customer-planning',
+        path: '/planning/customers',
       },
       {
         id: Math.random().toString(36).substring(2),
