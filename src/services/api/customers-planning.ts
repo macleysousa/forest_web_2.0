@@ -1,12 +1,11 @@
 import { api } from '../api';
-import type { GenericAbortSignal } from 'axios';
 
 /* eslint-disable typescript-sort-keys/interface */
 type GetCustomersPlanningParams = {
   page?: string | undefined;
-  actor_id?: string | undefined;
-  tree_id?: string | undefined;
-  signal?: GenericAbortSignal;
+  actor_id: string;
+  tree_id: string;
+  signal?: AbortSignal | undefined;
 };
 /* eslint-enable typescript-sort-keys/interface */
 
