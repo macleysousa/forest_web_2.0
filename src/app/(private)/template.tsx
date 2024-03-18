@@ -347,12 +347,12 @@ export default function PrivateTemplate({ children }: PrivateTemplateProps) {
           bg="gray.50"
           flexGrow={1}
           h={`max(calc(100dvh - 4.5rem), ${sidebarRef.current?.clientHeight ?? 0}px)`}
+          minW={"375px" /* iPhone SE (smallest width in list of dimensions options in dev mode in chromium based browsers) */}
           overflow="auto"
           p={8}
         >
           <Box
             maxW="container.xl"
-            minW={"375px" /* iPhone SE (smallest width in list of dimensions options in dev mode in chromium based browsers) */}
             mx="auto"
           >
             {children}
