@@ -88,6 +88,10 @@ export function RouterContextProvider({
     router.push(url);
   };
 
+  if (pathname === null) {
+    return <Loading />;
+  }
+
   return (
     <RouterContext.Provider value={{ pathname, push }}>
       {children}
