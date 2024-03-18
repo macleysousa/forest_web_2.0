@@ -9,8 +9,9 @@ type User = {
   type: string;
   date_birth: string;
   is_ranking: number;
-  avatar: any;
-  app_version: any;
+  avatar: string;
+  app_version: number;
+  mobile_app: number;
 };
 /* eslint-enable typescript-sort-keys/interface */
 
@@ -24,28 +25,10 @@ type Distributor = {
 /* eslint-enable typescript-sort-keys/interface */
 
 /* eslint-disable typescript-sort-keys/interface */
-type ActorTree = {
-  parent_id: number;
-  user_id: number;
-  name: string;
-  avatar: any;
-  actor_id: number;
-  actor_name: string;
-  actor_type: string;
-  actor_level: number;
-  tree_id: number;
-  tree_name: string;
-  tree_type: string;
-  tree_branch_id: number;
-};
-/* eslint-enable typescript-sort-keys/interface */
-
-/* eslint-disable typescript-sort-keys/interface */
 type LoginResult = {
   status: string;
   user: User;
   distributor: Distributor;
-  actor_tree: ActorTree[];
 };
 /* eslint-enable typescript-sort-keys/interface */
 
