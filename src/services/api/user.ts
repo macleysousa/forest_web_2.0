@@ -9,8 +9,9 @@ type User = {
   type: string;
   date_birth: string;
   is_ranking: number;
-  avatar: any;
-  app_version: any;
+  avatar: string;
+  app_version: null;
+  mobile_app: number;
 };
 /* eslint-enable typescript-sort-keys/interface */
 
