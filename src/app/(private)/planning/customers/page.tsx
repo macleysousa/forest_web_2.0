@@ -6,16 +6,15 @@ import {
   Button,
   Heading,
   Icon,
+  Menu,
+  MenuButton,
+  MenuGroup,
+  MenuItem,
+  MenuList,
   Popover,
-  PopoverArrow,
-  PopoverBody,
   PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
   PopoverTrigger,
   Portal,
-  Stack,
-  StackDivider,
   Stat,
   StatLabel,
   StatNumber,
@@ -37,22 +36,32 @@ import { useEffect, useRef, useState } from 'react';
 import { MdFilterList } from 'react-icons/md';
 import { Loading } from '../../../../components/Loading';
 import { AuthUser, useAuthContext } from '../../../../contexts/AuthContext';
-import { getCustomersPlanning } from '../../../../services/api/customers-planning';
+
+import {
+  GetCustomersPlanningFilters,
+  GetCustomersPlanningResult,
+  getCustomersPlanning,
+} from '../../../../services/api/customers-planning';
+
+import { CustomersPlanningPeriodFilterModal } from './components/CustomersPlanningFilterModal';
+import { CustomersPlanningFilters } from './components/CustomersPlanningFilters';
+import { CustomersPlanningFilter } from './components/CustomersPlanningFilters/CustomersPlanningFilter';
 import type { DefaultError, InfiniteData } from '@tanstack/query-core';
 
-type GetCustomersPlanning = typeof getCustomersPlanning;
-type GetCustomersPlanningResult = Awaited<ReturnType<GetCustomersPlanning>>;
+type ActorTree = AuthUser['actor_tree'][number];
 
 export default function CustomerPlanningPage() {
   const toast = useToast();
   const auth = useAuthContext();
   const loadMoreButtonRef = useRef<HTMLButtonElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [periodModalOpen, setPeriodModalOpen] = useState(false);
 
-  const [actorTreeInFilterIsDistributor, setActorTreeInFilterIsDistributor] =
-    useState(true);
+  const [selectedActorTree, setSelectedActorTree] = useState<ActorTree | null>(
+    null,
+  );
 
-  const [filters, setFilters] = useState(() => {
+  const [filters, setFilters] = useState<GetCustomersPlanningFilters>(() => {
     if (auth.is !== 'authenticated') throw new Error('unexpected auth state');
     const { actor_id, tree_id } = auth.user.distributor;
     return { actor_id: actor_id.toString(), tree_id: tree_id.toString() };
@@ -104,26 +113,25 @@ export default function CustomerPlanningPage() {
     return () => observer.disconnect();
   }, [infiniteQuery]);
 
-  const isActorTreeFilterOptionActive = (
-    actorTree: AuthUser['actor_tree'][number],
-  ) => {
-    if (actorTreeInFilterIsDistributor) return false;
+  useEffect(() => {
+    window.document.title = 'Forest | Planejamento de Clientes';
+  }, []);
+
+  const isActorTreeFilterOptionActive = (actorTree: ActorTree) => {
+    if (!selectedActorTree) return false;
     if (filters.actor_id !== actorTree.actor_id.toString()) return false;
     if (filters.tree_id !== actorTree.tree_id.toString()) return false;
     return true;
   };
 
-  const handleSelectActorTree =
-    (actorTree: AuthUser['actor_tree'][number]) => () => {
-      setPopoverOpen(false);
-      if (isActorTreeFilterOptionActive(actorTree)) return;
-      // eslint-disable-next-line prettier/prettier
-      setFilters({ actor_id: actorTree.actor_id.toString(), tree_id: actorTree.tree_id.toString() });
-      setActorTreeInFilterIsDistributor(false);
-    };
+  const handleSelectActorTree = (actorTree: ActorTree) => () => {
+    if (isActorTreeFilterOptionActive(actorTree)) return;
+    // eslint-disable-next-line prettier/prettier
+    setFilters({ actor_id: actorTree.actor_id.toString(), tree_id: actorTree.tree_id.toString() });
+    setSelectedActorTree(actorTree);
+  };
 
   const handleUnselectActorTree = () => {
-    if (actorTreeInFilterIsDistributor) return;
     if (auth.is !== 'authenticated') throw new Error('unexpected auth state');
     const { actor_id, tree_id } = auth.user.distributor;
 
@@ -131,7 +139,7 @@ export default function CustomerPlanningPage() {
     const newFilters = { actor_id: actor_id.toString(), tree_id: tree_id.toString() };
     setFilters(newFilters);
 
-    setActorTreeInFilterIsDistributor(true);
+    setSelectedActorTree(null);
   };
 
   if (auth.is !== 'authenticated') {
@@ -153,89 +161,161 @@ export default function CustomerPlanningPage() {
           flexWrap="wrap"
           gap={4}
         >
-          <Popover
-            isOpen={popoverOpen}
-            placement="bottom-start"
-            onClose={() => setPopoverOpen(false)}
-          >
+          <Box maxW={{ md: '20rem' }}>
+            <CustomersPlanningFilter
+              disabled={infiniteQuery.isFetching}
+              label="Data"
+              value={filters.period ?? ''}
+              inputLeftAddonProps={{
+                fontSize: 'base',
+                lineHeight: 'base',
+                w: 'auto',
+              }}
+              readOnly
+              onClick={() => setPeriodModalOpen(true)}
+              onTextChange={(period) => setFilters({ ...filters, period })}
+            />
+            <CustomersPlanningPeriodFilterModal
+              open={periodModalOpen}
+              onClose={() => setPeriodModalOpen(false)}
+              onSubmit={(period) => setFilters({ ...filters, period })}
+            />
+          </Box>
+
+          <Menu>
+            <MenuButton
+              as={Button}
+              isLoading={infiniteQuery.isFetching}
+              variant="outline"
+            >
+              Ator / Árvore
+            </MenuButton>
+            <MenuList>
+              {Object.entries(
+                auth.user.actor_tree.reduce<Record<string, ActorTree[]>>(
+                  (o, actorTree) => {
+                    const { tree_name: k } = actorTree;
+                    return { ...o, [k]: [...(o[k] ?? []), actorTree] };
+                  },
+                  {},
+                ),
+              ).map(([treeName, actorTrees]) => (
+                <MenuGroup
+                  key={treeName}
+                  title={treeName}
+                >
+                  {actorTrees.map((actorTree) => (
+                    <MenuItem
+                      key={JSON.stringify(actorTree)}
+                      onClick={handleSelectActorTree(actorTree)}
+                    >
+                      {actorTree.actor_name}
+                    </MenuItem>
+                  ))}
+                </MenuGroup>
+              ))}
+            </MenuList>
+          </Menu>
+
+          {/* eslint-disable prettier/prettier */}
+          <Popover closeOnBlur={false} isOpen={popoverOpen} placement="bottom-start" isLazy onClose={() => setPopoverOpen(false)}>
             <PopoverTrigger>
-              <Button
-                isLoading={infiniteQuery.isFetching}
-                variant="outline"
-                onClick={() => setPopoverOpen(true)}
-              >
-                Ator / Árvore
+              <Button isLoading={infiniteQuery.isFetching} leftIcon={<Icon as={MdFilterList} />} variant="outline" onClick={() => setPopoverOpen(true)}>
+                Filtros
               </Button>
             </PopoverTrigger>
             <Portal>
-              <PopoverContent>
-                <PopoverArrow />
-                <PopoverHeader></PopoverHeader>
-                <PopoverBody>
-                  <Stack
-                    direction="column"
-                    divider={<StackDivider borderColor="gray.300" />}
-                    gap={2}
-                    maxHeight="60dvh"
-                    overflowY="auto"
-                  >
-                    {/* eslint-disable prettier/prettier */}
-                    {auth.user.actor_tree.map((actorTree) => (
-                      <Table
-                        key={JSON.stringify(actorTree)}
-                        _hover={{ '& td': { background: 'gray.100', borderColor: 'gray.300' }, 'cursor': 'pointer' }}
-                        size="sm"
-                        sx={isActorTreeFilterOptionActive(actorTree) ? { '& td': { background: 'gray.100', borderColor: 'gray.300' } } : {}}
-                        onClick={handleSelectActorTree(actorTree)}
-                      >
-                        <Tbody>
-                          <Tr>
-                            <Td fontWeight="bold" textAlign="end">actor_name</Td>
-                            <Td width="100%">{actorTree.actor_name}</Td>
-                          </Tr>
-                          <Tr>
-                            <Td fontWeight="bold" textAlign="end">actor_type</Td>
-                            <Td width="100%">{actorTree.actor_type}</Td>
-                          </Tr>
-                          <Tr>
-                            <Td fontWeight="bold" textAlign="end">tree_name</Td>
-                            <Td width="100%">{actorTree.tree_name}</Td>
-                          </Tr>
-                          <Tr>
-                            <Td fontWeight="bold" textAlign="end">tree_type</Td>
-                            <Td width="100%">{actorTree.tree_type}</Td>
-                          </Tr>
-                        </Tbody>
-                      </Table>
-                    ))}
-                    {/* eslint-enable prettier/prettier */}
-                  </Stack>
-                </PopoverBody>
-                <PopoverFooter />
+              <PopoverContent width="20rem">
+                <CustomersPlanningFilters
+                  disabled={infiniteQuery.isFetching}
+                  filters={filters}
+                  onApply={setFilters}
+                  onClose={() => setPopoverOpen(false)}
+                />
               </PopoverContent>
             </Portal>
           </Popover>
-          <Button
-            isLoading={infiniteQuery.isFetching}
-            leftIcon={<Icon as={MdFilterList} />}
-            variant="outline"
-            isDisabled
-          >
-            Mais Filtros
-          </Button>
+          {/* eslint-enable prettier/prettier */}
         </Box>
       </Box>
-      {!actorTreeInFilterIsDistributor && (
+      {(selectedActorTree ||
+        filters.segment ||
+        filters.partner ||
+        filters.brand ||
+        filters.customer_name ||
+        filters.city ||
+        filters.status ||
+        filters.period) && (
         <Box
           display="flex"
           flexWrap="wrap"
           gap={2}
           mt={6}
         >
-          <Tag colorScheme="blue">
-            <TagLabel>Ator / Ávore</TagLabel>
-            <TagCloseButton onClick={handleUnselectActorTree} />
-          </Tag>
+          {selectedActorTree && (
+            <Tag colorScheme="blue">
+              <TagLabel>{selectedActorTree.actor_name}</TagLabel>
+              <TagCloseButton onClick={handleUnselectActorTree} />
+            </Tag>
+          )}
+          {filters.segment && (
+            <Tag colorScheme="blue">
+              <TagLabel>Segmento: {filters.segment}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, segment: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.partner && (
+            <Tag colorScheme="blue">
+              <TagLabel>Parceiro: {filters.partner}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, partner: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.brand && (
+            <Tag colorScheme="blue">
+              <TagLabel>Rede: {filters.brand}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, brand: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.customer_name && (
+            <Tag colorScheme="blue">
+              <TagLabel>Cliente: {filters.customer_name}</TagLabel>
+              <TagCloseButton
+                onClick={() =>
+                  setFilters({ ...filters, customer_name: undefined })
+                }
+              />
+            </Tag>
+          )}
+          {filters.city && (
+            <Tag colorScheme="blue">
+              <TagLabel>Cidade: {filters.city}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, city: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.status && (
+            <Tag colorScheme="blue">
+              <TagLabel>Status: {filters.status}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, status: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.period && (
+            <Tag colorScheme="blue">
+              <TagLabel>Período: {filters.period}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, period: undefined })}
+              />
+            </Tag>
+          )}
         </Box>
       )}
       <Box
@@ -360,16 +440,16 @@ export default function CustomerPlanningPage() {
                     >
                       <Box
                         as="span"
-                        fontSize="xs"
+                        fontSize="sm"
                         textDecoration="underline"
                       >
                         {item.social_name}
                       </Box>
                       <Box
                         as="span"
-                        background="#E9F1F2"
-                        color="#70B6C1"
-                        fontSize="xs"
+                        background="green.50"
+                        color="green.500"
+                        fontSize="sm"
                         textAlign="center"
                         width="100%"
                       >
@@ -394,7 +474,11 @@ export default function CustomerPlanningPage() {
                       {item.customer_status}
                     </Badge>
                   </Td>
-                  <Td textAlign="center">-</Td>
+                  <Td textAlign="center">
+                    {item.frentistas || item.consultores
+                      ? `${item.frentistas ?? 0} / ${item.consultores ?? 0}`
+                      : '-'}
+                  </Td>
                 </Tr>
               )),
             )}

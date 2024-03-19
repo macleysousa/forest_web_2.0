@@ -1,16 +1,29 @@
 import { api } from '../api';
 
 /* eslint-disable typescript-sort-keys/interface */
-type GetCustomersPlanningParams = {
-  page?: string | undefined;
+export type GetCustomersPlanningFilters = {
   actor_id: string;
   tree_id: string;
+  segment?: string | undefined;
+  flag?: string | undefined;
+  partner?: string | undefined;
+  brand?: string | undefined;
+  customer_name?: string | undefined;
+  city?: string | undefined;
+  status?: string | undefined;
+  period?: string | undefined;
+};
+/* eslint-enable typescript-sort-keys/interface */
+
+/* eslint-disable typescript-sort-keys/interface */
+export type GetCustomersPlanningParams = GetCustomersPlanningFilters & {
+  page?: string | undefined;
   signal?: AbortSignal | undefined;
 };
 /* eslint-enable typescript-sort-keys/interface */
 
 /* eslint-disable typescript-sort-keys/interface */
-type GetCustomersPlanningResult = {
+export type GetCustomersPlanningResult = {
   status: 'success';
   customers_planning: {
     current_page: number;
@@ -83,17 +96,9 @@ type GetCustomersPlanningResult = {
 /* eslint-enable typescript-sort-keys/interface */
 
 export async function getCustomersPlanning({
-  page,
-  actor_id,
-  tree_id,
   signal,
+  ...params
 }: GetCustomersPlanningParams) {
-  const params: Record<string, string> = {};
-
-  if (page !== undefined) params.page = page;
-  if (actor_id !== undefined) params.actor_id = actor_id;
-  if (tree_id !== undefined) params.tree_id = tree_id;
-
   const response = await api.get<GetCustomersPlanningResult>(
     '/v2/customers-planning',
     { params, signal },
