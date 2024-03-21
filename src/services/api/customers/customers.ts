@@ -129,12 +129,17 @@ export async function getCustomers({
     tree: tree || '',
   });
 
+  const keysToDelete: string[] = [];
   queryParams.forEach((value, key) => {
-    if (['', undefined].includes(value)) queryParams.delete(key);
+    if (['', undefined, null].includes(value)) keysToDelete.push(key);
+  });
+
+  keysToDelete.forEach((key) => {
+    if (key !== 'null') queryParams.delete(key);
   });
 
   const response = await api.get<CustomersResponse>(
-    `/web/customers?${queryParams.toString()}`,
+    `/customers?${queryParams.toString()}`,
     {
       headers: {
         filters: 'AwA=',
