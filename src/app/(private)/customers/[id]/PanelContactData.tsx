@@ -7,7 +7,8 @@ import {
   TabPanel,
   Text,
 } from '@chakra-ui/react';
-import InputMask from 'react-input-mask';
+import IMask from 'imask';
+import { useEffect, useRef } from 'react';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
 
@@ -28,6 +29,23 @@ export function PanelContactData({
   onError,
   onCancel,
 }: PanelContactDataProps) {
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!phoneInputRef.current) return;
+
+    const phoneInputMask = IMask(phoneInputRef.current, {
+      mask: [
+        {
+          mask: '(00) 0000-0000',
+        },
+        {
+          mask: '(00) 0 0000-0000',
+        },
+      ],
+    });
+
+    return () => phoneInputMask.destroy();
+  }, []);
   return (
     <TabPanel p="2rem 0">
       <Box
@@ -82,14 +100,10 @@ export function PanelContactData({
               w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Input
-                alwaysShowMask={false}
-                as={InputMask}
-                mask="(99) 9 9999-9999"
-                maskChar={null}
                 ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="Telefone"
-                //   mask={[/^(\d{2})\D*(\d{5}|\d{4})\D*(\d{4})$/]}
                 {...register('phoneNumber')}
+                ref={phoneInputRef}
               />
             </InputLabel>
           </Flex>
