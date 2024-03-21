@@ -11,9 +11,9 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
+import IMask from 'imask';
+import { useEffect, useRef, useState } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
-import InputMask from 'react-input-mask';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
 
@@ -58,6 +58,17 @@ export function PanelRegistrationData({
 
     promise.then(setPhoto);
   };
+
+  const cnpjInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!cnpjInputRef.current) return;
+
+    const cnpjInputMask = IMask(cnpjInputRef.current, {
+      mask: '00.000.000/0000-00',
+    });
+
+    return () => cnpjInputMask.destroy();
+  }, []);
 
   return (
     <TabPanel p="2rem 0">
@@ -155,13 +166,10 @@ export function PanelRegistrationData({
               w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Input
-                alwaysShowMask={false}
-                as={InputMask}
-                mask="99.999.999/9999-99"
-                maskChar={null}
                 ml={{ lg: '0', md: '0', xl: '4rem' }}
                 placeholder="CNPJ"
                 {...register('cnpj')}
+                ref={cnpjInputRef}
               />
             </InputLabel>
           </Flex>

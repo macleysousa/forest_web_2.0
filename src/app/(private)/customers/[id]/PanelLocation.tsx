@@ -12,9 +12,9 @@ import {
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import GoogleMapReact from 'google-map-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import IMask from 'imask';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MdArrowDropDown, MdPinDrop } from 'react-icons/md';
-import InputMask from 'react-input-mask';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
 import { postGeolocation } from '../../../../services/geolocation/geolocation';
@@ -47,7 +47,7 @@ export function PanelLocation({
     lat: getValues('latitude') || -23.5489,
     lng: getValues('longitude') || -46.6388,
   });
-  const canFetch = useMemo(() => !!Number(cep), [cep]);
+  const canFetch = useMemo(() => !!Number(cep) && cep?.length === 8, [cep]);
   let mapsIndex = 0;
 
   const { data, refetch } = useQuery({
@@ -67,6 +67,17 @@ export function PanelLocation({
     },
     [],
   );
+
+  const zipInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!zipInputRef.current) return;
+
+    const zipInputMask = IMask(zipInputRef.current, {
+      mask: '00000-000',
+    });
+
+    return () => zipInputMask.destroy();
+  }, []);
 
   useEffect(() => {
     if (canFetch && cep) {
@@ -121,16 +132,13 @@ export function PanelLocation({
               w={{ lg: '100%', md: '100%', xl: '90%' }}
             >
               <Input
-                alwaysShowMask={false}
-                as={InputMask}
-                mask="99999-999"
-                maskChar={null}
                 ml={{ lg: '0', md: '0', xl: '3rem' }}
                 placeholder="CEP"
                 w="12rem"
                 {...register('zip', {
                   onChange: handleOnChange,
                 })}
+                ref={zipInputRef}
               />
             </InputLabel>
           </Flex>
