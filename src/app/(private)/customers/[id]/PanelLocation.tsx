@@ -14,10 +14,10 @@ import { useQuery } from '@tanstack/react-query';
 import GoogleMapReact from 'google-map-react';
 import IMask from 'imask';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { OutputFormat, fromAddress, setDefaults, setKey } from 'react-geocode';
 import { MdArrowDropDown, MdPinDrop } from 'react-icons/md';
 import { InputLabel } from '../../../../components/InputLabel';
 import { InputText } from '../../../../components/InputText';
-import { postGeolocation } from '../../../../services/geolocation/geolocation';
 import { getCep } from '../../../../services/viacep/cep';
 import { states } from '../../../../utils/location';
 
@@ -31,6 +31,14 @@ type PanelLocationProps = {
   register: any;
   setValue: any;
 };
+
+setDefaults({
+  language: 'pt-BR',
+  outputFormat: 'json' as OutputFormat,
+  region: 'br',
+});
+const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+if (apiKey) setKey(apiKey);
 
 export function PanelLocation({
   formState,
@@ -48,7 +56,7 @@ export function PanelLocation({
     lng: getValues('longitude') || -46.6388,
   });
   const canFetch = useMemo(() => !!Number(cep) && cep?.length === 8, [cep]);
-  let mapsIndex = 0;
+  const mapsIndex = useRef(0);
 
   const { data, refetch } = useQuery({
     enabled: canFetch,
@@ -92,19 +100,22 @@ export function PanelLocation({
   const handleGeolocation = async () => {
     const { address: street, neighborhood, number, state, city } = getValues();
     const address = `${street}, ${number}, ${neighborhood}, ${city}, ${state}`;
-    try {
-      const geocodedData = await postGeolocation({ address });
-
-      setCoordinates({
-        lat: geocodedData[0]?.latitude || 0,
-        lng: geocodedData[0]?.longitude || 0,
+    fromAddress(address)
+      .then((geolocateData) => {
+        setCoordinates({
+          lat: geolocateData.results[0]?.geometry.location.lat,
+          lng: geolocateData.results[0]?.geometry.location.lng,
+        });
+        setValue('latitude', geolocateData.results[0]?.geometry.location.lat);
+        setValue('longitude', geolocateData.results[0]?.geometry.location.lng);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        mapsIndex.current += 1;
       });
-      setValue('latitude', geocodedData[0]?.latitude);
-      setValue('longitude', geocodedData[0]?.longitude);
-      mapsIndex++;
-    } catch (error) {
-      console.error(error);
-    }
+    console.log(mapsIndex);
   };
 
   return (
