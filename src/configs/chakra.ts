@@ -53,6 +53,13 @@ const themeOverride = {
         },
       },
     },
+    Select: {
+      variants: {
+        outline: {
+          field: { bg: 'white' },
+        },
+      },
+    },
   },
 
   fonts: { body: 'var(--font-inter)', heading: 'var(--font-inter)' },

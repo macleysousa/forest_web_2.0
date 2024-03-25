@@ -4,23 +4,33 @@ import {
   Badge,
   Box,
   Button,
-  Flex,
   Heading,
   Icon,
   IconButton,
   Image,
   Input,
   InputGroup,
-  InputLeftElement,
+  InputLeftAddon,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
   Table,
   TableContainer,
+  Tag,
+  TagCloseButton,
+  TagLabel,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
@@ -31,21 +41,39 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
-import { MdArrowDropDown, MdMoreHoriz, MdSearch } from 'react-icons/md';
+import { MdFilterList, MdMoreHoriz } from 'react-icons/md';
 import ReactPaginate from 'react-paginate';
-import { getProducts } from '../../../../services/api/products';
+
+import {
+  GetProductsFilters,
+  getProducts,
+} from '../../../../services/api/products';
+
+function getScrollParent(node: ParentNode | null) {
+  if (node == null) {
+    return null;
+  }
+
+  if (!(node instanceof Element)) {
+    throw new Error('Expect node is instance of Element');
+  }
+
+  if (node.scrollHeight > node.clientHeight) {
+    return node;
+  }
+
+  return getScrollParent(node.parentNode);
+}
 
 export default function ProductsPage() {
   const toast = useToast();
-  const [limit, setLimit] = useState(10);
-  const [offset, setOffset] = useState(0);
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [status, setStatus] = useState<number | null>(null);
+  const [page, setPage] = useState('1');
+  const [filters, setFilters] = useState<GetProductsFilters>({});
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const query = useQuery({
-    queryFn: ({ signal }) => getProducts({ signal }),
-    queryKey: ['products'],
+    queryFn: ({ signal }) => getProducts({ ...filters, page, signal }),
+    queryKey: ['products', { ...filters, page }],
   });
 
   useEffect(() => {
@@ -53,275 +81,264 @@ export default function ProductsPage() {
     toast({ description: query.error.message, status: 'error' });
   }, [query.error, toast]);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setOffset(0);
-      setDebouncedSearch(search);
-    }, 300);
+  const handlePaginateClick = (event: React.MouseEvent) => {
+    const element = event.target;
 
-    return () => clearTimeout(timeoutId);
-  }, [search]);
+    if (!(element instanceof HTMLAnchorElement)) return;
+    const parent = element.parentNode;
+    if (!(parent instanceof HTMLLIElement)) return;
+    const disabled = parent.classList.contains('disabled');
+    const selected = parent.classList.contains('selected');
+    if (disabled || selected) return;
 
-  const products = query.data?.categories
-    .flatMap((category) => category.products)
-    .filter((product) => {
-      if (status === null) return true;
-      return product.status === status;
-    })
-    .filter((product) => {
-      if (!debouncedSearch) return true;
-      const lowerCase = (value: string) => value.toLocaleLowerCase('pt-BR');
-
-      const lowercaseSearch = lowerCase(debouncedSearch);
-
-      const name = lowerCase(product.name);
-      if (name.includes(lowercaseSearch)) return true;
-
-      const code = lowerCase(product.code);
-      if (code.includes(lowercaseSearch)) return true;
-
-      const categoryName = lowerCase(product.category.name);
-      if (categoryName.includes(lowercaseSearch)) return true;
-
-      for (const segment of product.segments) {
-        const segmentName = lowerCase(segment.name);
-        if (segmentName.includes(lowercaseSearch)) return true;
-      }
-
-      return false;
-    });
-
-  const handlePageChange = (event: { selected: number }) => {
-    if (!products) return;
-    setOffset((event.selected * limit) % products.length);
+    getScrollParent(parent)?.scroll({ behavior: 'smooth', top: 0 });
   };
 
-  const handleLimitChange = (value: number) => () => {
-    if (value === limit) return;
-    setOffset(0);
-    setLimit(value);
-  };
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.target as HTMLFormElement);
+    const fields = ['code', 'category', 'segment', 'dsh_dso', 'unity'] as const;
+    const newFiltersState: GetProductsFilters = {};
 
-  const handleStatusChange = (value: number | null) => () => {
-    if (value === status) return;
-    setOffset(0);
-    setStatus(value);
+    for (const field of fields) {
+      const value = formData.get(field);
+      if (typeof value !== 'string') continue;
+      if (value === '') continue;
+      newFiltersState[field] = value;
+    }
+
+    setFilters(newFiltersState);
+    setPopoverOpen(false);
   };
 
   return (
-    <Box padding="2rem">
-      <Flex
-        align="center"
-        gap="1rem"
+    <>
+      <Box
+        display="flex"
+        flexDirection={{ base: 'column', md: 'row' }}
+        flexWrap="wrap"
+        gap={4}
+        justifyContent={{ md: 'space-between' }}
       >
-        <Heading
-          flexShrink={0}
-          mr="auto"
+        <Heading flexShrink={0}>Produtos</Heading>
+        <Box
+          display="flex"
+          flexWrap="wrap"
+          gap={4}
         >
-          Lista de Produtos
-        </Heading>
-        <InputGroup w="15rem">
-          <InputLeftElement pointerEvents="none">
-            <Icon
-              as={MdSearch}
-              color="#898989"
-            />
-          </InputLeftElement>
-          <Input
-            bg="white"
-            placeholder="Busque um produto"
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </InputGroup>
-        <Menu>
-          <MenuButton
-            _active={{ bg: 'gray.300' }}
-            _hover={{ _disabled: { bg: 'gray.200' }, bg: 'gray.200' }}
-            as={Button}
-            bg="white"
-            border="1px solid #DCDCDC"
-            color="gray.800"
-            fontWeight="400"
-            h="3rem"
-            rightIcon={<MdArrowDropDown color="#898989" />}
-            size="sm"
+          <Popover
+            isOpen={popoverOpen}
+            placement="bottom-start"
+            isLazy
+            onClose={() => setPopoverOpen(false)}
           >
-            <Text
-              as="span"
-              color="#898989"
-              display="inline-block"
-              mr={status !== null ? '0.25rem' : '0'}
-            >
-              Status{status !== null ? ':' : ''}
-            </Text>
-            {status !== null && (status ? 'Ativo' : 'Inativo')}
-          </MenuButton>
-          <MenuList>
-            <MenuItem
-              fontSize="sm"
-              onClick={handleStatusChange(null)}
-            >
-              Nenhum
-            </MenuItem>
-            <MenuItem
-              fontSize="sm"
-              onClick={handleStatusChange(1)}
-            >
-              Ativo
-            </MenuItem>
-            <MenuItem
-              fontSize="sm"
-              onClick={handleStatusChange(0)}
-            >
-              Inativo
-            </MenuItem>
-          </MenuList>
-        </Menu>
-        <Button
-          as={Link}
-          flexShrink={0}
-          href="/products/create"
-          size="sm"
-          variant="solid"
+            <PopoverTrigger>
+              <Button
+                isLoading={query.isFetching}
+                leftIcon={<Icon as={MdFilterList} />}
+                variant="outline"
+                onClick={() => setPopoverOpen(true)}
+              >
+                Filtros
+              </Button>
+            </PopoverTrigger>
+            <Portal>
+              <PopoverContent
+                as="form"
+                width="20rem"
+                onSubmit={handleSubmit}
+              >
+                <PopoverArrow />
+                <PopoverHeader py={3}>
+                  <Heading size="sm">Filtros</Heading>
+                </PopoverHeader>
+                <PopoverCloseButton
+                  right={2}
+                  top={2}
+                  onClick={() => setPopoverOpen(false)}
+                />
+                <PopoverBody
+                  display="flex"
+                  flexDirection="column"
+                  gap={2}
+                  sx={{ '& > *': { flexShrink: 0 } }}
+                >
+                  <InputGroup>
+                    <InputLeftAddon width="6.5rem">Produto</InputLeftAddon>
+                    <Input
+                      defaultValue={filters.code ?? ''}
+                      isDisabled={query.isFetching}
+                      name="code"
+                    />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon width="6.5rem">Categoria</InputLeftAddon>
+                    <Input
+                      defaultValue={filters.category ?? ''}
+                      isDisabled={query.isFetching}
+                      name="category"
+                    />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon width="6.5rem">Segmento</InputLeftAddon>
+                    <Input
+                      defaultValue={filters.segment ?? ''}
+                      isDisabled={query.isFetching}
+                      name="segment"
+                    />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon width="6.5rem">DSH/DSO</InputLeftAddon>
+                    <Input
+                      defaultValue={filters.dsh_dso ?? ''}
+                      isDisabled={query.isFetching}
+                      name="dsh_dso"
+                    />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon width="6.5rem">Unidade</InputLeftAddon>
+                    <Input
+                      defaultValue={filters.unity ?? ''}
+                      isDisabled={query.isFetching}
+                      name="unity"
+                    />
+                  </InputGroup>
+                </PopoverBody>
+                <PopoverFooter
+                  display="flex"
+                  flexDirection="column"
+                >
+                  <Button type="submit">Aplicar</Button>
+                </PopoverFooter>
+              </PopoverContent>
+            </Portal>
+          </Popover>
+          <Button
+            as={Link}
+            href="/products/create"
+          >
+            Novo Produto
+          </Button>
+        </Box>
+      </Box>
+
+      {(filters.code ||
+        filters.category ||
+        filters.segment ||
+        filters.dsh_dso ||
+        filters.unity) && (
+        <Box
+          display="flex"
+          flexWrap="wrap"
+          gap={2}
+          mt={6}
         >
-          Novo Produto
-        </Button>
-      </Flex>
-      <TableContainer
-        bg="#FFFFFF"
-        borderRadius="0.5rem"
-        boxShadow="base"
-        mt="2.375rem"
-      >
-        <Table fontSize="xs">
+          {filters.code && (
+            <Tag colorScheme="blue">
+              <TagLabel>Produto: {filters.code}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, code: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.category && (
+            <Tag colorScheme="blue">
+              <TagLabel>Categoria: {filters.category}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, category: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.segment && (
+            <Tag colorScheme="blue">
+              <TagLabel>Segmento: {filters.segment}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, segment: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.dsh_dso && (
+            <Tag colorScheme="blue">
+              <TagLabel>DSH/DSO: {filters.dsh_dso}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, dsh_dso: undefined })}
+              />
+            </Tag>
+          )}
+          {filters.unity && (
+            <Tag colorScheme="blue">
+              <TagLabel>Unidade: {filters.unity}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, unity: undefined })}
+              />
+            </Tag>
+          )}
+
+          {filters.segment && (
+            <Tag colorScheme="blue">
+              <TagLabel>Segmento: {filters.segment}</TagLabel>
+              <TagCloseButton
+                onClick={() => setFilters({ ...filters, segment: undefined })}
+              />
+            </Tag>
+          )}
+        </Box>
+      )}
+
+      {/* eslint-disable prettier/prettier */}
+      <TableContainer background="white" borderRadius="sm" boxShadow="base" marginTop={6}>
+        <Table>
           <Thead>
             <Tr>
-              <Th p="1.25rem 0.75rem"></Th>
-              <Th p="1.25rem 0.75rem">Nome</Th>
-              <Th p="1.25rem 0.75rem">Código</Th>
-              <Th p="1.25rem 0.75rem">Categoria</Th>
-              <Th p="1.25rem 0.75rem">Segmento</Th>
-              <Th
-                p="1.25rem 0.75rem"
-                textAlign="center"
-              >
-                Unid. Venda (Qtd)
-              </Th>
-              <Th
-                p="1.25rem 0.75rem"
-                textAlign="center"
-              >
-                Status
-              </Th>
-              <Th p="1.25rem 0.75rem"></Th>
+              <Th></Th>
+              <Th>Nome</Th>
+              <Th>Código</Th>
+              <Th>Categoria</Th>
+              <Th>Segmento</Th>
+              <Th textAlign="center">Unid. Venda (Qtd)</Th>
+              <Th textAlign="center">Status</Th>
+              <Th></Th>
             </Tr>
           </Thead>
           <Tbody>
-            {products?.slice(offset, offset + limit).map((product, i) => (
-              <Tr
-                key={product.id}
-                bg={i % 2 === 0 ? '#FFFFFF' : '#F9F9F9'}
-              >
-                <Td p="1.25rem 0.75rem">
-                  {product.image ? (
-                    <Image
-                      alt=""
-                      h="2rem"
-                      src={product.image}
-                      w="2rem"
-                    />
-                  ) : (
-                    <Box
-                      bg="gray.100"
-                      display="inline-block"
-                      h="2rem"
-                      w="2rem"
-                    />
-                  )}
+            {query.data?.products.data.map((product, i) => (
+              <Tr key={product.id} bg={i % 2 === 0 ? '#FFFFFF' : '#F9F9F9'}>
+                <Td>
+                  {product.image && <Image alt="" h="4rem" src={product.image} w="4rem" />}
+                  {!product.image && <Box bg="gray.100" display="inline-block" h="4rem" w="4rem" />}
                 </Td>
-                <Td p="1.25rem 0.75rem">
-                  <Box
-                    as="span"
-                    display="inline-block"
-                    maxW="12rem"
-                    whiteSpace="normal"
-                  >
-                    {product.name}
-                  </Box>
+                <Td maxW="16rem" whiteSpace="normal">{product.name}</Td>
+                <Td>{product.code}</Td>
+                <Td>{product.category.name}</Td>
+                <Td display="flex" flexWrap="wrap" gap={2} maxW="20rem">
+                  {product.segments.map((segment) => (
+                    <Badge key={segment.id} colorScheme="blue">
+                      {segment.name}
+                    </Badge>
+                  ))}
                 </Td>
-                <Td p="1.25rem 0.75rem">{product.code}</Td>
-                <Td p="1.25rem 0.75rem">{product.category.name}</Td>
-                <Td p="1.25rem 0.75rem">
-                  <Box
-                    as="span"
-                    display="inline-flex"
-                    flexShrink={0}
-                    flexWrap="wrap"
-                    gap="0.5rem"
-                    minW="20rem"
-                  >
-                    {product.segments.map((segment) => (
-                      <Badge
-                        key={segment.id}
-                        bg="#DFEDFA"
-                        borderRadius="0.25rem"
-                        color="#1E93FF"
-                        p="0.125rem 0.5rem"
-                        size="sm"
-                      >
-                        {segment.name}
-                      </Badge>
-                    ))}
-                  </Box>
-                </Td>
-                <Td
-                  padding="1.25rem 0.75rem"
-                  textAlign="center"
-                >
-                  {product.unity}
-                </Td>
-                <Td
-                  padding="1.25rem 0.75rem"
-                  textAlign="center"
-                >
-                  <Badge
-                    background={product.status ? '#E9F1F2' : 'gray.100'}
-                    borderRadius="0.25rem"
-                    color={product.status ? '#70B6C1' : 'gray.800'}
-                    p="0.125rem 0.5rem"
-                    size="sm"
-                  >
+                <Td textAlign="center">{product.unity}({product.amount})</Td>
+                <Td textAlign="center">
+                  <Badge colorScheme={product.status ? 'green' : 'red'}>
                     {product.status ? 'Ativo' : 'Inativo'}
                   </Badge>
                 </Td>
-                <Td
-                  padding="1.25rem 0.75rem"
-                  textAlign="end"
-                >
+                <Td textAlign="end">
                   <Menu>
                     <MenuButton
                       aria-label="Opções"
                       as={IconButton}
-                      color="#898989"
-                      icon={<MdMoreHoriz />}
-                      size="sm"
+                      icon={<Icon as={MdMoreHoriz} />}
                       variant="ghost"
                     />
                     <MenuList>
-                      <Link
+                      <MenuItem
+                        as={Link}
                         href={`/products/${product.id}/edit`}
-                        legacyBehavior
-                        passHref
+                        icon={<Icon as={FaRegEdit} />}
                       >
-                        <MenuItem
-                          as="a"
-                          icon={<FaRegEdit fontSize="1rem" />}
-                        >
-                          Editar
-                        </MenuItem>
-                      </Link>
+                        Editar
+                      </MenuItem>
                     </MenuList>
                   </Menu>
                 </Td>
@@ -330,113 +347,42 @@ export default function ProductsPage() {
           </Tbody>
         </Table>
       </TableContainer>
-      {products && (
-        <Flex
-          align="center"
-          justifyContent="space-between"
-          mt="2rem"
+      {/* eslint-enable prettier/prettier */}
+
+      {query.data && (
+        <Box
+          display={{ md: 'center' }}
+          justifyContent={{ md: 'center' }}
+          marginTop={6}
+          sx={{
+            /* eslint-disable prettier/prettier, canonical/sort-keys */
+            ul: {
+              display: 'flex',
+              gap: 2,
+              listStyle: 'none',
+
+              li: {
+                a: { color: 'blue.500' },
+                '&.previous': { mr: { base: 'auto', md: 2 } },
+                '&.next': { ml: { base: 'auto', md: 2 } },
+                '&:is(.disabled, .selected)': { a: { color: 'gray.500', cursor: 'default' } },
+                '&:not(:is(.disabled, .selected)):hover': { textDecoration: 'underline' },
+              },
+            },
+            /* eslint-enable prettier/prettier, canonical/sort-keys */
+          }}
+          onClick={handlePaginateClick}
         >
-          <Box
-            fontSize="0.875rem"
-            lineHeight="1rem"
-          >
-            Mostrando&nbsp;
-            <Menu>
-              <MenuButton
-                _active={{ bg: 'gray.300' }}
-                _hover={{ _disabled: { bg: 'gray.200' }, bg: 'gray.200' }}
-                as={Button}
-                bg="white"
-                border="1px solid #DCDCDC"
-                color="gray.800"
-                fontWeight="400"
-                h="2rem"
-                rightIcon={<MdArrowDropDown color="#898989" />}
-                size="sm"
-              >
-                {limit}
-              </MenuButton>
-              <MenuList>
-                <MenuItem
-                  fontSize="sm"
-                  onClick={handleLimitChange(10)}
-                >
-                  10
-                </MenuItem>
-                <MenuItem
-                  fontSize="sm"
-                  onClick={handleLimitChange(25)}
-                >
-                  25
-                </MenuItem>
-                <MenuItem
-                  fontSize="sm"
-                  onClick={handleLimitChange(50)}
-                >
-                  50
-                </MenuItem>
-                <MenuItem
-                  fontSize="sm"
-                  onClick={handleLimitChange(100)}
-                >
-                  100
-                </MenuItem>
-              </MenuList>
-            </Menu>
-            <Box
-              as="span"
-              color="#898989"
-            >
-              &nbsp;itens por página
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              '& li a': {
-                alignItems: 'center',
-                display: 'flex',
-                fontSize: '0.857rem',
-                justifyContent: 'center',
-                lineHeight: '1rem',
-                minH: '2rem',
-                minW: '2rem',
-              },
-              '& li.next': {
-                ml: '1.25rem',
-              },
-              '& li.next.disabled, & li.previous.disabled': {
-                '& a': { cursor: 'default' },
-                'color': '#898989',
-              },
-              '& li.previous': {
-                mr: '1.25rem',
-              },
-              '& li.selected': {
-                bg: 'white',
-                border: '1px solid #1e93ff',
-                borderRadius: '0.25rem',
-              },
-              '& li:not(.disabled):hover': {
-                textDecoration: 'underline',
-              },
-              '& ul': {
-                display: 'flex',
-                gap: '0.5rem',
-                listStyle: 'none',
-              },
-            }}
-          >
-            <ReactPaginate
-              breakLabel="..."
-              nextLabel="Próximo"
-              pageCount={Math.ceil(products.length / limit)}
-              previousLabel="Anterior"
-              renderOnZeroPageCount={null}
-              onPageChange={handlePageChange}
-            />
-          </Box>
-        </Flex>
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel="Próximo"
+            pageCount={query.data.products.last_page}
+            previousLabel="Anterior"
+            renderOnZeroPageCount={null}
+            onPageChange={({ selected }) => setPage(selected.toString())}
+          />
+        </Box>
       )}
-    </Box>
+    </>
   );
 }
