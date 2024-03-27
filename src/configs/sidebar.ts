@@ -101,8 +101,8 @@ const options: Option[] = [
     items: [
       {
         id: Math.random().toString(36).substring(2),
-        name: 'Lista de Produtos',
-        path: '/products/products-list',
+        name: 'Produtos',
+        path: '/products/products',
       },
       {
         id: Math.random().toString(36).substring(2),

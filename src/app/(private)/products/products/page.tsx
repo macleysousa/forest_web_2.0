@@ -215,7 +215,7 @@ export default function ProductsPage() {
           </Popover>
           <Button
             as={Link}
-            href="/products/create"
+            href="/products/products/create"
           >
             Novo Produto
           </Button>
