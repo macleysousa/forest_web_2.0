@@ -273,15 +273,6 @@ export default function ProductsPage() {
               />
             </Tag>
           )}
-
-          {filters.segment && (
-            <Tag colorScheme="blue">
-              <TagLabel>Segmento: {filters.segment}</TagLabel>
-              <TagCloseButton
-                onClick={() => setFilters({ ...filters, segment: undefined })}
-              />
-            </Tag>
-          )}
         </Box>
       )}
 
@@ -310,12 +301,14 @@ export default function ProductsPage() {
                 <Td maxW="16rem" whiteSpace="normal">{product.name}</Td>
                 <Td>{product.code}</Td>
                 <Td>{product.category.name}</Td>
-                <Td display="flex" flexWrap="wrap" gap={2} maxW="20rem">
-                  {product.segments.map((segment) => (
-                    <Badge key={segment.id} colorScheme="blue">
-                      {segment.name}
-                    </Badge>
-                  ))}
+                <Td>
+                  <Box display="inline-flex" flexWrap="wrap" gap={2} maxW="20rem">
+                    {product.segments.map((segment) => (
+                      <Badge key={segment.id} colorScheme="blue">
+                        {segment.name}
+                      </Badge>
+                    ))}
+                  </Box>
                 </Td>
                 <Td textAlign="center">{product.unity}({product.amount})</Td>
                 <Td textAlign="center">
@@ -375,11 +368,12 @@ export default function ProductsPage() {
         >
           <ReactPaginate
             breakLabel="..."
+            forcePage={query.data.products.current_page - 1}
             nextLabel="Próximo"
             pageCount={query.data.products.last_page}
             previousLabel="Anterior"
             renderOnZeroPageCount={null}
-            onPageChange={({ selected }) => setPage(selected.toString())}
+            onPageChange={({ selected }) => setPage((selected + 1).toString())}
           />
         </Box>
       )}
